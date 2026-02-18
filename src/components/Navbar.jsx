@@ -19,6 +19,7 @@ function Navbar() {
         <Link to="/dashboard">Dashboard</Link>
         <Link to="/upload">Upload</Link>
         <Link to="/profile">Perfil</Link>
+        <Link to="/purchase">Solicitação de Compras</Link>
         <button className="logout-button" onClick={handleLogout}>
           Logout
         </button>
