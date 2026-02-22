@@ -1,73 +1,46 @@
-import { useState } from "react";
+// src/pages/Login.jsx
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authService from "../services/authService";
-import "../styles/pages.css";
+import { AuthContext } from "../context/AuthContext";
+import api from "../services/api";
 
-export default function Login(){
+const Login = () => {
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
 
-const [email,setEmail]=useState("");
-const [senha,setSenha]=useState("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.post("/auth/login", { email, senha });
+      login(res.data); // salva user + token
+      navigate("/"); // redireciona imediatamente
+    } catch (err) {
+      alert("Email ou senha inválidos!");
+    }
+  };
 
-const navigate=useNavigate();
+  return (
+    <form onSubmit={handleSubmit}>
+      <h2>Login</h2>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <input
+        type="password"
+        placeholder="Senha"
+        value={senha}
+        onChange={(e) => setSenha(e.target.value)}
+        required
+      />
+      <button type="submit">Entrar</button>
+    </form>
+  );
+};
 
-async function handleLogin(e){
-
-e.preventDefault();
-
-try{
-
-await authService.login(email,senha);
-
-navigate("/dashboard");
-
-}catch(error){
-
-alert("Login inválido");
-
-}
-
-}
-
-return(
-
-<div className="loginContainer">
-
-<form
-className="loginCard"
-onSubmit={handleLogin}
->
-
-<h2 className="loginTitle">
-
-Login
-
-</h2>
-
-<input
-className="input"
-placeholder="Email"
-value={email}
-onChange={(e)=>setEmail(e.target.value)}
-/>
-
-<input
-className="input"
-type="password"
-placeholder="Senha"
-value={senha}
-onChange={(e)=>setSenha(e.target.value)}
-/>
-
-<button className="button">
-
-Entrar
-
-</button>
-
-</form>
-
-</div>
-
-)
-
-}
+export default Login;

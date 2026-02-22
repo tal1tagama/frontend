@@ -1,29 +1,26 @@
-import { Link } from "react-router-dom";
+// src/pages/Dashboard.jsx
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-function Dashboard() {
+const Dashboard = () => {
+  const navigate = useNavigate();
 
-return (
-
-<div>
-
-<h1>Sistema Obras</h1>
-
-<Link to="/medicao">
-<button>Enviar Medição</button>
-</Link>
-
-<Link to="/solicitacao">
-<button>Solicitação</button>
-</Link>
-
-<Link to="/relatorios">
-<button>Relatórios</button>
-</Link>
-
-</div>
-
-);
-
-}
+  return (
+    <div className="dashboard-container">
+      <h1>Dashboard</h1>
+      <div className="buttons-container">
+        <button onClick={() => navigate("/medicoes")}>
+          Enviar Medição
+        </button>
+        <button onClick={() => navigate("/solicitacoes")}>
+          Solicitação
+        </button>
+        <button onClick={() => navigate("/relatorios")}>
+          Relatórios
+        </button>
+      </div>
+    </div>
+  );
+};
 
 export default Dashboard;

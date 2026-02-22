@@ -1,41 +1,70 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// src/App.jsx
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import PrivateRoute from "./components/PrivateRoute";
 
-import Layout from "./components/Layout";
-
+// Páginas
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import EnviarMedicao from "./pages/EnviarMedicao";
-import NovaSolicitacao from "./pages/NovaSolicitacao";
-import MeusRelatorios from "./pages/MeusRelatorios";
-import StatusSolicitacao from "./pages/StatusSolicitacao";
+import Profile from "./pages/Profile";
+import Medicoes from "./pages/EnviarMedicao";
+import Solicitacoes from "./pages/PurchaseRequest";
+import Relatorios from "./pages/MeusRelatorios";
 
 function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Página de login */}
+          <Route path="/login" element={<Login />} />
 
-return (
-
-<BrowserRouter>
-
-<Layout>
-
-<Routes>
-
-<Route path="/dashboard" element={<Dashboard/>}/>
-
-<Route path="/medicao" element={<EnviarMedicao/>}/>
-
-<Route path="/solicitacao" element={<NovaSolicitacao/>}/>
-
-<Route path="/relatorios" element={<MeusRelatorios/>}/>
-
-<Route path="/status" element={<StatusSolicitacao/>}/>
-
-</Routes>
-
-</Layout>
-
-</BrowserRouter>
-
-);
-
+          {/* Dashboard e páginas internas protegidas */}
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Dashboard />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/medicoes"
+            element={
+              <PrivateRoute>
+                <Medicoes />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/solicitacoes"
+            element={
+              <PrivateRoute>
+                <Solicitacoes />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/relatorios"
+            element={
+              <PrivateRoute>
+                <Relatorios />
+              </PrivateRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
 }
 
 export default App;
