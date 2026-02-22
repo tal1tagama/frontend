@@ -1,33 +1,29 @@
-import React, { useEffect, useState } from "react";
-import api from "../api/api";
+import { Link } from "react-router-dom";
 
 function Dashboard() {
-  const [medicoes, setMedicoes] = useState([]);
 
-  useEffect(() => {
-    const fetchMedicoes = async () => {
-      try {
-        const response = await api.get("/measurements/minhas?page=1&limit=10");
-        setMedicoes(response.data.data);
-      } catch (error) {
-        console.error("Erro ao buscar medições:", error);
-      }
-    };
-    fetchMedicoes();
-  }, []);
+return (
 
-  return (
-    <div className="dashboard-container">
-      <h1>Minhas Mediçōes</h1>
-      <ul>
-        {medicoes.map((m) => (
-          <li key={m._id}>
-            {m.obra} - {m.data} - {m.status}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+<div>
+
+<h1>Sistema Obras</h1>
+
+<Link to="/medicao">
+<button>Enviar Medição</button>
+</Link>
+
+<Link to="/solicitacao">
+<button>Solicitação</button>
+</Link>
+
+<Link to="/relatorios">
+<button>Relatórios</button>
+</Link>
+
+</div>
+
+);
+
 }
 
 export default Dashboard;

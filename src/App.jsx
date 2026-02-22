@@ -1,29 +1,41 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Layout from "./components/Layout";
+
 import Dashboard from "./pages/Dashboard";
-import Upload from "./pages/Upload";
-import Profile from "./pages/Profile";
-import PrivateRoute from "./components/PrivateRoute";
-import PurchaseRequest from "./pages/PurchaseRequest";
-import "./App.css";
+import EnviarMedicao from "./pages/EnviarMedicao";
+import NovaSolicitacao from "./pages/NovaSolicitacao";
+import MeusRelatorios from "./pages/MeusRelatorios";
+import StatusSolicitacao from "./pages/StatusSolicitacao";
 
 function App() {
-    return (
-        <div>
-            <Navbar />
-        <Routes>
-            <Route path="/" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="/upload" element={<PrivateRoute><Upload /></PrivateRoute>} />
-            <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-            <Route path="/purchase" element={<PrivateRoute><PurchaseRequest /></PrivateRoute>} /> {/* nova rota */}
-        </Routes>
-        </div>
-    );
+
+return (
+
+<BrowserRouter>
+
+<Layout>
+
+<Routes>
+
+<Route path="/dashboard" element={<Dashboard/>}/>
+
+<Route path="/medicao" element={<EnviarMedicao/>}/>
+
+<Route path="/solicitacao" element={<NovaSolicitacao/>}/>
+
+<Route path="/relatorios" element={<MeusRelatorios/>}/>
+
+<Route path="/status" element={<StatusSolicitacao/>}/>
+
+</Routes>
+
+</Layout>
+
+</BrowserRouter>
+
+);
+
 }
 
 export default App;

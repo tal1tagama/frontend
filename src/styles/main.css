@@ -1,0 +1,65 @@
+/* HEADER */
+
+.header{
+
+background:#111;
+color:white;
+padding:10px;
+
+}
+
+.header h1{
+
+font-size:20px;
+margin-bottom:10px;
+
+}
+
+/* MENU */
+
+.menu{
+
+display:flex;
+flex-direction:column;
+gap:8px;
+
+}
+
+.menu button{
+
+width:100%;
+padding:12px;
+border:none;
+background:#333;
+color:white;
+border-radius:8px;
+font-size:16px;
+
+}
+
+/* CONTAINER */
+
+.container{
+
+padding:15px;
+
+}
+
+
+/* DESKTOP */
+
+@media(min-width:768px){
+
+.menu{
+
+flex-direction:row;
+
+}
+
+.menu button{
+
+width:auto;
+
+}
+
+}

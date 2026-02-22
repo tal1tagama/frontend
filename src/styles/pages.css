@@ -1,0 +1,61 @@
+/* Container geral */
+.page-container {
+  padding: 20px;
+  max-width: 600px;
+  margin: auto;
+}
+
+/* Título */
+.page-title {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Botões de tópico */
+.topic-button {
+  background: #2563eb;
+  color: white;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+/* Lista itens */
+.items-container {
+  background: #f3f4f6;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Item */
+.item {
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Item selecionado */
+.selected {
+  background: #dbeafe;
+}
+
+/* Resumo */
+.summary {
+  margin-top: 20px;
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+/* Botão enviar */
+.button-primary {
+  background: #22c55e;
+  color: white;
+  padding: 14px;
+  border-radius: 10px;
+  margin-top: 15px;
+  text-align: center;
+  cursor: pointer;
+}

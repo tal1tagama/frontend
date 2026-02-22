@@ -1,40 +1,73 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/api";
+import authService from "../services/authService";
+import "../styles/pages.css";
 
-function Login() {
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const navigate = useNavigate();
+export default function Login(){
 
-  const handleLogin = async () => {
-    try {
-      const response = await api.post("/auth/login", { email, senha });
-      localStorage.setItem("token", response.data.data.accessToken);
-      navigate("/dashboard");
-    } catch (error) {
-      alert("Erro ao fazer login: " + error.response?.data?.message);
-    }
-  };
+const [email,setEmail]=useState("");
+const [senha,setSenha]=useState("");
 
-  return (
-    <div className="login-container">
-      <h1>Login</h1>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={(e) => setSenha(e.target.value)}
-      />
-      <button className="button" onClick={handleLogin}>Entrar</button>
-    </div>
-  );
+const navigate=useNavigate();
+
+async function handleLogin(e){
+
+e.preventDefault();
+
+try{
+
+await authService.login(email,senha);
+
+navigate("/dashboard");
+
+}catch(error){
+
+alert("Login inválido");
+
 }
 
-export default Login;
+}
+
+return(
+
+<div className="loginContainer">
+
+<form
+className="loginCard"
+onSubmit={handleLogin}
+>
+
+<h2 className="loginTitle">
+
+Login
+
+</h2>
+
+<input
+className="input"
+placeholder="Email"
+value={email}
+onChange={(e)=>setEmail(e.target.value)}
+/>
+
+<input
+className="input"
+type="password"
+placeholder="Senha"
+value={senha}
+onChange={(e)=>setSenha(e.target.value)}
+/>
+
+<button className="button">
+
+Entrar
+
+</button>
+
+</form>
+
+</div>
+
+)
+
+}
