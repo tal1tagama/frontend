@@ -1,5 +1,7 @@
 import { useState } from "react";
 import api from "../services/api";
+import Layout from "../components/Layout";
+import "../styles/pages.css";
 
 function EnviarMedicao() {
 
@@ -49,10 +51,11 @@ function EnviarMedicao() {
   }
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>Enviar Medição</h2>
+    <Layout>
+      <div className="page-container">
+        <h2 className="page-title">Enviar Medição</h2>
 
-      <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="form-container">
 
         <div>
           <label>Comprimento (m)</label>
@@ -136,13 +139,14 @@ function EnviarMedicao() {
 
         <br />
 
-        <button type="submit">
+        <button type="submit" className="button-primary">
           Enviar Medição
         </button>
 
       </form>
 
-    </div>
+      </div>
+    </Layout>
   );
 }
 

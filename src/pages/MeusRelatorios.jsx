@@ -1,5 +1,6 @@
 import { useEffect,useState } from "react";
 import api from "../services/api";
+import Layout from "../components/Layout";
 import "../styles/pages.css";
 
 function MeusRelatorios(){
@@ -20,9 +21,10 @@ console.log("Erro medicoes:",err);
 
 return(
 
-<div className="page-container">
+<Layout>
+  <div className="page-container">
 
-<h2>Meus Relatórios</h2>
+    <h2 className="page-title">Meus Relatórios</h2>
 
 {medicoes.length===0 && (
 
@@ -38,6 +40,7 @@ return(
 
 <img
 src={`http://localhost:5000/${m.foto}`}
+alt={m.descricao || "Foto da medição"}
 width="200"
 />
 
@@ -45,7 +48,8 @@ width="200"
 
 ))}
 
-</div>
+  </div>
+</Layout>
 
 );
 

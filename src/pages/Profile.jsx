@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/api";
+import Layout from "../components/Layout";
+import "../styles/pages.css";
 
 function Profile() {
   const [user, setUser] = useState(null);
@@ -17,17 +19,25 @@ function Profile() {
   }, []);
 
   if (!user) {
-    return <p>Carregando perfil...</p>;
+    return (
+      <Layout>
+        <p>Carregando perfil...</p>
+      </Layout>
+    );
   }
 
   return (
-    <div className="profile-container">
-      <h1>Perfil do Usuário</h1>
-      <p><strong>ID:</strong> {user._id}</p>
-      <p><strong>Email:</strong> {user.email}</p>
-      <p><strong>Papel:</strong> {user.role}</p>
-      <p><strong>Criado em:</strong> {new Date(user.createdAt).toLocaleString()}</p>
-    </div>
+    <Layout>
+      <div className="page-container">
+        <h1 className="page-title">Perfil do Usuário</h1>
+        <div className="summary">
+          <p><strong>ID:</strong> {user._id}</p>
+          <p><strong>Email:</strong> {user.email}</p>
+          <p><strong>Papel:</strong> {user.role}</p>
+          <p><strong>Criado em:</strong> {new Date(user.createdAt).toLocaleString()}</p>
+        </div>
+      </div>
+    </Layout>
   );
 }
 

@@ -3,6 +3,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
+import "./App.css";              
+import "./styles/main.css";    
+import "./styles/pages.css";
 
 // Páginas
 import Login from "./pages/Login";

@@ -58,4 +58,98 @@
   margin-top: 15px;
   text-align: center;
   cursor: pointer;
+  border: none;
+  width: 100%;
+  font-size: 16px;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.button-primary:hover {
+  background: #16a34a;
+}
+
+/* Formulários */
+.login-form {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-container {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.form-container input,
+.form-container textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-container label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #374151;
+}
+
+/* Container de botões */
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+@media (min-width: 768px) {
+  .buttons-container {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .buttons-container .topic-button {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+/* Card para relatórios */
+.card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+}
+
+.card img {
+  border-radius: 8px;
+  margin-top: 10px;
 }

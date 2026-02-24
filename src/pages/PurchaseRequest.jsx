@@ -1,4 +1,6 @@
 import { useState } from "react";
+import Layout from "../components/Layout";
+import "../styles/pages.css";
 
 const topicos = [
 
@@ -231,15 +233,17 @@ alert("Erro ao enviar solicitação");
 
 return(
 
-<div>
+<Layout>
+  <div className="page-container">
 
-<h2>Fazer Solicitação</h2>
+    <h2 className="page-title">Fazer Solicitação</h2>
 
-{topicos.map(topico=>(
+    {topicos.map(topico=>(
 
 <div key={topico.id}>
 
 <button
+className="topic-button"
 onClick={()=>toggleTopico(topico.id)}
 >
 {topico.titulo}
@@ -247,12 +251,13 @@ onClick={()=>toggleTopico(topico.id)}
 
 {expanded===topico.id &&(
 
-<div>
+<div className="items-container">
 
 {topico.itens.map((item,index)=>(
 
 <div
 key={index}
+className={selecionados[item] ? "item selected" : "item"}
 onClick={()=>toggleItem(item)}
 >
 
@@ -276,23 +281,26 @@ readOnly
 
 ))}
 
-<h3>Resumo da Solicitação</h3>
+    <div className="summary">
+      <h3>Resumo da Solicitação</h3>
 
-{itensSelecionados.length===0&&(
-<p>Nenhum item selecionado</p>
-)}
+      {itensSelecionados.length===0&&(
+        <p>Nenhum item selecionado</p>
+      )}
 
-{itensSelecionados.map((item,index)=>(
-<div key={index}>
-{item}
-</div>
-))}
+      {itensSelecionados.map((item,index)=>(
+        <div key={index}>
+          {item}
+        </div>
+      ))}
+    </div>
 
-<button onClick={enviarSolicitacao}>
-Enviar Solicitação
-</button>
+    <button className="button-primary" onClick={enviarSolicitacao}>
+      Enviar Solicitação
+    </button>
 
-</div>
+  </div>
+</Layout>
 
 );
 

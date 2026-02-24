@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
+import "../styles/pages.css";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -22,24 +23,26 @@ const Login = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      <input
-        type="password"
-        placeholder="Senha"
-        value={senha}
-        onChange={(e) => setSenha(e.target.value)}
-        required
-      />
-      <button type="submit">Entrar</button>
-    </form>
+    <div className="page-container">
+      <form onSubmit={handleSubmit} className="login-form">
+        <h2 className="page-title">Login</h2>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={senha}
+          onChange={(e) => setSenha(e.target.value)}
+          required
+        />
+        <button type="submit" className="button-primary">Entrar</button>
+      </form>
+    </div>
   );
 };
 

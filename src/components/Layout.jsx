@@ -11,15 +11,15 @@ function Layout({ children }) {
 
         <nav className="menu">
 
-          <Link to="/dashboard">
+          <Link to="/">
             <button>Início</button>
           </Link>
 
-          <Link to="/medicao">
+          <Link to="/medicoes">
             <button>Enviar Medição</button>
           </Link>
 
-          <Link to="/solicitacao">
+          <Link to="/solicitacoes">
             <button>Solicitação</button>
           </Link>
 
@@ -27,8 +27,8 @@ function Layout({ children }) {
             <button>Relatórios</button>
           </Link>
 
-          <Link to="/status">
-            <button>Status</button>
+          <Link to="/profile">
+            <button>Perfil</button>
           </Link>
 
         </nav>
