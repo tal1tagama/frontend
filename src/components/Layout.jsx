@@ -1,7 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
 import "../styles/main.css";
 
 function Layout({ children }) {
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <div>
 
@@ -30,6 +40,10 @@ function Layout({ children }) {
           <Link to="/profile">
             <button>Perfil</button>
           </Link>
+
+          <button className="btn-logout" onClick={handleLogout}>
+            Sair
+          </button>
 
         </nav>
 

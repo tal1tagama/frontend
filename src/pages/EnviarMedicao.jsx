@@ -12,6 +12,9 @@ function EnviarMedicao() {
     observacoes: ""
   });
 
+  const [foto, setFoto] = useState(null);
+  const [preview, setPreview] = useState(null);
+
   const comprimento = Number(form.comprimento) || 0;
   const largura = Number(form.largura) || 0;
   const altura = Number(form.altura) || 0;
@@ -26,14 +29,43 @@ function EnviarMedicao() {
     });
   }
 
+  function handleFotoChange(e) {
+    const file = e.target.files[0];
+    if (file) {
+      setFoto(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
 
     try {
+      let fotoUrl = null;
+
+      // 1. Se há foto, fazer upload primeiro via /files/upload
+      if (foto) {
+        const uploadData = new FormData();
+        uploadData.append("file", foto);
+        uploadData.append("tipo", "fotos");
+
+        const uploadRes = await api.post("/files/upload", uploadData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        // O backend retorna { data: { url: "/uploads/fotos/..." } }
+        fotoUrl = uploadRes.data?.data?.url || uploadRes.data?.url || null;
+      }
+
+      // 2. Enviar medição como JSON com a URL da foto (texto)
       await api.post("/medicoes", {
-        ...form,
+        comprimento: form.comprimento,
+        largura: form.largura,
+        altura: form.altura,
+        observacoes: form.observacoes,
         area,
-        volume
+        volume,
+        ...(fotoUrl && { foto: fotoUrl })
       });
 
       alert("Medição enviada com sucesso!");
@@ -44,9 +76,11 @@ function EnviarMedicao() {
         altura: "",
         observacoes: ""
       });
+      setFoto(null);
+      setPreview(null);
 
     } catch (error) {
-      alert("Erro ao enviar medição");
+      alert("Erro ao enviar medição: " + (error.response?.data?.message || error.message));
     }
   }
 
@@ -135,6 +169,24 @@ function EnviarMedicao() {
             onChange={handleChange}
             rows="4"
           />
+        </div>
+
+        <br />
+
+        <div>
+          <label>Foto da Medição (opcional)</label>
+          <br />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleFotoChange}
+            className="file-input"
+          />
+          {preview && (
+            <div className="foto-preview">
+              <img src={preview} alt="Preview da foto" width="200" />
+            </div>
+          )}
         </div>
 
         <br />

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import api from "../api/api";
+import api from "../services/api";
+import Layout from "../components/Layout";
 import { saveFileOffline, getPendingFiles, markAsUploaded } from "../utils/db";
+import "../styles/pages.css";
 
 function Upload() {
   const [file, setFile] = useState(null);
@@ -70,22 +72,33 @@ function Upload() {
   }, []);
 
   return (
-    <div className="upload-container">
-      <h1>Upload de Arquivos</h1>
-      <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-      <button className="button" onClick={handleUpload}>Enviar</button>
+    <Layout>
+      <div className="page-container">
+        <h2 className="page-title">Upload de Arquivos</h2>
+        <div className="form-container">
+          <label>Selecionar arquivo</label>
+          <input
+            type="file"
+            className="file-input"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+          <button className="button-primary" onClick={handleUpload} style={{ marginTop: 12 }}>
+            Enviar
+          </button>
+        </div>
 
-      <h2>Arquivos pendentes</h2>
-      {pendingFiles.length === 0 ? (
-        <p>Nenhum arquivo pendente.</p>
-      ) : (
-        <ul>
-          {pendingFiles.map((f) => (
-            <li key={f.id}>{f.file.name}</li>
-          ))}
-        </ul>
-      )}
-    </div>
+        <h3 style={{ marginTop: 24, marginBottom: 8 }}>Arquivos pendentes (offline)</h3>
+        {pendingFiles.length === 0 ? (
+          <p>Nenhum arquivo pendente.</p>
+        ) : (
+          <ul>
+            {pendingFiles.map((f) => (
+              <li key={f.id}>{f.file.name}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </Layout>
   );
 }
 

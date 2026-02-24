@@ -1,51 +1,65 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import Layout from "../components/Layout";
 import "../styles/pages.css";
 
-function StatusSolicitacao(){
+const STATUS_LABEL = {
+  pendente: "Pendente",
+  aprovado: "Aprovado",
+  reprovado: "Reprovado",
+  em_andamento: "Em Andamento",
+};
 
-const [solicitacoes,setSolicitacoes]=useState([]);
+function StatusSolicitacao() {
 
-useEffect(()=>{
+  const [solicitacoes, setSolicitacoes] = useState([]);
+  const [erro, setErro] = useState(null);
 
-api.get("/solicitacoes")
-.then(res=>{
-setSolicitacoes(res.data || []);
-})
-.catch(err=>{
-console.log("Erro solicitacoes:",err);
-});
+  useEffect(() => {
+    api.get("/solicitacoes")
+      .then(res => {
+        setSolicitacoes(Array.isArray(res.data) ? res.data : res.data?.data || []);
+      })
+      .catch(err => {
+        console.error("Erro solicitacoes:", err);
+        setErro("Não foi possível carregar as solicitações.");
+      });
+  }, []);
 
-},[]);
+  return (
+    <Layout>
+      <div className="page-container">
 
-return(
+        <h2 className="page-title">Status das Solicitações</h2>
 
-<div className="page-container">
+        {erro && <p className="erro-msg">{erro}</p>}
 
-<h2>Status Solicitações</h2>
+        {!erro && solicitacoes.length === 0 && (
+          <p>Nenhuma solicitação encontrada.</p>
+        )}
 
-{solicitacoes.length===0 && (
+        {solicitacoes.map((s, idx) => (
+          <div key={s._id || s.id || idx} className="card">
+            <p><strong>Status:</strong> {STATUS_LABEL[s.status] || s.status || "—"}</p>
+            {s.descricao && (
+              <div>
+                <strong>Itens:</strong>
+                <ul style={{ marginTop: 4, paddingLeft: 18 }}>
+                  {(Array.isArray(s.descricao) ? s.descricao : [s.descricao]).map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {s.createdAt && (
+              <p><strong>Data:</strong> {new Date(s.createdAt).toLocaleDateString("pt-BR")}</p>
+            )}
+          </div>
+        ))}
 
-<p>Nenhuma solicitação encontrada</p>
-
-)}
-
-{solicitacoes.map(s=>(
-
-<div key={s.id} className="card">
-
-<p><b>ID:</b> {s.id}</p>
-
-<p><b>Status:</b> {s.status}</p>
-
-</div>
-
-))}
-
-</div>
-
-);
-
+      </div>
+    </Layout>
+  );
 }
 
 export default StatusSolicitacao;

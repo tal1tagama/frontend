@@ -35,7 +35,22 @@ background:#333;
 color:white;
 border-radius:8px;
 font-size:16px;
+cursor:pointer;
 
+}
+
+.menu button:hover {
+  background: #555;
+}
+
+/* Botão de logout */
+.btn-logout {
+  background: #dc2626 !important;
+  color: white !important;
+}
+
+.btn-logout:hover {
+  background: #b91c1c !important;
 }
 
 /* CONTAINER */

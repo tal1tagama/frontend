@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
+import api from "../services/api";
 import "../styles/pages.css";
 
 const topicos = [
@@ -195,40 +196,24 @@ const itensSelecionados=
 Object.keys(selecionados)
 .filter(key=>selecionados[key]);
 
-const enviarSolicitacao=async()=>{
+const enviarSolicitacao = async () => {
 
-if(itensSelecionados.length===0){
-alert("Selecione pelo menos um item");
-return;
-}
+  if (itensSelecionados.length === 0) {
+    alert("Selecione pelo menos um item");
+    return;
+  }
 
-try{
+  try {
+    await api.post("/solicitacoes", {
+      descricao: itensSelecionados
+    });
 
-const res=await fetch(
-"http://localhost:3000/fazer-solicitacao",
-{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-descricao:itensSelecionados
-})
-}
-);
+    alert("Solicitação enviada com sucesso!");
+    setSelecionados({});
 
-const data=await res.json();
-
-alert(data.message||"Solicitação enviada");
-
-setSelecionados({});
-
-}catch{
-
-alert("Erro ao enviar solicitação");
-
-}
-
+  } catch (err) {
+    alert("Erro ao enviar solicitação: " + (err.response?.data?.message || err.message));
+  }
 };
 
 return(

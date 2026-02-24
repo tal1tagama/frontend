@@ -152,4 +152,70 @@
 .card img {
   border-radius: 8px;
   margin-top: 10px;
+  display: block;
+}
+
+/* Input de arquivo */
+.file-input {
+  display: block;
+  margin-top: 6px;
+  padding: 8px;
+  border: 1px dashed #d1d5db;
+  border-radius: 6px;
+  background: #f9fafb;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* Preview de foto */
+.foto-preview {
+  margin-top: 10px;
+}
+
+.foto-preview img {
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Sem foto */
+.sem-foto {
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+/* Mensagem de erro */
+.erro-msg {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* Tabela de medições */
+.measurements-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.measurements-table th,
+.measurements-table td {
+  border: 1px solid #e5e7eb;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.measurements-table th {
+  background: #f3f4f6;
+  font-weight: 600;
+  color: #374151;
+}
+
+.measurements-table tr:nth-child(even) {
+  background: #f9fafb;
 }

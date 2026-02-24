@@ -1,6 +1,6 @@
 // src/pages/Login.jsx
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
 import "../styles/pages.css";
@@ -41,6 +41,9 @@ const Login = () => {
           required
         />
         <button type="submit" className="button-primary">Entrar</button>
+        <p style={{ textAlign: "center", marginTop: "12px" }}>
+          Não tem conta? <Link to="/register" style={{ color: "#2563eb" }}>Cadastre-se</Link>
+        </p>
       </form>
     </div>
   );
