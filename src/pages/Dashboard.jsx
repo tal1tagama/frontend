@@ -15,8 +15,17 @@ const Dashboard = () => {
           <button className="topic-button" onClick={() => navigate("/medicoes")}>
             Enviar Medição
           </button>
+          <button className="topic-button" onClick={() => navigate("/medicoes-lista")}>
+            Lista de Medicoes
+          </button>
           <button className="topic-button" onClick={() => navigate("/solicitacoes")}>
             Solicitação
+          </button>
+          <button className="topic-button" onClick={() => navigate("/status-solicitacoes")}>
+            Status de Solicitacoes
+          </button>
+          <button className="topic-button" onClick={() => navigate("/upload")}>
+            Upload de Arquivos
           </button>
           <button className="topic-button" onClick={() => navigate("/relatorios")}>
             Relatórios

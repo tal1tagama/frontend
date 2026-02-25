@@ -1,21 +1,43 @@
 import React, { useEffect, useState } from "react";
-import api from "../services/api";
 import Layout from "../components/Layout";
+import { listMedicoes } from "../services/medicoesService";
 import "../styles/pages.css";
 
 function Measurements() {
   const [measurements, setMeasurements] = useState([]);
   const [erro, setErro] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const normalizeMedicao = (m) => {
+    const itens = Array.isArray(m.itens) ? m.itens : [];
+    const firstItem = itens[0] || {};
+    return {
+      id: m.id || m._id,
+      area: m.area ?? firstItem.quantidade,
+      volume: m.volume ?? firstItem.valorTotal,
+      observacoes: m.observacoes || firstItem.observacoes,
+      status: m.status,
+      createdAt: m.createdAt || m.metadata?.createdAt,
+    };
+  };
 
   useEffect(() => {
-    api.get("/medicoes")
-      .then(res => {
-        setMeasurements(Array.isArray(res.data) ? res.data : res.data?.data || []);
-      })
-      .catch(err => {
-        console.error("Erro ao buscar medições:", err);
-        setErro("Não foi possível carregar as medições.");
-      });
+    const load = async () => {
+      try {
+        setLoading(true);
+        setErro(null);
+        const res = await listMedicoes({ page: 1, limit: 50 });
+        const raw = Array.isArray(res) ? res : res?.data || [];
+        const list = Array.isArray(raw) ? raw : raw?.data || [];
+        setMeasurements(list.map(normalizeMedicao));
+      } catch (err) {
+        console.error("Erro ao buscar medicoes:", err);
+        setErro("Nao foi possivel carregar as medicoes.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, []);
 
   return (
@@ -25,11 +47,13 @@ function Measurements() {
 
         {erro && <p className="erro-msg">{erro}</p>}
 
-        {!erro && measurements.length === 0 && (
+        {loading && <p>Carregando medicoes...</p>}
+
+        {!erro && !loading && measurements.length === 0 && (
           <p>Nenhuma medição encontrada.</p>
         )}
 
-        {measurements.length > 0 && (
+        {!loading && measurements.length > 0 && (
           <div style={{ overflowX: "auto" }}>
             <table className="measurements-table">
               <thead>
@@ -43,7 +67,7 @@ function Measurements() {
               </thead>
               <tbody>
                 {measurements.map((m, idx) => (
-                  <tr key={m._id || idx}>
+                  <tr key={m.id || idx}>
                     <td>{m.area ?? "—"}</td>
                     <td>{m.volume ?? "—"}</td>
                     <td>{m.observacoes || "—"}</td>

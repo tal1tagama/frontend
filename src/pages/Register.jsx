@@ -9,15 +9,23 @@ const Register = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [nome, setNome] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
+      setError("");
+      setSuccess("");
       await api.post("/auth/register", { email, senha, nome });
-      alert("Usuário criado com sucesso!");
+      setSuccess("Usuario criado com sucesso!");
       navigate("/login");
     } catch (err) {
-      alert("Erro ao criar usuário: " + (err.response?.data?.message || err.message));
+      setError("Erro ao criar usuario: " + (err.response?.data?.message || err.message));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,7 +54,11 @@ const Register = () => {
           onChange={(e) => setSenha(e.target.value)}
           required
         />
-        <button type="submit" className="button-primary">Cadastrar</button>
+        {error && <p className="erro-msg">{error}</p>}
+        {success && <p className="success-msg">{success}</p>}
+        <button type="submit" className="button-primary" disabled={loading}>
+          {loading ? "Cadastrando..." : "Cadastrar"}
+        </button>
         <p style={{ textAlign: "center", marginTop: "12px" }}>
           Já tem conta? <Link to="/login" style={{ color: "#2563eb" }}>Entrar</Link>
         </p>

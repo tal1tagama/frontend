@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import "../styles/main.css";
@@ -6,6 +6,9 @@ import "../styles/main.css";
 function Layout({ children }) {
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   function handleLogout() {
     logout();
@@ -22,23 +25,31 @@ function Layout({ children }) {
         <nav className="menu">
 
           <Link to="/">
-            <button>Início</button>
+            <button className={isActive("/") ? "active" : ""}>Inicio</button>
           </Link>
 
           <Link to="/medicoes">
-            <button>Enviar Medição</button>
+            <button className={isActive("/medicoes") ? "active" : ""}>Enviar Medicao</button>
           </Link>
 
           <Link to="/solicitacoes">
-            <button>Solicitação</button>
+            <button className={isActive("/solicitacoes") ? "active" : ""}>Solicitacao</button>
+          </Link>
+
+          <Link to="/status-solicitacoes">
+            <button className={isActive("/status-solicitacoes") ? "active" : ""}>Status</button>
+          </Link>
+
+          <Link to="/upload">
+            <button className={isActive("/upload") ? "active" : ""}>Upload</button>
           </Link>
 
           <Link to="/relatorios">
-            <button>Relatórios</button>
+            <button className={isActive("/relatorios") ? "active" : ""}>Relatorios</button>
           </Link>
 
           <Link to="/profile">
-            <button>Perfil</button>
+            <button className={isActive("/profile") ? "active" : ""}>Perfil</button>
           </Link>
 
           <button className="btn-logout" onClick={handleLogout}>

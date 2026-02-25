@@ -10,15 +10,21 @@ const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
+      setError("");
       const res = await api.post("/auth/login", { email, senha });
       login(res.data); // salva user + token
       navigate("/"); // redireciona imediatamente
     } catch (err) {
-      alert("Email ou senha inválidos!");
+      setError("Email ou senha invalidos.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -40,7 +46,10 @@ const Login = () => {
           onChange={(e) => setSenha(e.target.value)}
           required
         />
-        <button type="submit" className="button-primary">Entrar</button>
+        {error && <p className="erro-msg">{error}</p>}
+        <button type="submit" className="button-primary" disabled={loading}>
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
         <p style={{ textAlign: "center", marginTop: "12px" }}>
           Não tem conta? <Link to="/register" style={{ color: "#2563eb" }}>Cadastre-se</Link>
         </p>

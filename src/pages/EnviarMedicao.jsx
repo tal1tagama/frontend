@@ -1,6 +1,7 @@
 import { useState } from "react";
-import api from "../services/api";
 import Layout from "../components/Layout";
+import { createMedicao } from "../services/medicoesService";
+import { uploadFile } from "../services/filesService";
 import "../styles/pages.css";
 
 function EnviarMedicao() {
@@ -14,6 +15,9 @@ function EnviarMedicao() {
 
   const [foto, setFoto] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const comprimento = Number(form.comprimento) || 0;
   const largura = Number(form.largura) || 0;
@@ -40,25 +44,27 @@ function EnviarMedicao() {
   async function handleSubmit(e) {
     e.preventDefault();
 
+    setError("");
+    setSuccess("");
+
+    if (comprimento <= 0 || largura <= 0 || altura <= 0) {
+      setError("Comprimento, largura e altura devem ser maiores que zero.");
+      return;
+    }
+
     try {
+      setLoading(true);
       let fotoUrl = null;
 
       // 1. Se há foto, fazer upload primeiro via /files/upload
       if (foto) {
-        const uploadData = new FormData();
-        uploadData.append("file", foto);
-        uploadData.append("tipo", "fotos");
-
-        const uploadRes = await api.post("/files/upload", uploadData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-
+        const uploadRes = await uploadFile(foto, { tipo: "fotos" });
         // O backend retorna { data: { url: "/uploads/fotos/..." } }
-        fotoUrl = uploadRes.data?.data?.url || uploadRes.data?.url || null;
+        fotoUrl = uploadRes?.data?.url || uploadRes?.url || null;
       }
 
       // 2. Enviar medição como JSON com a URL da foto (texto)
-      await api.post("/medicoes", {
+      await createMedicao({
         comprimento: form.comprimento,
         largura: form.largura,
         altura: form.altura,
@@ -68,7 +74,7 @@ function EnviarMedicao() {
         ...(fotoUrl && { foto: fotoUrl })
       });
 
-      alert("Medição enviada com sucesso!");
+      setSuccess("Medicao enviada com sucesso!");
 
       setForm({
         comprimento: "",
@@ -80,7 +86,9 @@ function EnviarMedicao() {
       setPreview(null);
 
     } catch (error) {
-      alert("Erro ao enviar medição: " + (error.response?.data?.message || error.message));
+      setError("Erro ao enviar medicao: " + (error.response?.data?.message || error.message));
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -191,8 +199,11 @@ function EnviarMedicao() {
 
         <br />
 
-        <button type="submit" className="button-primary">
-          Enviar Medição
+        {error && <p className="erro-msg">{error}</p>}
+        {success && <p className="success-msg">{success}</p>}
+
+        <button type="submit" className="button-primary" disabled={loading}>
+          {loading ? "Enviando..." : "Enviar Medicao"}
         </button>
 
       </form>

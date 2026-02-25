@@ -1,11 +1,12 @@
 import { useState } from "react";
-import api from "../services/api";
+import { createPurchase } from "../services/purchasesService";
 import "../styles/pages.css";
 
 function NovaSolicitacao() {
 
 const [selecionados, setSelecionados] = useState({});
 const [mensagem, setMensagem] = useState("");
+const [loading, setLoading] = useState(false);
 
 const toggleItem = (item) => {
 setSelecionados(prev => ({
@@ -26,9 +27,9 @@ return;
 
 try{
 
-await api.post("/solicitacoes",{
-descricao: itens
-});
+setLoading(true);
+const itemsPayload = itens.map((descricao) => ({ descricao }));
+await createPurchase(itemsPayload);
 
 setMensagem("Solicitação enviada");
 
@@ -37,6 +38,10 @@ setSelecionados({});
 }catch{
 
 setMensagem("Erro ao enviar");
+
+}finally{
+
+setLoading(false);
 
 }
 
@@ -51,8 +56,9 @@ return (
 <button
 className="button-primary"
 onClick={enviarSolicitacao}
+disabled={loading}
 >
-Enviar Solicitação
+{loading ? "Enviando..." : "Enviar Solicitacao"}
 </button>
 
 <p>{mensagem}</p>

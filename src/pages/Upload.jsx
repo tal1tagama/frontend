@@ -1,38 +1,42 @@
 import React, { useState, useEffect } from "react";
-import api from "../services/api";
 import Layout from "../components/Layout";
 import { saveFileOffline, getPendingFiles, markAsUploaded } from "../utils/db";
+import { uploadFile } from "../services/filesService";
 import "../styles/pages.css";
 
 function Upload() {
   const [file, setFile] = useState(null);
   const [pendingFiles, setPendingFiles] = useState([]);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleUpload = async () => {
+    setError("");
+    setSuccess("");
+
     if (!file) {
-      alert("Selecione um arquivo primeiro!");
+      setError("Selecione um arquivo primeiro.");
       return;
     }
 
     if (!navigator.onLine) {
       // offline → salva localmente
       await saveFileOffline(file);
-      alert("Sem conexão. Arquivo salvo localmente e será enviado quando a internet voltar.");
+      setSuccess("Sem conexao. Arquivo salvo localmente e sera enviado quando a internet voltar.");
       await loadPendingFiles(); // atualiza lista
       return;
     }
 
     // online → envia direto
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const response = await api.post("/files/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      alert("Upload realizado com sucesso: " + response.data.message);
+      setLoading(true);
+      const response = await uploadFile(file);
+      setSuccess("Upload realizado com sucesso: " + (response?.message || "Arquivo enviado"));
     } catch (error) {
-      alert("Erro ao enviar arquivo: " + error.response?.data?.message);
+      setError("Erro ao enviar arquivo: " + (error.response?.data?.message || error.message));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,15 +52,10 @@ function Upload() {
       const pending = await getPendingFiles();
       for (const item of pending) {
         if (!item.uploaded) {
-          const formData = new FormData();
-          formData.append("file", item.file);
-
           try {
-            await api.post("/files/upload", formData, {
-              headers: { "Content-Type": "multipart/form-data" },
-            });
+            await uploadFile(item.file);
             await markAsUploaded(item.id);
-            alert("Arquivo pendente enviado com sucesso!");
+            setSuccess("Arquivo pendente enviado com sucesso!");
           } catch (err) {
             console.error("Erro ao enviar arquivo pendente:", err);
           }
@@ -82,8 +81,10 @@ function Upload() {
             className="file-input"
             onChange={(e) => setFile(e.target.files[0])}
           />
-          <button className="button-primary" onClick={handleUpload} style={{ marginTop: 12 }}>
-            Enviar
+          {error && <p className="erro-msg">{error}</p>}
+          {success && <p className="success-msg">{success}</p>}
+          <button className="button-primary" onClick={handleUpload} style={{ marginTop: 12 }} disabled={loading}>
+            {loading ? "Enviando..." : "Enviar"}
           </button>
         </div>
 

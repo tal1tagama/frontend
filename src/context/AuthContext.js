@@ -13,16 +13,28 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (data) => {
-    // data.data.user vem do backend (res.data)
-    setUser(data.data.user);
-    localStorage.setItem("user", JSON.stringify(data.data.user));
-    localStorage.setItem("token", data.data.accessToken);
+    const payload = data?.data || data;
+    const nextUser = payload?.user || null;
+    const accessToken = payload?.accessToken;
+    const refreshToken = payload?.refreshToken;
+
+    setUser(nextUser);
+    if (nextUser) {
+      localStorage.setItem("user", JSON.stringify(nextUser));
+    }
+    if (accessToken) {
+      localStorage.setItem("token", accessToken);
+    }
+    if (refreshToken) {
+      localStorage.setItem("refreshToken", refreshToken);
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("refreshToken");
   };
 
   return (

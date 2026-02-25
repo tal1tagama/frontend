@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
-import api from "../services/api";
+import { createPurchase } from "../services/purchasesService";
 import "../styles/pages.css";
 
 const topicos = [
@@ -180,6 +180,9 @@ export default function PurchaseRequest(){
 
 const [expanded,setExpanded]=useState(null);
 const [selecionados,setSelecionados]=useState({});
+const [error,setError]=useState("");
+const [success,setSuccess]=useState("");
+const [loading,setLoading]=useState(false);
 
 const toggleTopico=(id)=>{
 setExpanded(expanded===id?null:id);
@@ -198,21 +201,27 @@ Object.keys(selecionados)
 
 const enviarSolicitacao = async () => {
 
+  setError("");
+  setSuccess("");
+
   if (itensSelecionados.length === 0) {
-    alert("Selecione pelo menos um item");
+    setError("Selecione pelo menos um item.");
     return;
   }
 
   try {
-    await api.post("/solicitacoes", {
-      descricao: itensSelecionados
-    });
+    setLoading(true);
+    const itemsPayload = itensSelecionados.map((descricao) => ({ descricao }));
 
-    alert("Solicitação enviada com sucesso!");
+    await createPurchase(itemsPayload);
+
+    setSuccess("Solicitacao enviada com sucesso!");
     setSelecionados({});
 
   } catch (err) {
-    alert("Erro ao enviar solicitação: " + (err.response?.data?.message || err.message));
+    setError("Erro ao enviar solicitacao: " + (err.response?.data?.message || err.message));
+  } finally {
+    setLoading(false);
   }
 };
 
@@ -280,8 +289,11 @@ readOnly
       ))}
     </div>
 
-    <button className="button-primary" onClick={enviarSolicitacao}>
-      Enviar Solicitação
+    {error && <p className="erro-msg">{error}</p>}
+    {success && <p className="success-msg">{success}</p>}
+
+    <button className="button-primary" onClick={enviarSolicitacao} disabled={loading}>
+      {loading ? "Enviando..." : "Enviar Solicitacao"}
     </button>
 
   </div>
