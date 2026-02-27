@@ -237,17 +237,21 @@ return(
 <Layout>
   <div className="page-container">
 
-    <h2 className="page-title">Fazer Solicitação</h2>
+    <h2 className="page-title">Nova Solicitação de Materiais</h2>
+    <p style={{ fontSize: "var(--tamanho-fonte-grande)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-xl)", lineHeight: "1.6" }}>
+      Selecione uma categoria e marque os materiais que você precisa para a obra
+    </p>
 
     {topicos.map(topico=>(
 
-<div key={topico.id}>
+<div key={topico.id} style={{ marginBottom: "var(--espacamento-md)" }}>
 
 <button
 className="topic-button"
 onClick={()=>toggleTopico(topico.id)}
+style={{ width: "100%", textAlign: "left" }}
 >
-{topico.titulo}
+{expanded === topico.id ? "▼" : "▶"} {topico.titulo}
 </button>
 
 {expanded===topico.id &&(
@@ -268,7 +272,7 @@ checked={selecionados[item]||false}
 readOnly
 />
 
-{item}
+<span>{item}</span>
 
 </div>
 
@@ -283,24 +287,38 @@ readOnly
 ))}
 
     <div className="summary">
-      <h3>Resumo da Solicitação</h3>
+      <h3>Itens Selecionados</h3>
 
       {itensSelecionados.length===0&&(
-        <p>Nenhum item selecionado</p>
+        <p style={{ color: "var(--cor-texto-secundario)", fontStyle: "italic" }}>Nenhum item selecionado ainda</p>
       )}
 
-      {itensSelecionados.map((item,index)=>(
-        <div key={index}>
-          {item}
-        </div>
-      ))}
+      {itensSelecionados.length > 0 && (
+        <ul style={{ marginTop: "var(--espacamento-sm)", paddingLeft: "20px" }}>
+          {itensSelecionados.map((item,index)=>(
+            <li key={index} style={{ marginBottom: "var(--espacamento-xs)" }}>
+              {item}
+            </li>
+          ))}
+        </ul>
+      )}
+      
+      {itensSelecionados.length > 0 && (
+        <p style={{ marginTop: "var(--espacamento-md)", fontWeight: 600 }}>
+          Total: {itensSelecionados.length} {itensSelecionados.length === 1 ? "item" : "itens"}
+        </p>
+      )}
     </div>
-
+    
     {error && <p className="erro-msg">{error}</p>}
     {success && <p className="success-msg">{success}</p>}
 
-    <button className="button-primary" onClick={enviarSolicitacao} disabled={loading}>
-      {loading ? "Enviando..." : "Enviar Solicitacao"}
+    <button 
+      className="button-primary" 
+      onClick={enviarSolicitacao} 
+      disabled={loading || itensSelecionados.length === 0}
+    >
+      {loading ? "Enviando solicitação..." : `Enviar Solicitação (${itensSelecionados.length} ${itensSelecionados.length === 1 ? "item" : "itens"})`}
     </button>
 
   </div>

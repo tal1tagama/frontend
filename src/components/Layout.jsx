@@ -28,54 +28,54 @@ function Layout({ children }) {
 
       <header className="header">
 
-        <h1>Sistema Obras</h1>
+        <h1>Sistema de Gestão de Obras</h1>
 
         <nav className="menu">
 
           {canAccessRoute(perfil, "/") && (
             <Link to="/">
-              <button className={isActive("/") ? "active" : ""}>Inicio</button>
+              <button className={isActive("/") ? "active" : ""}>🏠 Início</button>
             </Link>
           )}
 
           {canAccessRoute(perfil, "/medicoes") && (
             <Link to="/medicoes">
-              <button className={isActive("/medicoes") ? "active" : ""}>Enviar Medicao</button>
+              <button className={isActive("/medicoes") ? "active" : ""}>📏 Nova Medição</button>
             </Link>
           )}
 
           {canAccessRoute(perfil, "/solicitacoes") && (
             <Link to="/solicitacoes">
-              <button className={isActive("/solicitacoes") ? "active" : ""}>Solicitacao</button>
+              <button className={isActive("/solicitacoes") ? "active" : ""}>🛒 Solicitar</button>
             </Link>
           )}
 
           {canAccessRoute(perfil, "/status-solicitacoes") && (
             <Link to="/status-solicitacoes">
-              <button className={isActive("/status-solicitacoes") ? "active" : ""}>Status</button>
+              <button className={isActive("/status-solicitacoes") ? "active" : ""}>⏳ Status</button>
             </Link>
           )}
 
           {canAccessRoute(perfil, "/upload") && (
             <Link to="/upload">
-              <button className={isActive("/upload") ? "active" : ""}>Upload</button>
+              <button className={isActive("/upload") ? "active" : ""}>📤 Upload</button>
             </Link>
           )}
 
           {canAccessRoute(perfil, "/relatorios") && (
             <Link to="/relatorios">
-              <button className={isActive("/relatorios") ? "active" : ""}>Relatorios</button>
+              <button className={isActive("/relatorios") ? "active" : ""}>📊 Relatórios</button>
             </Link>
           )}
 
           {canAccessRoute(perfil, "/profile") && (
             <Link to="/profile">
-              <button className={isActive("/profile") ? "active" : ""}>Perfil</button>
+              <button className={isActive("/profile") ? "active" : ""}>👤 Perfil</button>
             </Link>
           )}
 
           <button className="btn-logout" onClick={handleLogout}>
-            Sair
+            🚪 Sair
           </button>
 
         </nav>

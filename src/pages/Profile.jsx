@@ -28,7 +28,9 @@ function Profile() {
   if (loading) {
     return (
       <Layout>
-        <p>Carregando perfil...</p>
+        <div className="page-container" style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>
+          <p>Carregando informações...</p>
+        </div>
       </Layout>
     );
   }
@@ -36,7 +38,9 @@ function Profile() {
   if (error) {
     return (
       <Layout>
-        <p className="erro-msg">{error}</p>
+        <div className="page-container">
+          <p className="erro-msg">{error}</p>
+        </div>
       </Layout>
     );
   }
@@ -44,14 +48,35 @@ function Profile() {
   return (
     <Layout>
       <div className="page-container">
-        <h1 className="page-title">Perfil do Usuário</h1>
+        <h1 className="page-title">Meu Perfil</h1>
+        <p style={{ fontSize: "var(--tamanho-fonte-base)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-lg)" }}>
+          Informações da sua conta
+        </p>
         <div className="summary">
-          <p><strong>ID:</strong> {user.id || user._id}</p>
-          <p><strong>Nome:</strong> {user.nome || "-"}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Perfil:</strong> {user.perfil || "-"}</p>
-          <p><strong>Obra atual:</strong> {user.obraAtual || "-"}</p>
-          <p><strong>Criado em:</strong> {user.createdAt ? new Date(user.createdAt).toLocaleString() : "-"}</p>
+          <div style={{ display: "grid", gap: "var(--espacamento-md)" }}>
+            <div>
+              <strong>Nome:</strong>
+              <p style={{ marginTop: "var(--espacamento-xs)", fontSize: "var(--tamanho-fonte-grande)" }}>{user.nome || "-"}</p>
+            </div>
+            <div>
+              <strong>Email:</strong>
+              <p style={{ marginTop: "var(--espacamento-xs)" }}>{user.email}</p>
+            </div>
+            <div>
+              <strong>Tipo de usuário:</strong>
+              <p style={{ marginTop: "var(--espacamento-xs)", textTransform: "capitalize" }}>{user.perfil || "-"}</p>
+            </div>
+            <div>
+              <strong>Obra atual:</strong>
+              <p style={{ marginTop: "var(--espacamento-xs)" }}>{user.obraAtual || "Nenhuma obra atribuída"}</p>
+            </div>
+            <div>
+              <strong>Conta criada em:</strong>
+              <p style={{ marginTop: "var(--espacamento-xs)", color: "var(--cor-texto-secundario)", fontSize: "var(--tamanho-fonte-pequena)" }}>
+                {user.createdAt ? new Date(user.createdAt).toLocaleString("pt-BR") : "-"}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

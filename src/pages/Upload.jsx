@@ -74,28 +74,40 @@ function Upload() {
   return (
     <Layout>
       <div className="page-container">
-        <h2 className="page-title">Upload de Arquivos</h2>
+        <h2 className="page-title">Enviar Arquivos</h2>
+        <p style={{ fontSize: "var(--tamanho-fonte-base)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-lg)" }}>
+          Selecione um arquivo para enviar. Se estiver offline, o arquivo será enviado automaticamente quando a conexão voltar.
+        </p>
         <div className="form-container">
-          <label>Selecionar arquivo</label>
+          <label>Escolher arquivo</label>
           <input
             type="file"
             className="file-input"
             onChange={(e) => setFile(e.target.files[0])}
           />
+          {file && (
+            <p style={{ marginTop: "var(--espacamento-sm)", color: "var(--cor-texto-secundario)" }}>
+              Arquivo selecionado: <strong>{file.name}</strong>
+            </p>
+          )}
           {error && <p className="erro-msg">{error}</p>}
           {success && <p className="success-msg">{success}</p>}
-          <button className="button-primary" onClick={handleUpload} style={{ marginTop: 12 }} disabled={loading}>
-            {loading ? "Enviando..." : "Enviar"}
+          <button className="button-primary" onClick={handleUpload} disabled={loading}>
+            {loading ? "Enviando arquivo..." : "Enviar Arquivo"}
           </button>
         </div>
 
-        <h3 style={{ marginTop: 24, marginBottom: 8 }}>Arquivos pendentes (offline)</h3>
+        <h3 style={{ marginTop: "var(--espacamento-xl)", marginBottom: "var(--espacamento-md)", fontSize: "var(--tamanho-subtitulo)", fontWeight: 600 }}>Arquivos Pendentes (Offline)</h3>
         {pendingFiles.length === 0 ? (
-          <p>Nenhum arquivo pendente.</p>
+          <div className="card" style={{ textAlign: "center", padding: "var(--espacamento-lg)" }}>
+            <p style={{ color: "var(--cor-texto-secundario)" }}>Nenhum arquivo aguardando envio</p>
+          </div>
         ) : (
-          <ul>
+          <ul style={{ listStyle: "none", padding: 0 }}>
             {pendingFiles.map((f) => (
-              <li key={f.id}>{f.file.name}</li>
+              <li key={f.id} className="card" style={{ marginBottom: "var(--espacamento-sm)" }}>
+                📄 {f.file.name}
+              </li>
             ))}
           </ul>
         )}

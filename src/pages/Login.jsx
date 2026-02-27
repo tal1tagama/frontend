@@ -30,29 +30,47 @@ const Login = () => {
   };
 
   return (
-    <div className="page-container">
+    <div className="login-page">
       <form onSubmit={handleSubmit} className="login-form">
-        <h2 className="page-title">Login</h2>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Senha"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          required
-        />
+        <div className="login-header">
+          <h2 className="page-title">Bem-vindo</h2>
+          <p className="login-subtitle">Digite suas credenciais para acessar o sistema</p>
+        </div>
+
         {error && <p className="erro-msg">{error}</p>}
+        
+        <div className="form-group">
+          <label htmlFor="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="seuemail@exemplo.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="senha">Senha</label>
+          <input
+            id="senha"
+            type="password"
+            placeholder="Digite sua senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+        </div>
+
         <button type="submit" className="button-primary" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar"}
+          {loading ? "Entrando..." : "Entrar no Sistema"}
         </button>
-        <p style={{ textAlign: "center", marginTop: "12px" }}>
-          Não tem conta? <Link to="/register" style={{ color: "#2563eb" }}>Cadastre-se</Link>
+
+        <p className="login-footer">
+          Não tem uma conta? <Link to="/register">Cadastre-se gratuitamente</Link>
         </p>
       </form>
     </div>

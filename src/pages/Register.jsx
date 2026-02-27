@@ -36,40 +36,64 @@ const Register = () => {
   };
 
   return (
-    <div className="page-container">
+    <div className="login-page">
       <form onSubmit={handleSubmit} className="login-form">
-        <h2 className="page-title">Cadastro</h2>
-        <input
-          type="text"
-          placeholder="Nome"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          required
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          placeholder="Senha (mínimo 6 caracteres)"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          minLength={6}
-          required
-        />
+        <div className="login-header">
+          <h2 className="page-title">Criar Nova Conta</h2>
+          <p className="login-subtitle">Preencha os dados abaixo para começar</p>
+        </div>
+
         {error && <p className="erro-msg">{error}</p>}
+        
+        <div className="form-group">
+          <label htmlFor="nome">Nome Completo</label>
+          <input
+            id="nome"
+            type="text"
+            placeholder="Digite seu nome completo"
+            value={nome}
+            onChange={(e) => setNome(e.target.value)}
+            required
+            autoComplete="name"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="email">E-mail</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="seuemail@exemplo.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="senha">Senha</label>
+          <input
+            id="senha"
+            type="password"
+            placeholder="Mínimo 6 caracteres"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            minLength={6}
+            required
+            autoComplete="new-password"
+          />
+          <small style={{ display: "block", marginTop: "4px", color: "var(--cor-texto-secundario)", fontSize: "14px" }}>
+            Use uma senha com pelo menos 6 caracteres
+          </small>
+        </div>
+
         <button type="submit" className="button-primary" disabled={loading}>
-          {loading ? "Cadastrando..." : "Cadastrar"}
+          {loading ? "Criando conta..." : "Criar Minha Conta"}
         </button>
-        <p style={{ textAlign: "center", marginTop: "12px" }}>
-          Já tem conta?{" "}
-          <Link to="/login" style={{ color: "#2563eb" }}>
-            Entrar
-          </Link>
+
+        <p className="login-footer">
+          Já tem uma conta? <Link to="/login">Faça login aqui</Link>
         </p>
       </form>
     </div>

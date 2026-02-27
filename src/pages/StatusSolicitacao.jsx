@@ -95,47 +95,59 @@ function StatusSolicitacao() {
       <div className="page-container">
 
         <h2 className="page-title">Status das Solicitações</h2>
+        <p style={{ fontSize: "var(--tamanho-fonte-grande)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-xl)", lineHeight: "1.6" }}>
+          Acompanhe o andamento de todas as suas solicitações de materiais
+        </p>
 
         {erro && <p className="erro-msg">{erro}</p>}
 
-        {loading && <p>Carregando solicitacoes...</p>}
+        {loading && <p style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>Carregando solicitações...</p>}
 
         {!erro && !loading && solicitacoes.length === 0 && (
-          <p>Nenhuma solicitação encontrada.</p>
+          <div className="card" style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>
+            <p style={{ color: "var(--cor-texto-secundario)" }}>Nenhuma solicitação encontrada.</p>
+          </div>
         )}
 
         {!loading && solicitacoes.map((s, idx) => (
           <div key={s._id || s.id || idx} className="card">
-            <p><strong>Status:</strong> {SOLICITACAO_STATUS_LABELS[s.status] || s.status || "—"}</p>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--espacamento-md)" }}>
+              <span className={`status-badge ${s.status || 'pendente'}`}>
+                {SOLICITACAO_STATUS_LABELS[s.status] || s.status || "Pendente"}
+              </span>
+            </div>
             {getItems(s).length > 0 && (
               <div>
-                <strong>Itens:</strong>
-                <ul style={{ marginTop: 4, paddingLeft: 18 }}>
+                <strong style={{ fontSize: "16px", display: "block", marginBottom: "var(--espacamento-sm)" }}>Materiais solicitados:</strong>
+                <ul style={{ marginTop: "var(--espacamento-sm)", paddingLeft: "20px", lineHeight: "1.8" }}>
                   {getItems(s).map((item, i) => (
-                    <li key={i}>{item.descricao || item.nome || item}</li>
+                    <li key={i} style={{ marginBottom: "var(--espacamento-xs)" }}>{item.descricao || item.nome || item}</li>
                   ))}
                 </ul>
               </div>
             )}
             {(s.dataSolicitacao || s.createdAt) && (
-              <p><strong>Data:</strong> {new Date(s.dataSolicitacao || s.createdAt).toLocaleDateString("pt-BR")}</p>
+              <p style={{ marginTop: "var(--espacamento-md)", color: "var(--cor-texto-secundario)", fontSize: "14px" }}>
+                <strong>Data da solicitação:</strong> {new Date(s.dataSolicitacao || s.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
+              </p>
             )}
             {isReviewer && s.status === "pendente" && (
-              <div style={{ marginTop: 12 }}>
+              <div style={{ marginTop: "var(--espacamento-lg)", display: "flex", gap: "var(--espacamento-sm)", flexWrap: "wrap" }}>
                 <button
                   className="button-primary"
-                  style={{ marginRight: 8 }}
+                  style={{ flex: 1, minWidth: "140px" }}
                   onClick={() => handleApprove(s.id)}
                   disabled={actionLoadingId === s.id}
                 >
-                  Aprovar
+                  ✓ Aprovar
                 </button>
                 <button
                   className="button-danger"
+                  style={{ flex: 1, minWidth: "140px" }}
                   onClick={() => handleReject(s.id)}
                   disabled={actionLoadingId === s.id}
                 >
-                  Rejeitar
+                  ✗ Rejeitar
                 </button>
               </div>
             )}

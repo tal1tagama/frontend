@@ -81,13 +81,18 @@ function MeusRelatorios() {
       <div className="page-container">
 
         <h2 className="page-title">Meus Relatórios</h2>
+        <p style={{ fontSize: "var(--tamanho-fonte-base)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-lg)" }}>
+          Visualize todas as medições que você enviou
+        </p>
 
         {erro && <p className="erro-msg">{erro}</p>}
 
-        {loading && <p>Carregando medicoes...</p>}
+        {loading && <p style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>Carregando medições...</p>}
 
         {!erro && !loading && medicoes.length === 0 && (
-          <p>Nenhuma medição enviada.</p>
+          <div className="card" style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>
+            <p style={{ color: "var(--cor-texto-secundario)" }}>Você ainda não enviou nenhuma medição.</p>
+          </div>
         )}
 
         {!loading && medicoes.map((m, idx) => {
@@ -95,21 +100,34 @@ function MeusRelatorios() {
           return (
             <div key={m.id || idx} className="card">
 
-              {m.descricao && <p><strong>Descrição:</strong> {m.descricao}</p>}
-              {m.observacoes && <p><strong>Observações:</strong> {m.observacoes}</p>}
-              {(m.area !== undefined) && <p><strong>Área:</strong> {m.area} m²</p>}
-              {(m.volume !== undefined) && <p><strong>Volume:</strong> {m.volume} m³</p>}
+              {m.descricao && <p style={{ fontSize: "var(--tamanho-fonte-grande)", fontWeight: 600, marginBottom: "var(--espacamento-sm)" }}>{m.descricao}</p>}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--espacamento-md)", marginBottom: "var(--espacamento-md)" }}>
+                {(m.area !== undefined) && <p><strong>Área:</strong> {m.area} m²</p>}
+                {(m.volume !== undefined) && <p><strong>Volume:</strong> {m.volume} m³</p>}
+              </div>
+              {m.observacoes && (
+                <div style={{ padding: "var(--espacamento-md)", background: "var(--cor-fundo)", borderRadius: "var(--borda-radius)", marginBottom: "var(--espacamento-md)" }}>
+                  <strong>Observações:</strong>
+                  <p style={{ marginTop: "var(--espacamento-xs)" }}>{m.observacoes}</p>
+                </div>
+              )}
               {m.createdAt && (
-                <p><strong>Data:</strong> {new Date(m.createdAt).toLocaleDateString("pt-BR")}</p>
+                <p style={{ color: "var(--cor-texto-secundario)", fontSize: "var(--tamanho-fonte-pequena)" }}>
+                  <strong>Data:</strong> {new Date(m.createdAt).toLocaleDateString("pt-BR")} às {new Date(m.createdAt).toLocaleTimeString("pt-BR")}
+                </p>
               )}
 
               {fotoUrl ? (
-                <img
-                  src={fotoUrl}
-                  alt="Foto da medição"
-                  width="200"
-                  onError={(e) => { e.target.style.display = "none"; }}
-                />
+                <div style={{ marginTop: "var(--espacamento-md)" }}>
+                  <strong>Foto:</strong>
+                  <img
+                    src={fotoUrl}
+                    alt="Foto da medição"
+                    width="300"
+                    style={{ marginTop: "var(--espacamento-sm)", display: "block" }}
+                    onError={(e) => { e.target.style.display = "none"; }}
+                  />
+                </div>
               ) : (
                 <p className="sem-foto">Sem foto anexada</p>
               )}

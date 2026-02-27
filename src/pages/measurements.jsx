@@ -98,15 +98,20 @@ function Measurements() {
 
   return (
     <Layout>
-      <div className="page-container">
+      <div className="page-container" style={{ maxWidth: "1200px" }}>
         <h2 className="page-title">Lista de Medições</h2>
+        <p style={{ fontSize: "var(--tamanho-fonte-base)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-lg)" }}>
+          {isReviewer ? "Visualize e aprove medições enviadas" : "Suas medições enviadas"}
+        </p>
 
         {erro && <p className="erro-msg">{erro}</p>}
 
-        {loading && <p>Carregando medicoes...</p>}
+        {loading && <p style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>Carregando medições...</p>}
 
         {!erro && !loading && measurements.length === 0 && (
-          <p>Nenhuma medição encontrada.</p>
+          <div className="card" style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>
+            <p style={{ color: "var(--cor-texto-secundario)" }}>Nenhuma medição encontrada.</p>
+          </div>
         )}
 
         {!loading && measurements.length > 0 && (
@@ -125,28 +130,44 @@ function Measurements() {
               <tbody>
                 {measurements.map((m, idx) => (
                   <tr key={m.id || idx}>
-                    <td>{m.area ?? "—"}</td>
-                    <td>{m.volume ?? "—"}</td>
+                    <td><strong>{m.area ?? "—"}</strong></td>
+                    <td><strong>{m.volume ?? "—"}</strong></td>
                     <td>{m.observacoes || "—"}</td>
-                    <td>{m.status || "—"}</td>
+                    <td>
+                      <span style={{ 
+                        padding: "4px 8px", 
+                        borderRadius: "4px", 
+                        fontSize: "var(--tamanho-fonte-pequena)", 
+                        fontWeight: 500,
+                        background: m.status === "aprovada" ? "var(--cor-sucesso-clara)" : 
+                                   m.status === "rejeitada" ? "var(--cor-perigo-clara)" : 
+                                   "var(--cor-aviso-clara)",
+                        color: m.status === "aprovada" ? "var(--cor-sucesso)" : 
+                               m.status === "rejeitada" ? "var(--cor-perigo)" : 
+                               "var(--cor-aviso)"
+                      }}>
+                        {m.status || "pendente"}
+                      </span>
+                    </td>
                     <td>{m.createdAt ? new Date(m.createdAt).toLocaleDateString("pt-BR") : "—"}</td>
                     {isReviewer && (
                       <td>
-                        <button
-                          className="button-primary"
-                          style={{ marginRight: 8 }}
-                          disabled={actionLoadingId === m.id || m.status === "aprovada"}
-                          onClick={() => handleApprove(m.id)}
-                        >
-                          Aprovar
-                        </button>
-                        <button
-                          className="button-danger"
-                          disabled={actionLoadingId === m.id || m.status === "rejeitada"}
-                          onClick={() => handleReject(m.id)}
-                        >
-                          Rejeitar
-                        </button>
+                        <div style={{ display: "flex", gap: "var(--espacamento-xs)" }}>
+                          <button
+                            className="button-primary"
+                            disabled={actionLoadingId === m.id || m.status === "aprovada"}
+                            onClick={() => handleApprove(m.id)}
+                          >
+                            ✓
+                          </button>
+                          <button
+                            className="button-danger"
+                            disabled={actionLoadingId === m.id || m.status === "rejeitada"}
+                            onClick={() => handleReject(m.id)}
+                          >
+                            ✗
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
