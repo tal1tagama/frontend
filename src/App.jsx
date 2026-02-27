@@ -29,14 +29,14 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           {/* Páginas protegidas */}
-          <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-          <Route path="/medicoes" element={<PrivateRoute><Medicoes /></PrivateRoute>} />
-          <Route path="/solicitacoes" element={<PrivateRoute><Solicitacoes /></PrivateRoute>} />
-          <Route path="/relatorios" element={<PrivateRoute><Relatorios /></PrivateRoute>} />
-          <Route path="/status-solicitacoes" element={<PrivateRoute><StatusSolicitacao /></PrivateRoute>} />
-          <Route path="/upload" element={<PrivateRoute><Upload /></PrivateRoute>} />
-          <Route path="/medicoes-lista" element={<PrivateRoute><Measurements /></PrivateRoute>} />
+          <Route path="/" element={<PrivateRoute routePath="/"><Dashboard /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute routePath="/profile"><Profile /></PrivateRoute>} />
+          <Route path="/medicoes" element={<PrivateRoute routePath="/medicoes"><Medicoes /></PrivateRoute>} />
+          <Route path="/solicitacoes" element={<PrivateRoute routePath="/solicitacoes"><Solicitacoes /></PrivateRoute>} />
+          <Route path="/relatorios" element={<PrivateRoute routePath="/relatorios"><Relatorios /></PrivateRoute>} />
+          <Route path="/status-solicitacoes" element={<PrivateRoute routePath="/status-solicitacoes"><StatusSolicitacao /></PrivateRoute>} />
+          <Route path="/upload" element={<PrivateRoute routePath="/upload"><Upload /></PrivateRoute>} />
+          <Route path="/medicoes-lista" element={<PrivateRoute routePath="/medicoes-lista"><Measurements /></PrivateRoute>} />
         </Routes>
       </Router>
     </AuthProvider>

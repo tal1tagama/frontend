@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
 import { createPurchase } from "../services/purchasesService";
+import { extractApiMessage } from "../services/response";
 import "../styles/pages.css";
 
 const topicos = [
@@ -211,7 +212,13 @@ const enviarSolicitacao = async () => {
 
   try {
     setLoading(true);
-    const itemsPayload = itensSelecionados.map((descricao) => ({ descricao }));
+    const itemsPayload = itensSelecionados.map((descricao) => ({
+      descricao,
+      quantidade: 1,
+      unidade: "un",
+      valorUnitario: null,
+      observacoes: null,
+    }));
 
     await createPurchase(itemsPayload);
 
@@ -219,7 +226,7 @@ const enviarSolicitacao = async () => {
     setSelecionados({});
 
   } catch (err) {
-    setError("Erro ao enviar solicitacao: " + (err.response?.data?.message || err.message));
+    setError("Erro ao enviar solicitacao: " + extractApiMessage(err));
   } finally {
     setLoading(false);
   }

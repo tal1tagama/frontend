@@ -1,30 +1,21 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import "../components/Navbar.css";
 
-export default function Navbar(){
+export default function Navbar() {
+  const navigate = useNavigate();
+  const { logout } = useContext(AuthContext);
 
-const navigate = useNavigate();
+  const handleLogout = async () => {
+    await logout(); // invalida refreshToken no servidor e limpa localStorage
+    navigate("/login");
+  };
 
-function logout(){
-
-localStorage.removeItem("token");
-
-navigate("/");
-
-}
-
-return(
-
-<div className="navbar">
-
-<h3>Sistema</h3>
-
-<button onClick={logout}>
-Sair
-</button>
-
-</div>
-
-)
-
+  return (
+    <div className="navbar">
+      <h3>Sistema</h3>
+      <button onClick={handleLogout}>Sair</button>
+    </div>
+  );
 }

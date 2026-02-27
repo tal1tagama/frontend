@@ -1,4 +1,5 @@
 import api from "./api";
+import { extractApiData } from "./response";
 
 export async function uploadFile(file, extra = {}) {
   const formData = new FormData();
@@ -13,5 +14,5 @@ export async function uploadFile(file, extra = {}) {
     headers: { "Content-Type": "multipart/form-data" },
   });
 
-  return response.data;
+  return extractApiData(response.data);
 }

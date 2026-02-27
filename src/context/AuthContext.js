@@ -1,5 +1,6 @@
 // src/context/AuthContext.js
 import { createContext, useState, useEffect } from "react";
+import api from "../services/api";
 
 export const AuthContext = createContext();
 
@@ -10,6 +11,16 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
+
+    const handleExternalLogout = () => {
+      setUser(null);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      localStorage.removeItem("refreshToken");
+    };
+
+    window.addEventListener("auth:logout", handleExternalLogout);
+    return () => window.removeEventListener("auth:logout", handleExternalLogout);
   }, []);
 
   const login = (data) => {
@@ -30,7 +41,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (_) {
+      // ignora falha de rede — sessão local sempre é limpa
+    }
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("token");

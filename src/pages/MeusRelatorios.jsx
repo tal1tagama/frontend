@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { listMedicoes } from "../services/medicoesService";
+import api from "../services/api";
 import "../styles/pages.css";
 
 const BASE_URL = (process.env.REACT_APP_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
 
 function getFotoUrl(m) {
   const caminho = m.foto || m.fotoUrl || m.arquivo || m.arquivoUrl;
+  const source = caminho || m.resolvedFotoUrl;
 
-  if (!caminho) return null;
+  if (!source) return null;
   // URL já absoluta → usa direto
-  if (caminho.startsWith("http")) return caminho;
+  if (source.startsWith("http")) return source;
   // URL relativa (ex: /uploads/fotos/...) → prefixar com base do backend
-  return `${BASE_URL}${caminho.startsWith("/") ? "" : "/"}${caminho}`;
+  return `${BASE_URL}${source.startsWith("/") ? "" : "/"}${source}`;
 }
 
 function MeusRelatorios() {
@@ -31,6 +33,7 @@ function MeusRelatorios() {
       area: m.area ?? firstItem.quantidade,
       volume: m.volume ?? firstItem.valorTotal,
       foto: m.foto || m.fotoUrl || m.arquivo || m.arquivoUrl,
+      anexos: Array.isArray(m.anexos) ? m.anexos : [],
       createdAt: m.createdAt || m.metadata?.createdAt,
     };
   };
@@ -43,7 +46,26 @@ function MeusRelatorios() {
         const res = await listMedicoes({ page: 1, limit: 50 });
         const raw = Array.isArray(res) ? res : res?.data || [];
         const list = Array.isArray(raw) ? raw : raw?.data || [];
-        setMedicoes(list.map(normalizeMedicao));
+        const normalized = list.map(normalizeMedicao);
+
+        const withFileUrls = await Promise.all(
+          normalized.map(async (medicao) => {
+            const firstAnexoId = Array.isArray(medicao.anexos) ? medicao.anexos[0] : null;
+            if (!firstAnexoId || typeof firstAnexoId !== "number") {
+              return medicao;
+            }
+
+            try {
+              const fileRes = await api.get(`/files/${firstAnexoId}`);
+              const fileUrl = fileRes?.data?.data?.url || null;
+              return { ...medicao, resolvedFotoUrl: fileUrl };
+            } catch (error) {
+              return medicao;
+            }
+          })
+        );
+
+        setMedicoes(withFileUrls);
       } catch (err) {
         console.error("Erro medicoes:", err);
         setErro("Nao foi possivel carregar as medicoes.");
@@ -69,7 +91,7 @@ function MeusRelatorios() {
         )}
 
         {!loading && medicoes.map((m, idx) => {
-          const fotoUrl = getFotoUrl({ foto: m.foto });
+          const fotoUrl = getFotoUrl(m);
           return (
             <div key={m.id || idx} className="card">
 

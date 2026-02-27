@@ -1,12 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Layout from "../components/Layout";
-import { listMedicoes } from "../services/medicoesService";
+import {
+  aprovarMedicao,
+  listAllMedicoes,
+  listMedicoes,
+  rejeitarMedicao,
+} from "../services/medicoesService";
+import { extractApiMessage } from "../services/response";
 import "../styles/pages.css";
 
 function Measurements() {
   const [measurements, setMeasurements] = useState([]);
   const [erro, setErro] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
+
+  const currentUser = useMemo(
+    () => JSON.parse(localStorage.getItem("user") || "null"),
+    []
+  );
+  const isReviewer = useMemo(
+    () => ["supervisor", "admin"].includes(currentUser?.perfil),
+    [currentUser?.perfil]
+  );
 
   const normalizeMedicao = (m) => {
     const itens = Array.isArray(m.itens) ? m.itens : [];
@@ -26,9 +42,12 @@ function Measurements() {
       try {
         setLoading(true);
         setErro(null);
-        const res = await listMedicoes({ page: 1, limit: 50 });
-        const raw = Array.isArray(res) ? res : res?.data || [];
-        const list = Array.isArray(raw) ? raw : raw?.data || [];
+        // Supervisores/admins vêem TODAS as medições via GET /measurements
+        // Encarregados vêem apenas as próprias via GET /measurements/minhas
+        const res = isReviewer
+          ? await listAllMedicoes({ page: 1, limit: 50 })
+          : await listMedicoes({ page: 1, limit: 50 });
+        const list = Array.isArray(res) ? res : res?.data || [];
         setMeasurements(list.map(normalizeMedicao));
       } catch (err) {
         console.error("Erro ao buscar medicoes:", err);
@@ -38,7 +57,44 @@ function Measurements() {
       }
     };
     load();
-  }, []);
+  }, [isReviewer]);
+
+  const refreshList = async () => {
+    try {
+      const res = isReviewer
+        ? await listAllMedicoes({ page: 1, limit: 50 })
+        : await listMedicoes({ page: 1, limit: 50 });
+      const list = Array.isArray(res) ? res : res?.data || [];
+      setMeasurements(list.map(normalizeMedicao));
+    } catch {
+    }
+  };
+
+  const handleApprove = async (id) => {
+    try {
+      setActionLoadingId(id);
+      setErro(null);
+      await aprovarMedicao(id);
+      await refreshList();
+    } catch (error) {
+      setErro(extractApiMessage(error, "Não foi possível aprovar a medição."));
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      setActionLoadingId(id);
+      setErro(null);
+      await rejeitarMedicao(id);
+      await refreshList();
+    } catch (error) {
+      setErro(extractApiMessage(error, "Não foi possível rejeitar a medição."));
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
 
   return (
     <Layout>
@@ -63,6 +119,7 @@ function Measurements() {
                   <th>Observações</th>
                   <th>Status</th>
                   <th>Data</th>
+                  {isReviewer && <th>Ações</th>}
                 </tr>
               </thead>
               <tbody>
@@ -73,6 +130,25 @@ function Measurements() {
                     <td>{m.observacoes || "—"}</td>
                     <td>{m.status || "—"}</td>
                     <td>{m.createdAt ? new Date(m.createdAt).toLocaleDateString("pt-BR") : "—"}</td>
+                    {isReviewer && (
+                      <td>
+                        <button
+                          className="button-primary"
+                          style={{ marginRight: 8 }}
+                          disabled={actionLoadingId === m.id || m.status === "aprovada"}
+                          onClick={() => handleApprove(m.id)}
+                        >
+                          Aprovar
+                        </button>
+                        <button
+                          className="button-danger"
+                          disabled={actionLoadingId === m.id || m.status === "rejeitada"}
+                          onClick={() => handleReject(m.id)}
+                        >
+                          Rejeitar
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

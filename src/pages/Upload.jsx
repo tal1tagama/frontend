@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { saveFileOffline, getPendingFiles, markAsUploaded } from "../utils/db";
 import { uploadFile } from "../services/filesService";
+import { extractApiMessage } from "../services/response";
 import "../styles/pages.css";
 
 function Upload() {
@@ -32,9 +33,9 @@ function Upload() {
     try {
       setLoading(true);
       const response = await uploadFile(file);
-      setSuccess("Upload realizado com sucesso: " + (response?.message || "Arquivo enviado"));
+      setSuccess("Upload realizado com sucesso: " + (response?.nomeOriginal || response?.nome || "Arquivo enviado"));
     } catch (error) {
-      setError("Erro ao enviar arquivo: " + (error.response?.data?.message || error.message));
+      setError("Erro ao enviar arquivo: " + extractApiMessage(error));
     } finally {
       setLoading(false);
     }

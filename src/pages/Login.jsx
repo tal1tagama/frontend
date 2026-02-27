@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
+import { extractApiMessage } from "../services/response";
 import "../styles/pages.css";
 
 const Login = () => {
@@ -22,7 +23,7 @@ const Login = () => {
       login(res.data); // salva user + token
       navigate("/"); // redireciona imediatamente
     } catch (err) {
-      setError("Email ou senha invalidos.");
+      setError(extractApiMessage(err, "Email ou senha invalidos."));
     } finally {
       setLoading(false);
     }
