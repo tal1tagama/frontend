@@ -1,91 +1,84 @@
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import api from "../services/api";
 import { canAccessRoute } from "../constants/permissions";
 import "../styles/main.css";
 
+/**
+ * Links de navegação disponíveis por perfil.
+ * A função canAccessRoute (baseada em ROUTE_PERMISSIONS) controla o que cada perfil vê.
+ */
+const NAV_LINKS = [
+  { path: "/",                   label: "Início" },
+  { path: "/medicoes",           label: "Nova Medição" },
+  { path: "/solicitacoes",       label: "Solicitar Materiais" },
+  { path: "/status-solicitacoes",label: "Minhas Solicitações" },
+  { path: "/upload",             label: "Enviar Arquivos" },
+  // -- apenas supervisor e admin --
+  { path: "/medicoes-lista",     label: "Lista de Medições" },
+  { path: "/relatorios",         label: "Relatórios" },
+  { path: "/obras",              label: "Obras" },
+  // -- apenas admin --
+  { path: "/admin",              label: "Administração" },
+  // -- todos --
+  { path: "/profile",            label: "Meu Perfil" },
+];
+
+const PERFIL_LABELS = {
+  admin: "Administrador",
+  supervisor: "Supervisor",
+  encarregado: "Encarregado",
+};
+
 function Layout({ children }) {
-  const { logout } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const perfil = (JSON.parse(localStorage.getItem("user") || "null") || {}).perfil;
+
+  const perfil = user?.perfil || null;
 
   const isActive = (path) => location.pathname === path;
 
   async function handleLogout() {
-    try {
-      await api.post("/auth/logout");
-    } catch (error) {
-    } finally {
-      logout();
-      navigate("/login");
-    }
+    await logout(); // AuthContext.logout() já chama /auth/logout no servidor
+    navigate("/login");
   }
 
   return (
     <div>
-
       <header className="header">
-
-        <h1>Sistema de Gestão de Obras</h1>
+        <div className="header-top">
+          <h1>Gestão de Obras</h1>
+          {user && (
+            <div className="header-user-info">
+              {user.nome && <span>{user.nome}</span>}
+              <span className="header-perfil-badge">
+                {PERFIL_LABELS[perfil] || perfil || "Usuário"}
+              </span>
+            </div>
+          )}
+        </div>
 
         <nav className="menu">
-
-          {canAccessRoute(perfil, "/") && (
-            <Link to="/">
-              <button className={isActive("/") ? "active" : ""}>🏠 Início</button>
+          {NAV_LINKS.filter(({ path }) => canAccessRoute(perfil, path)).map(({ path, label }) => (
+            <Link key={path} to={path}>
+              <button className={isActive(path) ? "active" : ""}>
+                {label}
+              </button>
             </Link>
-          )}
+          ))}
 
-          {canAccessRoute(perfil, "/medicoes") && (
-            <Link to="/medicoes">
-              <button className={isActive("/medicoes") ? "active" : ""}>📏 Nova Medição</button>
-            </Link>
-          )}
-
-          {canAccessRoute(perfil, "/solicitacoes") && (
-            <Link to="/solicitacoes">
-              <button className={isActive("/solicitacoes") ? "active" : ""}>🛒 Solicitar</button>
-            </Link>
-          )}
-
-          {canAccessRoute(perfil, "/status-solicitacoes") && (
-            <Link to="/status-solicitacoes">
-              <button className={isActive("/status-solicitacoes") ? "active" : ""}>⏳ Status</button>
-            </Link>
-          )}
-
-          {canAccessRoute(perfil, "/upload") && (
-            <Link to="/upload">
-              <button className={isActive("/upload") ? "active" : ""}>📤 Upload</button>
-            </Link>
-          )}
-
-          {canAccessRoute(perfil, "/relatorios") && (
-            <Link to="/relatorios">
-              <button className={isActive("/relatorios") ? "active" : ""}>📊 Relatórios</button>
-            </Link>
-          )}
-
-          {canAccessRoute(perfil, "/profile") && (
-            <Link to="/profile">
-              <button className={isActive("/profile") ? "active" : ""}>👤 Perfil</button>
-            </Link>
-          )}
+          <div className="menu-separator" />
 
           <button className="btn-logout" onClick={handleLogout}>
-            🚪 Sair
+            Sair
           </button>
-
         </nav>
-
       </header>
 
       <main className="container">
         {children}
       </main>
-
     </div>
   );
 }

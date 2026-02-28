@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import {
   aprovarMedicao,
@@ -7,75 +7,65 @@ import {
   rejeitarMedicao,
 } from "../services/medicoesService";
 import { extractApiMessage } from "../services/response";
+import { AuthContext } from "../context/AuthContext";
+import { isReviewer } from "../constants/permissions";
 import "../styles/pages.css";
 
+const STATUS_CLASS = {
+  aprovada: "aprovada",
+  rejeitada: "rejeitada",
+  pendente: "pendente",
+  enviada: "pendente",
+};
+
 function Measurements() {
+  const { user } = useContext(AuthContext);
+  const reviewer = isReviewer(user?.perfil);
+
   const [measurements, setMeasurements] = useState([]);
   const [erro, setErro] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
-
-  const currentUser = useMemo(
-    () => JSON.parse(localStorage.getItem("user") || "null"),
-    []
-  );
-  const isReviewer = useMemo(
-    () => ["supervisor", "admin"].includes(currentUser?.perfil),
-    [currentUser?.perfil]
-  );
 
   const normalizeMedicao = (m) => {
     const itens = Array.isArray(m.itens) ? m.itens : [];
     const firstItem = itens[0] || {};
     return {
       id: m.id || m._id,
+      obra: m.obra || m.obraId || null,
       area: m.area ?? firstItem.quantidade,
       volume: m.volume ?? firstItem.valorTotal,
       observacoes: m.observacoes || firstItem.observacoes,
-      status: m.status,
+      status: m.status || "enviada",
       createdAt: m.createdAt || m.metadata?.createdAt,
     };
   };
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setLoading(true);
-        setErro(null);
-        // Supervisores/admins vêem TODAS as medições via GET /measurements
-        // Encarregados vêem apenas as próprias via GET /measurements/minhas
-        const res = isReviewer
-          ? await listAllMedicoes({ page: 1, limit: 50 })
-          : await listMedicoes({ page: 1, limit: 50 });
-        const list = Array.isArray(res) ? res : res?.data || [];
-        setMeasurements(list.map(normalizeMedicao));
-      } catch (err) {
-        console.error("Erro ao buscar medicoes:", err);
-        setErro("Nao foi possivel carregar as medicoes.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [isReviewer]);
-
-  const refreshList = async () => {
+  const load = useCallback(async () => {
     try {
-      const res = isReviewer
+      setLoading(true);
+      setErro(null);
+      const res = reviewer
         ? await listAllMedicoes({ page: 1, limit: 50 })
         : await listMedicoes({ page: 1, limit: 50 });
       const list = Array.isArray(res) ? res : res?.data || [];
       setMeasurements(list.map(normalizeMedicao));
-    } catch {
+    } catch (err) {
+      console.error("Erro ao buscar medicoes:", err);
+      setErro("Não foi possível carregar as medições.");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [reviewer]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => { load(); }, [load]);
 
   const handleApprove = async (id) => {
     try {
       setActionLoadingId(id);
       setErro(null);
       await aprovarMedicao(id);
-      await refreshList();
+      await load();
     } catch (error) {
       setErro(extractApiMessage(error, "Não foi possível aprovar a medição."));
     } finally {
@@ -88,7 +78,7 @@ function Measurements() {
       setActionLoadingId(id);
       setErro(null);
       await rejeitarMedicao(id);
-      await refreshList();
+      await load();
     } catch (error) {
       setErro(extractApiMessage(error, "Não foi possível rejeitar a medição."));
     } finally {
@@ -98,19 +88,20 @@ function Measurements() {
 
   return (
     <Layout>
-      <div className="page-container" style={{ maxWidth: "1200px" }}>
+      <div className="page-container" style={{ maxWidth: "1100px" }}>
         <h2 className="page-title">Lista de Medições</h2>
-        <p style={{ fontSize: "var(--tamanho-fonte-base)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-lg)" }}>
-          {isReviewer ? "Visualize e aprove medições enviadas" : "Suas medições enviadas"}
+        <p className="page-description">
+          {reviewer
+            ? "Visualize e aprove as medições enviadas pelos encarregados."
+            : "Suas medições enviadas e seus respectivos status."}
         </p>
 
         {erro && <p className="erro-msg">{erro}</p>}
-
         {loading && <p style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>Carregando medições...</p>}
 
         {!erro && !loading && measurements.length === 0 && (
           <div className="card" style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>
-            <p style={{ color: "var(--cor-texto-secundario)" }}>Nenhuma medição encontrada.</p>
+            <p>Nenhuma medição encontrada.</p>
           </div>
         )}
 
@@ -119,53 +110,49 @@ function Measurements() {
             <table className="measurements-table">
               <thead>
                 <tr>
+                  {reviewer && <th>Obra</th>}
                   <th>Área (m²)</th>
                   <th>Volume (m³)</th>
                   <th>Observações</th>
                   <th>Status</th>
                   <th>Data</th>
-                  {isReviewer && <th>Ações</th>}
+                  {reviewer && <th>Ações</th>}
                 </tr>
               </thead>
               <tbody>
                 {measurements.map((m, idx) => (
                   <tr key={m.id || idx}>
-                    <td><strong>{m.area ?? "—"}</strong></td>
-                    <td><strong>{m.volume ?? "—"}</strong></td>
+                    {reviewer && <td>{m.obra ?? "—"}</td>}
+                    <td><strong>{m.area != null ? Number(m.area).toFixed(2) : "—"}</strong></td>
+                    <td><strong>{m.volume != null ? Number(m.volume).toFixed(2) : "—"}</strong></td>
                     <td>{m.observacoes || "—"}</td>
                     <td>
-                      <span style={{ 
-                        padding: "4px 8px", 
-                        borderRadius: "4px", 
-                        fontSize: "var(--tamanho-fonte-pequena)", 
-                        fontWeight: 500,
-                        background: m.status === "aprovada" ? "var(--cor-sucesso-clara)" : 
-                                   m.status === "rejeitada" ? "var(--cor-perigo-clara)" : 
-                                   "var(--cor-aviso-clara)",
-                        color: m.status === "aprovada" ? "var(--cor-sucesso)" : 
-                               m.status === "rejeitada" ? "var(--cor-perigo)" : 
-                               "var(--cor-aviso)"
-                      }}>
-                        {m.status || "pendente"}
+                      <span
+                        className={`status-badge ${STATUS_CLASS[m.status] || "pendente"}`}
+                        style={{ display: "inline-block", padding: "5px 12px", borderRadius: "20px", fontSize: "var(--tamanho-fonte-pequena)", fontWeight: 700 }}
+                      >
+                        {m.status || "enviada"}
                       </span>
                     </td>
                     <td>{m.createdAt ? new Date(m.createdAt).toLocaleDateString("pt-BR") : "—"}</td>
-                    {isReviewer && (
+                    {reviewer && (
                       <td>
                         <div style={{ display: "flex", gap: "var(--espacamento-xs)" }}>
                           <button
-                            className="button-primary"
+                            className="button-success"
                             disabled={actionLoadingId === m.id || m.status === "aprovada"}
                             onClick={() => handleApprove(m.id)}
+                            style={{ padding: "10px 16px" }}
                           >
-                            ✓
+                            Aprovar
                           </button>
                           <button
                             className="button-danger"
                             disabled={actionLoadingId === m.id || m.status === "rejeitada"}
                             onClick={() => handleReject(m.id)}
+                            style={{ padding: "10px 16px" }}
                           >
-                            ✗
+                            Rejeitar
                           </button>
                         </div>
                       </td>

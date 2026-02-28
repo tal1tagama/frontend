@@ -1,61 +1,82 @@
-/* ========================================
-   CONTAINERS E TÍTULOS
+﻿/* ========================================
+   CONTAINERS E TÃTULOS
    ======================================== */
 .page-container {
   padding: var(--espacamento-lg);
-  max-width: 800px;
+  max-width: 860px;
   margin: 0 auto;
 }
 
 .page-title {
   font-size: var(--tamanho-titulo);
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: var(--espacamento-lg);
   color: var(--cor-texto-principal);
   line-height: 1.3;
+  border-bottom: 3px solid var(--cor-primaria);
+  padding-bottom: var(--espacamento-sm);
+}
+
+.page-description {
+  font-size: var(--tamanho-fonte-grande);
+  color: var(--cor-texto-secundario);
+  margin-bottom: var(--espacamento-xl);
+  line-height: 1.6;
 }
 
 /* ========================================
-   BOTÕES DE TÓPICO E NAVEGAÇÃO
+   BOTÃ•ES DE TÃ“PICO E NAVEGAÃ‡ÃƒO (Dashboard)
    ======================================== */
 .topic-button {
   background: var(--cor-primaria);
   color: white;
-  padding: 20px 24px;
+  padding: 22px 24px;
   border-radius: var(--borda-radius);
   margin-bottom: var(--espacamento-sm);
   cursor: pointer;
   border: none;
   font-size: var(--tamanho-fonte-base);
-  font-weight: 500;
-  transition: all 0.2s ease;
-  box-shadow: var(--sombra-pequena);
+  font-weight: 600;
   text-align: left;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   line-height: 1.5;
+  box-shadow: var(--sombra-pequena);
+  transition: background 0.15s ease;
 }
 
 .topic-button:hover {
   background: var(--cor-primaria-hover);
-  transform: translateY(-2px);
   box-shadow: var(--sombra-media);
 }
 
 .topic-button:active {
-  transform: translateY(0);
+  opacity: 0.9;
 }
 
 .topic-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
+}
+
+.topic-button-title {
+  display: block;
+  font-weight: 700;
+  font-size: var(--tamanho-fonte-grande);
+}
+
+.topic-button-desc {
+  display: block;
+  margin-top: 4px;
+  font-weight: 400;
+  font-size: var(--tamanho-fonte-pequena);
+  opacity: 0.9;
 }
 
 /* ========================================
-   LISTA DE ITENS SELECIONÁVEIS
+   LISTA DE ITENS SELECIONÃVEIS
    ======================================== */
 .items-container {
   background: var(--cor-fundo);
@@ -66,13 +87,12 @@
 }
 
 .item {
-  padding: 12px;
+  padding: 14px;
   border-radius: var(--borda-radius);
   cursor: pointer;
   margin-bottom: var(--espacamento-xs);
   background: white;
   border: 2px solid transparent;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: var(--espacamento-sm);
@@ -85,9 +105,10 @@
 }
 
 .item input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .selected {
@@ -97,20 +118,20 @@
 }
 
 /* ========================================
-   RESUMO E INFORMAÇÕES
+   RESUMO E INFORMAÃ‡Ã•ES
    ======================================== */
 .summary {
-  margin-top: var(--espacamento-lg);
   background: var(--cor-fundo-secundario);
   padding: var(--espacamento-lg);
   border-radius: var(--borda-radius-grande);
   border: 2px solid var(--cor-borda);
   box-shadow: var(--sombra-pequena);
+  margin-bottom: var(--espacamento-lg);
 }
 
 .summary h3 {
   font-size: var(--tamanho-subtitulo);
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 var(--espacamento-md) 0;
   color: var(--cor-texto-principal);
 }
@@ -124,77 +145,112 @@
 
 .summary strong {
   color: var(--cor-texto-principal);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ========================================
-   BOTÕES PRIMÁRIOS E AÇÕES
+   BOTÃ•ES PRINCIPAIS
    ======================================== */
 .button-primary {
-  background: var(--cor-sucesso);
+  background: var(--cor-primaria);
   color: white;
-  padding: 16px 24px;
+  padding: 18px 28px;
   border-radius: var(--borda-radius);
   margin-top: var(--espacamento-md);
   text-align: center;
   cursor: pointer;
   border: none;
   width: 100%;
-  font-size: var(--tamanho-fonte-base);
-  font-weight: 600;
-  transition: all 0.2s ease;
+  font-size: var(--tamanho-fonte-grande);
+  font-weight: 700;
   box-shadow: var(--sombra-pequena);
+  transition: background 0.15s ease;
 }
 
 .button-primary:hover {
-  background: var(--cor-sucesso-hover);
-  transform: translateY(-2px);
+  background: var(--cor-primaria-hover);
   box-shadow: var(--sombra-media);
 }
 
 .button-primary:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
   box-shadow: none;
+}
+
+.button-success {
+  background: var(--cor-sucesso);
+  color: white;
+  padding: 14px 22px;
+  border-radius: var(--borda-radius);
+  cursor: pointer;
+  border: none;
+  font-size: var(--tamanho-fonte-base);
+  font-weight: 700;
+  box-shadow: var(--sombra-pequena);
+  transition: background 0.15s ease;
+}
+
+.button-success:hover {
+  background: var(--cor-sucesso-hover);
+}
+
+.button-success:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .button-danger {
   background: var(--cor-perigo);
   color: white;
-  padding: 12px 20px;
+  padding: 14px 22px;
   border-radius: var(--borda-radius);
   cursor: pointer;
   border: none;
   font-size: var(--tamanho-fonte-base);
-  font-weight: 500;
-  transition: all 0.2s ease;
+  font-weight: 700;
   box-shadow: var(--sombra-pequena);
+  transition: background 0.15s ease;
 }
 
 .button-danger:hover {
   background: var(--cor-perigo-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-media);
 }
 
 .button-danger:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
+.button-secondary {
+  background: transparent;
+  color: var(--cor-texto-principal);
+  padding: 14px 22px;
+  border-radius: var(--borda-radius);
+  cursor: pointer;
+  border: 2px solid var(--cor-borda);
+  font-size: var(--tamanho-fonte-base);
+  font-weight: 600;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.button-secondary:hover {
+  background: var(--cor-fundo);
+  border-color: var(--cor-primaria);
+}
+
 /* ========================================
-   FORMULÁRIOS
+   FORMULÃRIOS
    ======================================== */
 
-/* P\u00e1gina de login e registro */
+/* PÃ¡gina de login e registro */
 .login-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--espacamento-md);
-  background: linear-gradient(135deg, var(--cor-primaria-clara) 0%, var(--cor-fundo) 100%);
+  background: var(--cor-primaria);
 }
 
 .login-form {
@@ -203,18 +259,18 @@
   border-radius: var(--borda-radius-grande);
   box-shadow: var(--sombra-grande);
   width: 100%;
-  max-width: 460px;
-  border: 1px solid var(--cor-borda);
+  max-width: 480px;
 }
 
 .login-header {
   text-align: center;
-  margin-bottom: var(--espacamento-lg);
+  margin-bottom: var(--espacamento-xl);
 }
 
 .login-header .page-title {
   margin-bottom: var(--espacamento-sm);
-  font-size: var(--tamanho-titulo);
+  border-bottom: none;
+  padding-bottom: 0;
 }
 
 .login-subtitle {
@@ -230,13 +286,19 @@
   color: var(--cor-texto-secundario);
 }
 
+.login-footer a {
+  color: var(--cor-primaria);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
 .form-group {
   margin-bottom: var(--espacamento-lg);
 }
 
 .form-group label {
   display: block;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: var(--espacamento-sm);
   color: var(--cor-texto-principal);
   font-size: var(--tamanho-fonte-base);
@@ -245,31 +307,38 @@
 .login-form input,
 .form-container input,
 .form-container textarea,
-.form-container select {
+.form-container select,
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: 100%;
-  padding: 14px 16px;
+  padding: 15px 16px;
   border: 2px solid var(--cor-borda);
   border-radius: var(--borda-radius);
   font-size: var(--tamanho-fonte-base);
   box-sizing: border-box;
   font-family: var(--fonte-principal);
-  transition: all 0.2s ease;
   background: white;
   color: var(--cor-texto-principal);
+  transition: border-color 0.15s ease;
 }
 
 .login-form input:focus,
 .form-container input:focus,
 .form-container textarea:focus,
-.form-container select:focus {
+.form-container select:focus,
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--cor-primaria);
-  box-shadow: 0 0 0 3px var(--cor-primaria-clara);
+  box-shadow: 0 0 0 3px rgba(29,78,216,0.15);
 }
 
 .login-form input::placeholder,
 .form-container input::placeholder,
-.form-container textarea::placeholder {
+.form-container textarea::placeholder,
+.form-group input::placeholder {
   color: #9ca3af;
 }
 
@@ -283,20 +352,20 @@
 
 .form-container label {
   display: block;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: var(--espacamento-sm);
   color: var(--cor-texto-principal);
   font-size: var(--tamanho-fonte-base);
 }
 
 .form-container textarea {
-  min-height: 100px;
+  min-height: 110px;
   resize: vertical;
   line-height: 1.5;
 }
 
 /* ========================================
-   CONTAINER DE BOTÕES
+   CONTAINER DE BOTÃ•ES (Dashboard)
    ======================================== */
 .buttons-container {
   display: grid;
@@ -327,12 +396,6 @@
   box-shadow: var(--sombra-pequena);
   margin-bottom: var(--espacamento-md);
   border: 1px solid var(--cor-borda);
-  transition: all 0.2s ease;
-}
-
-.card:hover {
-  box-shadow: var(--sombra-media);
-  border-color: var(--cor-primaria);
 }
 
 .card img {
@@ -353,7 +416,7 @@
 
 .card strong {
   color: var(--cor-texto-principal);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* Status badges nos cards */
@@ -361,8 +424,8 @@
   display: inline-block;
   padding: 6px 14px;
   border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--tamanho-fonte-pequena);
+  font-weight: 700;
   margin-bottom: var(--espacamento-sm);
 }
 
@@ -371,12 +434,14 @@
   color: var(--cor-aviso);
 }
 
-.card .status-badge.aprovado {
+.card .status-badge.aprovado,
+.card .status-badge.aprovada {
   background: var(--cor-sucesso-clara);
   color: var(--cor-sucesso);
 }
 
-.card .status-badge.rejeitado {
+.card .status-badge.rejeitado,
+.card .status-badge.rejeitada {
   background: var(--cor-perigo-clara);
   color: var(--cor-perigo);
 }
@@ -387,7 +452,7 @@
 .file-input {
   display: block;
   margin-top: var(--espacamento-sm);
-  padding: 14px;
+  padding: 16px;
   border: 2px dashed var(--cor-borda);
   border-radius: var(--borda-radius);
   background: var(--cor-fundo);
@@ -395,7 +460,6 @@
   width: 100%;
   box-sizing: border-box;
   font-size: var(--tamanho-fonte-base);
-  transition: all 0.2s ease;
 }
 
 .file-input:hover {
@@ -432,17 +496,8 @@
   margin-bottom: var(--espacamento-md);
   border-left: 4px solid var(--cor-perigo);
   font-size: var(--tamanho-fonte-base);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.6;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.erro-msg::before {
-  content: "⚠️";
-  font-size: 20px;
-  flex-shrink: 0;
 }
 
 .success-msg {
@@ -453,18 +508,8 @@
   margin-bottom: var(--espacamento-md);
   border-left: 4px solid var(--cor-sucesso);
   font-size: var(--tamanho-fonte-base);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.6;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.success-msg::before {
-  content: "✓";
-  font-size: 20px;
-  flex-shrink: 0;
-  font-weight: bold;
 }
 
 /* ========================================
@@ -490,7 +535,7 @@
 
 .measurements-table th {
   background: var(--cor-fundo);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--cor-texto-principal);
   font-size: var(--tamanho-fonte-base);
   border-bottom: 2px solid var(--cor-borda);
@@ -505,19 +550,171 @@
 }
 
 .measurements-table button {
-  padding: 8px 14px;
+  padding: 10px 16px;
   font-size: var(--tamanho-fonte-pequena);
   white-space: nowrap;
 }
 
-/* Responsividade de tabelas */
 @media (max-width: 768px) {
   .measurements-table {
     font-size: var(--tamanho-fonte-pequena);
   }
-  
   .measurements-table th,
   .measurements-table td {
     padding: 10px 8px;
   }
 }
+
+/* ========================================
+   MODAL DE REJEIÃ‡ÃƒO (inline)
+   ======================================== */
+.reject-form {
+  background: var(--cor-perigo-clara);
+  border: 2px solid var(--cor-perigo);
+  border-radius: var(--borda-radius);
+  padding: var(--espacamento-md);
+  margin-top: var(--espacamento-md);
+}
+
+.reject-form label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: var(--espacamento-sm);
+  color: var(--cor-perigo);
+  font-size: var(--tamanho-fonte-base);
+}
+
+.reject-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--cor-perigo);
+  border-radius: var(--borda-radius);
+  font-size: var(--tamanho-fonte-base);
+  font-family: var(--fonte-principal);
+  min-height: 80px;
+  resize: vertical;
+  background: white;
+  color: var(--cor-texto-principal);
+  box-sizing: border-box;
+}
+
+.reject-form-buttons {
+  display: flex;
+  gap: var(--espacamento-sm);
+  margin-top: var(--espacamento-sm);
+  flex-wrap: wrap;
+}
+
+/* ========================================
+   SEÃ‡ÃƒO DE PERFIL â€” ALTERAR SENHA
+   ======================================== */
+.section-divider {
+  margin: var(--espacamento-xl) 0 var(--espacamento-lg) 0;
+  border: none;
+  border-top: 2px solid var(--cor-borda);
+}
+
+.section-title {
+  font-size: var(--tamanho-subtitulo);
+  font-weight: 700;
+  color: var(--cor-texto-principal);
+  margin: 0 0 var(--espacamento-lg) 0;
+}
+
+/* ========================================
+   ADMIN â€” PAINEL DE CONTROLE
+   ======================================== */
+.admin-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacamento-md);
+  margin-top: var(--espacamento-lg);
+}
+
+@media (min-width: 600px) {
+  .admin-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.admin-stat-card {
+  background: var(--cor-fundo-secundario);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-radius-grande);
+  padding: var(--espacamento-lg);
+  box-shadow: var(--sombra-pequena);
+}
+
+.admin-stat-label {
+  font-size: var(--tamanho-fonte-pequena);
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.admin-stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--cor-primaria);
+  line-height: 1;
+}
+
+.admin-stat-sub {
+  font-size: var(--tamanho-fonte-pequena);
+  color: var(--cor-texto-secundario);
+  margin-top: 4px;
+}
+
+/* Obras */
+.obras-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacamento-md);
+}
+
+@media (min-width: 600px) {
+  .obras-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.obra-card {
+  background: var(--cor-fundo-secundario);
+  border: 2px solid var(--cor-borda);
+  border-radius: var(--borda-radius);
+  padding: var(--espacamento-md);
+}
+
+.obra-card h3 {
+  margin: 0 0 var(--espacamento-xs) 0;
+  font-size: var(--tamanho-fonte-grande);
+  color: var(--cor-texto-principal);
+}
+
+.obra-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: var(--tamanho-fonte-pequena);
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.obra-status.em_andamento,
+.obra-status.ativa {
+  background: var(--cor-sucesso-clara);
+  color: var(--cor-sucesso);
+}
+
+.obra-status.concluida {
+  background: var(--cor-primaria-clara);
+  color: var(--cor-primaria);
+}
+
+.obra-status.paralisada {
+  background: var(--cor-aviso-clara);
+  color: var(--cor-aviso);
+}
+

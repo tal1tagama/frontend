@@ -1,88 +1,130 @@
 /* ========================================
    VARIÁVEIS DE CORES E ESPAÇAMENTOS
+   (Design acessível — público com pouca familiaridade com tecnologia)
    ======================================== */
 :root {
-  /* Cores principais - paleta neutra e profissional */
-  --cor-primaria: #3b82f6;
-  --cor-primaria-hover: #2563eb;
+  /* Cores com alto contraste */
+  --cor-primaria: #1d4ed8;        /* azul escuro — contraste AAA */
+  --cor-primaria-hover: #1e40af;
   --cor-primaria-clara: #dbeafe;
-  
-  --cor-sucesso: #10b981;
-  --cor-sucesso-hover: #059669;
-  --cor-sucesso-clara: #d1fae5;
-  
-  --cor-perigo: #ef4444;
-  --cor-perigo-hover: #dc2626;
+
+  --cor-sucesso: #166534;        /* verde escuro — contraste AAA */
+  --cor-sucesso-hover: #14532d;
+  --cor-sucesso-clara: #dcfce7;
+
+  --cor-perigo: #b91c1c;         /* vermelho escuro — contraste AAA */
+  --cor-perigo-hover: #991b1b;
   --cor-perigo-clara: #fee2e2;
-  
-  --cor-aviso: #f59e0b;
+
+  --cor-aviso: #92400e;          /* âmbar escuro — contraste AAA */
   --cor-aviso-clara: #fef3c7;
-  
-  /* Cores neutras */
-  --cor-texto-principal: #1f2937;
-  --cor-texto-secundario: #6b7280;
-  --cor-borda: #d1d5db;
-  --cor-fundo: #f9fafb;
+
+  /* Cores neutras — alto contraste */
+  --cor-texto-principal: #111827;
+  --cor-texto-secundario: #374151;  /* mais escuro que antes para melhor legibilidade */
+  --cor-borda: #9ca3af;
+  --cor-fundo: #f3f4f6;
   --cor-fundo-secundario: #ffffff;
-  
+
   /* Header */
-  --cor-header: #ffffff;
-  --cor-header-texto: #1f2937;
-  --cor-header-border: #e5e7eb;
-  
-  /* Espaçamentos */
-  --espacamento-xs: 4px;
-  --espacamento-sm: 8px;
-  --espacamento-md: 16px;
-  --espacamento-lg: 24px;
-  --espacamento-xl: 32px;
-  
-  /* Tipografia */
+  --cor-header: #1e3a5f;          /* azul navy sólido */
+  --cor-header-texto: #ffffff;
+  --cor-header-border: #1a3353;
+
+  /* Espaçamentos generosos */
+  --espacamento-xs: 6px;
+  --espacamento-sm: 12px;
+  --espacamento-md: 20px;
+  --espacamento-lg: 28px;
+  --espacamento-xl: 40px;
+
+  /* Tipografia — fontes maiores para melhor leitura */
   --fonte-principal: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --tamanho-fonte-base: 16px;
-  --tamanho-fonte-pequena: 14px;
-  --tamanho-fonte-grande: 18px;
-  --tamanho-titulo: 24px;
-  --tamanho-subtitulo: 20px;
-  
+  --tamanho-fonte-base: 17px;
+  --tamanho-fonte-pequena: 15px;
+  --tamanho-fonte-grande: 19px;
+  --tamanho-titulo: 26px;
+  --tamanho-subtitulo: 21px;
+
   /* Bordas */
   --borda-radius: 8px;
   --borda-radius-grande: 12px;
-  
-  /* Sombras */
-  --sombra-pequena: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --sombra-media: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --sombra-grande: 0 10px 15px rgba(0, 0, 0, 0.1);
+
+  /* Sombras sutis */
+  --sombra-pequena: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --sombra-media: 0 4px 8px rgba(0, 0, 0, 0.12);
+  --sombra-grande: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Reset e base global */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--fonte-principal);
+  font-size: var(--tamanho-fonte-base);
+  color: var(--cor-texto-principal);
+  background: var(--cor-fundo);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ========================================
-   HEADER - LIMPO E PROFISSIONAL
+   HEADER — FUNDO AZUL SÓLIDO, TEXTO BRANCO
    ======================================== */
 .header {
   background: var(--cor-header);
   color: var(--cor-header-texto);
-  padding: var(--espacamento-lg) var(--espacamento-md);
-  border-bottom: 2px solid var(--cor-header-border);
-  box-shadow: var(--sombra-pequena);
+  padding: var(--espacamento-md) var(--espacamento-lg);
+  border-bottom: 3px solid var(--cor-header-border);
+  box-shadow: var(--sombra-media);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--espacamento-sm);
+}
+
 .header h1 {
   font-size: var(--tamanho-titulo);
-  margin: 0 0 var(--espacamento-md) 0;
-  color: var(--cor-texto-principal);
+  margin: 0;
+  color: var(--cor-header-texto);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.header-user-info {
+  font-size: var(--tamanho-fonte-pequena);
+  color: rgba(255,255,255,0.85);
+  text-align: right;
+}
+
+.header-perfil-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: var(--tamanho-fonte-pequena);
   font-weight: 600;
+  text-transform: capitalize;
+  margin-left: 6px;
 }
 
 /* ========================================
-   MENU - BOTÕES CLAROS E GRANDES
+   MENU DE NAVEGAÇÃO — BOTÕES GRANDES E CLAROS
    ======================================== */
 .menu {
   display: flex;
   flex-direction: column;
-  gap: var(--espacamento-sm);
+  gap: var(--espacamento-xs);
+  margin-top: var(--espacamento-sm);
 }
 
 .menu a {
@@ -92,53 +134,59 @@
 
 .menu button {
   width: 100%;
-  padding: 12px 16px;
-  border: 2px solid var(--cor-borda);
-  background: var(--cor-fundo-secundario);
-  color: var(--cor-texto-principal);
+  padding: 13px 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: #ffffff;
   border-radius: var(--borda-radius);
   font-size: var(--tamanho-fonte-base);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
   text-align: left;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
 }
 
 .menu button:hover {
-  background: var(--cor-fundo);
-  border-color: var(--cor-primaria);
-  transform: translateY(-1px);
-  box-shadow: var(--sombra-pequena);
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.6);
 }
 
 .menu button.active {
-  background: var(--cor-primaria);
-  color: white;
-  border-color: var(--cor-primaria);
-  font-weight: 600;
-  box-shadow: var(--sombra-pequena);
+  background: #ffffff;
+  color: var(--cor-header);
+  border-color: #ffffff;
+  font-weight: 700;
 }
 
-/* Botão de logout - destaque vermelho */
+/* Botão de logout — destaque vermelho */
 .btn-logout {
   background: var(--cor-perigo) !important;
   color: white !important;
   border-color: var(--cor-perigo) !important;
   font-weight: 600 !important;
-  margin-top: var(--espacamento-sm);
 }
 
 .btn-logout:hover {
   background: var(--cor-perigo-hover) !important;
   border-color: var(--cor-perigo-hover) !important;
-  transform: translateY(-1px);
 }
 
 /* ========================================
-   CONTAINER - ESPAÇAMENTO GENEROSO
+   SEPARADOR DE MENU
+   ======================================== */
+.menu-separator {
+  height: 1px;
+  background: rgba(255,255,255,0.2);
+  margin: var(--espacamento-xs) 0;
+  width: 100%;
+}
+
+/* ========================================
+   CONTAINER DE CONTEÚDO
    ======================================== */
 .container {
   padding: var(--espacamento-lg);
@@ -147,26 +195,43 @@
 }
 
 /* ========================================
-   RESPONSIVO - DESKTOP
+   RESPONSIVO — DESKTOP
    ======================================== */
 @media (min-width: 768px) {
+  .header {
+    padding: var(--espacamento-md) var(--espacamento-xl);
+  }
+
+  .header-top {
+    flex-direction: row;
+  }
+
   .menu {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--espacamento-sm);
+    gap: var(--espacamento-xs);
+    margin-top: var(--espacamento-sm);
+    align-items: center;
+  }
+
+  .menu a {
+    flex-shrink: 0;
   }
 
   .menu button {
     width: auto;
-    flex: 1 1 auto;
-    min-width: fit-content;
+    flex-shrink: 0;
+    padding: 11px 18px;
   }
-  
+
   .btn-logout {
-    margin-top: 0;
     margin-left: auto;
   }
-  
+
+  .menu-separator {
+    display: none;
+  }
+
   .container {
     padding: var(--espacamento-xl);
   }

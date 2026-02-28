@@ -105,8 +105,11 @@ function Upload() {
         ) : (
           <ul style={{ listStyle: "none", padding: 0 }}>
             {pendingFiles.map((f) => (
-              <li key={f.id} className="card" style={{ marginBottom: "var(--espacamento-sm)" }}>
-                📄 {f.file.name}
+              <li key={f.id} className="card" style={{ marginBottom: "var(--espacamento-sm)", padding: "var(--espacamento-md)" }}>
+                <strong style={{ fontSize: "var(--tamanho-fonte-base)" }}>{f.file.name}</strong>
+                <p style={{ margin: "4px 0 0 0", fontSize: "var(--tamanho-fonte-pequena)", color: "var(--cor-texto-secundario)" }}>
+                  Aguardando envio — será enviado quando a internet voltar
+                </p>
               </li>
             ))}
           </ul>

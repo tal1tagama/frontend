@@ -18,6 +18,8 @@ import Relatorios from "./pages/MeusRelatorios";
 import StatusSolicitacao from "./pages/StatusSolicitacao";
 import Upload from "./pages/Upload";
 import Measurements from "./pages/measurements";
+import GerenciarObras from "./pages/GerenciarObras";
+import AdminPanel from "./pages/AdminPanel";
 
 function App() {
   return (
@@ -28,15 +30,21 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* Páginas protegidas */}
+          {/* Páginas protegidas — todos os perfis */}
           <Route path="/" element={<PrivateRoute routePath="/"><Dashboard /></PrivateRoute>} />
           <Route path="/profile" element={<PrivateRoute routePath="/profile"><Profile /></PrivateRoute>} />
           <Route path="/medicoes" element={<PrivateRoute routePath="/medicoes"><Medicoes /></PrivateRoute>} />
           <Route path="/solicitacoes" element={<PrivateRoute routePath="/solicitacoes"><Solicitacoes /></PrivateRoute>} />
-          <Route path="/relatorios" element={<PrivateRoute routePath="/relatorios"><Relatorios /></PrivateRoute>} />
           <Route path="/status-solicitacoes" element={<PrivateRoute routePath="/status-solicitacoes"><StatusSolicitacao /></PrivateRoute>} />
           <Route path="/upload" element={<PrivateRoute routePath="/upload"><Upload /></PrivateRoute>} />
+
+          {/* Supervisor e Admin */}
           <Route path="/medicoes-lista" element={<PrivateRoute routePath="/medicoes-lista"><Measurements /></PrivateRoute>} />
+          <Route path="/relatorios" element={<PrivateRoute routePath="/relatorios"><Relatorios /></PrivateRoute>} />
+          <Route path="/obras" element={<PrivateRoute routePath="/obras"><GerenciarObras /></PrivateRoute>} />
+
+          {/* Admin apenas */}
+          <Route path="/admin" element={<PrivateRoute routePath="/admin"><AdminPanel /></PrivateRoute>} />
         </Routes>
       </Router>
     </AuthProvider>
