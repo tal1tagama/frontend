@@ -27,6 +27,7 @@ export const ROUTE_PERMISSIONS = {
 
   // Somente Admin
   "/admin":                [PERFIS.ADMIN],
+  "/register":             [PERFIS.ADMIN],
 };
 
 export function canAccessRoute(perfil, route) {

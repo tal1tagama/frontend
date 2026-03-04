@@ -20,6 +20,7 @@ const NAV_LINKS = [
   { path: "/obras",              label: "Obras" },
   // -- apenas admin --
   { path: "/admin",              label: "Administração" },
+  { path: "/register",           label: "Cadastrar Funcionário" },
   // -- todos --
   { path: "/profile",            label: "Meu Perfil" },
 ];

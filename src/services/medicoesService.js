@@ -2,35 +2,57 @@ import api from "./api";
 import { extractApiData } from "./response";
 
 export async function createMedicao(payload) {
-  const currentUser = JSON.parse(localStorage.getItem("user") || "null");
-  const obraId = payload?.obra || currentUser?.obraAtual;
+  const obraId = payload?.obra;
 
   if (!obraId) {
-    throw new Error("Usuário sem obra atual definida. Atualize o perfil antes de enviar medição.");
+    throw new Error("Obra não selecionada. Selecione uma obra antes de enviar a medição.");
   }
 
   const obraNumero = Number(obraId);
   if (!Number.isInteger(obraNumero) || obraNumero <= 0) {
-    throw new Error("Obra atual inválida. Atualize o perfil antes de enviar medição.");
+    throw new Error("Obra inválida. Selecione uma obra válida antes de enviar a medição.");
   }
 
-  const area = Number(payload?.area || 0);
-  const volume = Number(payload?.volume || 0);
+  // Dimensões brutas — preservadas individualmente no banco
+  const comprimento = Number(payload?.comprimento) || null;
+  const largura     = Number(payload?.largura)     || null;
+  const altura      = Number(payload?.altura)      || null;
+
+  // Valores geométricos calculados (podem vir pré-calculados do componente ou calculados aqui)
+  const areaCalculada = (comprimento && largura) ? comprimento * largura : (Number(payload?.areaCalculada) || 0);
+  const volume        = (comprimento && largura && altura) ? comprimento * largura * altura : (Number(payload?.volume) || 0);
+
+  // Nome do ambiente (quarto, sala, etc.) — campo "area" da entidade Medição no back-end
+  const areaNome   = payload?.area        || null;
+  const tipoServico = payload?.tipoServico || null;
+
+  const descricaoItem = areaNome
+    ? `Medição geométrica — ${areaNome}`
+    : "Medição geométrica";
 
   const body = {
-    obra: obraNumero,
-    data: new Date().toISOString(),
-    observacoes: payload?.observacoes || "",
-    status: "enviada",
+    obra:         obraNumero,
+    data:         new Date().toISOString(),
+    area:         areaNome,
+    tipoServico,
+    observacoes:  payload?.observacoes || "",
+    status:       "enviada",
+    // Dimensões brutas — agora persistidas como colunas dedicadas no banco
+    comprimento,
+    largura,
+    altura,
+    areaCalculada: areaCalculada > 0 ? areaCalculada : null,
+    volume:        volume > 0 ? volume : null,
     itens: [
       {
-        descricao: "Medição geométrica",
-        quantidade: area,
-        unidade: "m²",
-        valorUnitario: volume > 0 ? 1 : 0,
-        valorTotal: volume > 0 ? volume : area,
-        observacoes: payload?.observacoes || "",
-        local: "",
+        descricao:    descricaoItem,
+        quantidade:   areaCalculada > 0 ? areaCalculada : (comprimento || 0),
+        unidade:      "m²",
+        // volume é informação geométrica, não financeira — valorUnitario não se aplica
+        valorUnitario: null,
+        valorTotal:    volume > 0 ? volume : areaCalculada,
+        observacoes:   payload?.observacoes || "",
+        local:         areaNome || "",
       },
     ],
   };
@@ -50,14 +72,42 @@ export async function createMedicao(payload) {
 }
 
 export async function listMedicoes(params = {}) {
+  // Suporta filtros: page, limit, obra, status, tipoServico, area, dataInicio, dataFim
+  // O back-end filtra as medições do próprio usuário logado.
   const response = await api.get("/measurements/minhas", { params });
   return extractApiData(response.data);
 }
 
+/**
+ * Versão paginada de listMedicoes — retorna { data: [], pagination: {} }
+ * para que os componentes possam exibir controles de navegação de página.
+ */
+export async function listMedicoesPaginado(params = {}) {
+  const response = await api.get("/measurements/minhas", { params });
+  const payload = response.data;
+  return {
+    data:       payload?.data  ?? [],
+    pagination: payload?.pagination ?? null,
+  };
+}
+
 export async function listAllMedicoes(params = {}) {
-  // Endpoint exclusivo para supervisores/admins — retorna todas as medições
+  // Endpoint exclusivo para supervisores/admins — retorna todas as medições.
+  // Suporta filtros: page, limit, obra, status, responsavel, dataInicio, dataFim, area, tipoServico
   const response = await api.get("/measurements", { params });
   return extractApiData(response.data);
+}
+
+/**
+ * Versão paginada de listAllMedicoes — retorna { data: [], pagination: {} }
+ */
+export async function listAllMedicoesPaginado(params = {}) {
+  const response = await api.get("/measurements", { params });
+  const payload = response.data;
+  return {
+    data:       payload?.data  ?? [],
+    pagination: payload?.pagination ?? null,
+  };
 }
 
 export async function listMedicoesByObra(obraId, params = {}) {
@@ -70,7 +120,9 @@ export async function aprovarMedicao(id) {
   return extractApiData(response.data);
 }
 
-export async function rejeitarMedicao(id) {
-  const response = await api.post(`/measurements/${id}/rejeitar`);
+export async function rejeitarMedicao(id, motivoRejeicao = "") {
+  const response = await api.post(`/measurements/${id}/rejeitar`, {
+    motivoRejeicao,
+  });
   return extractApiData(response.data);
 }

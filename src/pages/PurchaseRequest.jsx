@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { createPurchase } from "../services/purchasesService";
+import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
 import "../styles/pages.css";
 
@@ -184,6 +185,16 @@ const [selecionados,setSelecionados]=useState({});
 const [error,setError]=useState("");
 const [success,setSuccess]=useState("");
 const [loading,setLoading]=useState(false);
+const [obras, setObras] = useState([]);
+const [obraId, setObraId] = useState("");
+const [loadingObras, setLoadingObras] = useState(true);
+
+useEffect(() => {
+  listObras({ page: 1, limit: 100 })
+    .then((data) => setObras(Array.isArray(data) ? data : []))
+    .catch(() => setObras([]))
+    .finally(() => setLoadingObras(false));
+}, []);
 
 const toggleTopico=(id)=>{
 setExpanded(expanded===id?null:id);
@@ -210,6 +221,11 @@ const enviarSolicitacao = async () => {
     return;
   }
 
+  if (!obraId) {
+    setError("Selecione a obra relacionada a esta solicitação.");
+    return;
+  }
+
   try {
     setLoading(true);
     const itemsPayload = itensSelecionados.map((descricao) => ({
@@ -220,10 +236,11 @@ const enviarSolicitacao = async () => {
       observacoes: null,
     }));
 
-    await createPurchase(itemsPayload);
+    await createPurchase(itemsPayload, obraId);
 
-    setSuccess("Solicitacao enviada com sucesso!");
+    setSuccess("Solicitaão enviada com sucesso!");
     setSelecionados({});
+    setObraId("");
 
   } catch (err) {
     setError("Erro ao enviar solicitacao: " + extractApiMessage(err));
@@ -239,8 +256,30 @@ return(
 
     <h2 className="page-title">Nova Solicitação de Materiais</h2>
     <p style={{ fontSize: "var(--tamanho-fonte-grande)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-xl)", lineHeight: "1.6" }}>
-      Selecione uma categoria e marque os materiais que você precisa para a obra
+      Selecione a obra e os materiais que você precisa
     </p>
+
+    {/* Seletor de Obra */}
+    <div className="form-container" style={{ marginBottom: "var(--espacamento-lg)", padding: "var(--espacamento-md)" }}>
+      <div className="form-group" style={{ marginBottom: 0 }}>
+        <label htmlFor="pr-obra">Obra Relacionada *</label>
+        {loadingObras ? (
+          <select disabled><option>Carregando obras...</option></select>
+        ) : (
+          <select
+            id="pr-obra"
+            value={obraId}
+            onChange={(e) => setObraId(e.target.value)}
+            required
+          >
+            <option value="">Selecione a obra</option>
+            {obras.map((o) => (
+              <option key={o.id} value={o.id}>{o.nome || `Obra #${o.id}`}</option>
+            ))}
+          </select>
+        )}
+      </div>
+    </div>
 
     {topicos.map(topico=>(
 

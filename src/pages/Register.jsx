@@ -1,102 +1,172 @@
 // src/pages/Register.jsx
-import { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
+// Tela de cadastro de funcionário — acessível apenas pelo perfil ADMIN
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Layout from "../components/Layout";
 import api from "../services/api";
 import { extractApiMessage } from "../services/response";
 import "../styles/pages.css";
 
 const Register = () => {
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [nome, setNome] = useState("");
+  const [perfil, setPerfil] = useState("encarregado");
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (senha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres.");
+    if (senha.length < 8) {
+      setError("A senha deve ter pelo menos 8 caracteres.");
+      return;
+    }
+    if (!/[A-Z]/.test(senha)) {
+      setError("A senha deve conter ao menos uma letra maiúscula.");
+      return;
+    }
+    if (!/[0-9]/.test(senha)) {
+      setError("A senha deve conter ao menos um número.");
       return;
     }
     try {
       setLoading(true);
       setError("");
-      const res = await api.post("/auth/register", { email, senha, nome });
-      // Aproveita os tokens retornados pelo back — auto-login sem segundo round-trip
-      login(res.data);
-      navigate("/");
+      setSuccess("");
+      await api.post("/auth/register", { nome, email, senha, perfil });
+      setSuccess(`Funcionário "${nome}" cadastrado com sucesso como ${perfil}.`);
+      // Limpar formulário para novo cadastro
+      setNome("");
+      setEmail("");
+      setSenha("");
+      setPerfil("encarregado");
     } catch (err) {
-      setError("Erro ao criar usuario: " + extractApiMessage(err));
+      setError("Erro ao cadastrar funcionário: " + extractApiMessage(err));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-page">
-      <form onSubmit={handleSubmit} className="login-form">
-        <div className="login-header">
-          <h2 className="page-title">Criar Nova Conta</h2>
-          <p className="login-subtitle">Preencha os dados abaixo para começar</p>
-        </div>
+    <Layout>
+      <div className="page-container" style={{ maxWidth: "520px" }}>
+        <h1 className="page-title">Cadastrar Funcionário</h1>
+        <p className="page-description">
+          Preencha os dados abaixo para cadastrar um novo funcionário no sistema.
+          Apenas administradores podem realizar esta ação.
+        </p>
 
         {error && <p className="erro-msg">{error}</p>}
-        
-        <div className="form-group">
-          <label htmlFor="nome">Nome Completo</label>
-          <input
-            id="nome"
-            type="text"
-            placeholder="Digite seu nome completo"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            required
-            autoComplete="name"
-          />
-        </div>
+        {success && (
+          <p
+            style={{
+              color: "var(--cor-sucesso, #2e7d32)",
+              background: "#e8f5e9",
+              border: "1px solid #a5d6a7",
+              borderRadius: "6px",
+              padding: "10px 14px",
+              marginBottom: "1rem",
+            }}
+          >
+            ✔ {success}
+          </p>
+        )}
 
-        <div className="form-group">
-          <label htmlFor="email">E-mail</label>
-          <input
-            id="email"
-            type="email"
-            placeholder="seuemail@exemplo.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="nome">Nome Completo</label>
+            <input
+              id="nome"
+              type="text"
+              placeholder="Nome completo do funcionário"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required
+              autoComplete="off"
+            />
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="senha">Senha</label>
-          <input
-            id="senha"
-            type="password"
-            placeholder="Mínimo 6 caracteres"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-            minLength={6}
-            required
-            autoComplete="new-password"
-          />
-          <small style={{ display: "block", marginTop: "4px", color: "var(--cor-texto-secundario)", fontSize: "14px" }}>
-            Use uma senha com pelo menos 6 caracteres
-          </small>
-        </div>
+          <div className="form-group">
+            <label htmlFor="email">E-mail</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="email@exemplo.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="off"
+            />
+          </div>
 
-        <button type="submit" className="button-primary" disabled={loading}>
-          {loading ? "Criando conta..." : "Criar Minha Conta"}
-        </button>
+          <div className="form-group">
+            <label htmlFor="senha">Senha Inicial</label>
+            <input
+              id="senha"
+              type="password"
+              placeholder="Mínimo 8 caracteres, 1 maiúscula e 1 número"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+              minLength={8}
+              required
+              autoComplete="new-password"
+            />
+            <small
+              style={{
+                display: "block",
+                marginTop: "4px",
+                color: "var(--cor-texto-secundario)",
+                fontSize: "14px",
+              }}
+            >
+              Mínimo 8 caracteres, ao menos uma letra maiúscula e um número.
+            </small>
+          </div>
 
-        <p className="login-footer">
-          Já tem uma conta? <Link to="/login">Faça login aqui</Link>
-        </p>
-      </form>
-    </div>
+          <div className="form-group">
+            <label htmlFor="perfil">Perfil de Acesso</label>
+            <select
+              id="perfil"
+              value={perfil}
+              onChange={(e) => setPerfil(e.target.value)}
+              required
+              style={{
+                width: "100%",
+                padding: "10px 12px",
+                borderRadius: "6px",
+                border: "1px solid var(--cor-borda, #ccc)",
+                fontSize: "1rem",
+                background: "#fff",
+              }}
+            >
+              <option value="encarregado">Encarregado</option>
+              <option value="supervisor">Supervisor</option>
+            </select>
+          </div>
+
+          <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
+            <button
+              type="submit"
+              className="button-primary"
+              disabled={loading}
+              style={{ flex: 1 }}
+            >
+              {loading ? "Cadastrando..." : "Cadastrar Funcionário"}
+            </button>
+            <button
+              type="button"
+              className="button-secondary"
+              onClick={() => navigate("/admin")}
+              style={{ flex: 1 }}
+            >
+              Voltar ao Painel
+            </button>
+          </div>
+        </form>
+      </div>
+    </Layout>
   );
 };
 

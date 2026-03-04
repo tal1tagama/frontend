@@ -28,7 +28,6 @@ function App() {
         <Routes>
           {/* Páginas públicas */}
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
 
           {/* Páginas protegidas — todos os perfis */}
           <Route path="/" element={<PrivateRoute routePath="/"><Dashboard /></PrivateRoute>} />
@@ -45,6 +44,7 @@ function App() {
 
           {/* Admin apenas */}
           <Route path="/admin" element={<PrivateRoute routePath="/admin"><AdminPanel /></PrivateRoute>} />
+          <Route path="/register" element={<PrivateRoute routePath="/register"><Register /></PrivateRoute>} />
         </Routes>
       </Router>
     </AuthProvider>

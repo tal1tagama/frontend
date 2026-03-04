@@ -1,6 +1,9 @@
 // src/pages/Login.jsx
+// Tela de login — acesso público.
+// O cadastro de novos funcionários é feito EXCLUSIVAMENTE pelo administrador
+// (rota /register protegida). Não há cadastro livre nesta tela.
 import { useContext, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import api from "../services/api";
 import { extractApiMessage } from "../services/response";
@@ -20,10 +23,10 @@ const Login = () => {
       setLoading(true);
       setError("");
       const res = await api.post("/auth/login", { email, senha });
-      login(res.data); // salva user + token
-      navigate("/"); // redireciona imediatamente
+      login(res.data); // salva user + token no contexto e localStorage
+      navigate("/");   // redireciona para a tela inicial
     } catch (err) {
-      setError(extractApiMessage(err, "Email ou senha invalidos."));
+      setError(extractApiMessage(err, "E-mail ou senha inválidos."));
     } finally {
       setLoading(false);
     }
@@ -38,7 +41,7 @@ const Login = () => {
         </div>
 
         {error && <p className="erro-msg">{error}</p>}
-        
+
         <div className="form-group">
           <label htmlFor="email">E-mail</label>
           <input
@@ -69,8 +72,16 @@ const Login = () => {
           {loading ? "Entrando..." : "Entrar no Sistema"}
         </button>
 
-        <p className="login-footer">
-          Não tem uma conta? <Link to="/register">Cadastre-se gratuitamente</Link>
+        {/* Nota informativa: não há cadastro livre — apenas admins criam contas */}
+        <p
+          style={{
+            marginTop: "var(--espacamento-lg)",
+            textAlign: "center",
+            fontSize: "var(--tamanho-fonte-pequena)",
+            color: "var(--cor-texto-secundario)",
+          }}
+        >
+          Não possui acesso? Solicite o cadastro ao administrador do sistema.
         </p>
       </form>
     </div>

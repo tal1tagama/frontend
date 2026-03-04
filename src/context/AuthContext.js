@@ -6,12 +6,11 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  // null = ainda verificando; false = verificado, não autenticado; object = autenticado
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // Tenta carregar user do localStorage ao iniciar
+  // Tenta carregar user do localStorage ao iniciar e valida o token com o servidor
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) setUser(JSON.parse(storedUser));
-
     const handleExternalLogout = () => {
       setUser(null);
       localStorage.removeItem("user");
@@ -20,6 +19,51 @@ export const AuthProvider = ({ children }) => {
     };
 
     window.addEventListener("auth:logout", handleExternalLogout);
+
+    const validateSession = async () => {
+      const storedToken = localStorage.getItem("token");
+      const storedUser = localStorage.getItem("user");
+
+      if (!storedToken || !storedUser) {
+        setAuthChecked(true);
+        return;
+      }
+
+      // Otimisticamente usar o usuário do localStorage enquanto valida
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (_) {
+        // JSON inválido — limpar e reiniciar
+        localStorage.removeItem("user");
+        setAuthChecked(true);
+        return;
+      }
+
+      // Validar token com o servidor (GET /auth/me)
+      try {
+        const res = await api.get("/auth/me");
+        const freshUser = res.data?.data || null;
+        if (freshUser) {
+          setUser(freshUser);
+          localStorage.setItem("user", JSON.stringify(freshUser));
+        }
+      } catch (err) {
+        // Só invalida sessão em 401/403 — erros de rede ou 5xx não desconectam o usuário
+        const status = err?.response?.status;
+        if (status === 401 || status === 403) {
+          setUser(null);
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          localStorage.removeItem("refreshToken");
+        }
+        // Para 5xx ou falhas de rede, mantemos o usuário logado (otimista)
+      } finally {
+        setAuthChecked(true);
+      }
+    };
+
+    validateSession();
+
     return () => window.removeEventListener("auth:logout", handleExternalLogout);
   }, []);
 
@@ -54,7 +98,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, authChecked }}>
       {children}
     </AuthContext.Provider>
   );
