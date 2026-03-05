@@ -6,6 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import Layout from "../components/Layout";
 import { listMedicoesPaginado } from "../services/medicoesService";
 import { TIPOS_SERVICO, getTipoServicoLabel, STATUS_CLASS, STATUS_LABEL } from "../constants/medicao";
+import { normalizeMedicao } from "../utils/normalizeMedicao";
 import { listObras } from "../services/obrasService";
 import api from "../services/api";
 import "../styles/pages.css";
@@ -41,28 +42,6 @@ function MeusRelatorios() {
     dataInicio:  "",
     dataFim:     "",
   });
-
-  // Normaliza um item de medição vindo do back-end
-  const normalizeMedicao = (m) => {
-    const itens = Array.isArray(m.itens) ? m.itens : [];
-    const firstItem = itens[0] || {};
-    return {
-      id:          m.id || m._id,
-      obra:        m.obra       || m.obraId || null,
-      obraNome:    m.obraNome   || null,
-      tipoServico: m.tipoServico || null,
-      area:        m.area        ?? firstItem.quantidade,
-      volume:      m.volume      ?? firstItem.valorTotal,
-      descricao:   m.descricao   || firstItem.descricao,
-      observacoes: m.observacoes || firstItem.observacoes,
-      status:      m.status      || "enviada",
-      itens,
-      // IDs de anexos (arquivos vinculados à medição)
-      anexos:      Array.isArray(m.anexos) ? m.anexos : [],
-      foto:        m.foto || m.fotoUrl || m.arquivo || m.arquivoUrl,
-      createdAt:   m.createdAt || m.metadata?.createdAt,
-    };
-  };
 
   // Carrega as obras para o select de filtro
   useEffect(() => {
@@ -153,7 +132,7 @@ function MeusRelatorios() {
   return (
     <Layout>
       <div className="page-container">
-        <h2 className="page-title">Meus Relatórios</h2>
+        <h1 className="page-title">Meus Relatórios</h1>
         <p style={{
           fontSize: "var(--tamanho-fonte-base)",
           color: "var(--cor-texto-secundario)",
@@ -326,12 +305,7 @@ function MeusRelatorios() {
                   {expanded && (
                     <>
                       {/* Área e Serviço */}
-                      <div style={{
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gap: "var(--espacamento-md)",
-                        marginBottom: "var(--espacamento-md)",
-                      }}>
+                      <div className="details-grid-2">
                         {m.area != null && (
                           <p style={{ margin: 0 }}>
                             <strong>Área calculada:</strong> {Number(m.area).toFixed(2)} m²

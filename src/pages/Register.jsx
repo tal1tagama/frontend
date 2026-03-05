@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
 import api from "../services/api";
 import { extractApiMessage } from "../services/response";
+import { validarSenha } from "../utils/validarSenha";
+import { PERFIL_LABELS } from "../constants/permissions";
 import "../styles/pages.css";
 
 const Register = () => {
@@ -19,16 +21,9 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (senha.length < 8) {
-      setError("A senha deve ter pelo menos 8 caracteres.");
-      return;
-    }
-    if (!/[A-Z]/.test(senha)) {
-      setError("A senha deve conter ao menos uma letra maiúscula.");
-      return;
-    }
-    if (!/[0-9]/.test(senha)) {
-      setError("A senha deve conter ao menos um número.");
+    const erroSenha = validarSenha(senha);
+    if (erroSenha) {
+      setError(erroSenha);
       return;
     }
     try {
@@ -36,7 +31,7 @@ const Register = () => {
       setError("");
       setSuccess("");
       await api.post("/auth/register", { nome, email, senha, perfil });
-      setSuccess(`Funcionário "${nome}" cadastrado com sucesso como ${perfil}.`);
+      setSuccess(`Funcionário "${nome}" cadastrado com sucesso como ${PERFIL_LABELS[perfil] || perfil}.`);
       // Limpar formulário para novo cadastro
       setNome("");
       setEmail("");

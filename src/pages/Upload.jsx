@@ -203,7 +203,7 @@ function Upload() {
   return (
     <Layout>
       <div className="page-container">
-        <h2 className="page-title">Enviar Arquivos</h2>
+        <h1 className="page-title">Enviar Arquivos</h1>
         <p style={{ fontSize: "var(--tamanho-fonte-base)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-lg)", lineHeight: "1.6" }}>
           Envie documentos, fotos e relatórios relacionados às obras. Preencha todos os campos
           para facilitar a identificação posterior do arquivo.

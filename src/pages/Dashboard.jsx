@@ -1,11 +1,14 @@
 // src/pages/Dashboard.jsx
 // Página inicial do sistema, exibida após o login.
 // Os atalhos visíveis dependem do perfil do usuário (encarregado / supervisor / admin).
+// src/pages/Dashboard.jsx
+// Página inicial do sistema, exibida após o login.
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import Icon from "../components/Icons";
 import { AuthContext } from "../context/AuthContext";
-import { canAccessRoute } from "../constants/permissions";
+import { canAccessRoute, PERFIL_LABELS } from "../constants/permissions";
 import "../styles/pages.css";
 
 /**
@@ -14,81 +17,30 @@ import "../styles/pages.css";
  */
 const GRUPOS = [
   {
-    titulo: "Atividades do Dia a Dia",
+    titulo: "Atividades diárias",
     atalhos: [
-      {
-        path: "/medicoes",
-        label: "Nova Medição",
-        descricao: "Registrar dimensões e informações da obra",
-        icone: "\uD83D\uDCCF",
-      },
-      {
-        path: "/upload",
-        label: "Enviar Arquivos",
-        descricao: "Enviar documentos, fotos e relatórios",
-        icone: "\uD83D\uDCC1",
-      },
-      {
-        path: "/solicitacoes",
-        label: "Solicitar Materiais",
-        descricao: "Pedir materiais e recursos para a obra",
-        icone: "\uD83D\uDECD️",
-      },
-      {
-        path: "/status-solicitacoes",
-        label: "Minhas Solicitações",
-        descricao: "Acompanhar o andamento das solicitações",
-        icone: "\uD83D\uDCCB",
-      },
+      { path: "/medicoes",            label: "Nova Medição",        descricao: "Registrar dimensões e informações da obra",   iconKey: "ruler"      },
+      { path: "/upload",              label: "Enviar Arquivos",      descricao: "Enviar documentos, fotos e relatórios",        iconKey: "upload"     },
+      { path: "/solicitacoes",        label: "Solicitar Materiais",  descricao: "Pedir materiais e recursos para a obra",       iconKey: "cart"       },
+      { path: "/status-solicitacoes", label: "Minhas Solicitações",  descricao: "Acompanhar o andamento das solicitações",     iconKey: "clipboard"  },
     ],
   },
   {
-    titulo: "Gestão e Aprovação",
+    titulo: "Gestão e aprovação",
     atalhos: [
-      {
-        path: "/medicoes-lista",
-        label: "Lista de Medições",
-        descricao: "Visualizar e aprovar medições enviadas",
-        icone: "\u2705",
-      },
-      {
-        path: "/relatorios",
-        label: "Relatórios",
-        descricao: "Visualizar relatórios de medições e obras",
-        icone: "\uD83D\uDCCA",
-      },
-      {
-        path: "/obras",
-        label: "Obras",
-        descricao: "Ver e gerenciar as obras cadastradas",
-        icone: "\uD83C\uDFD7️",
-      },
+      { path: "/medicoes-lista", label: "Lista de Medições", descricao: "Visualizar e aprovar medições enviadas",  iconKey: "checklist" },
+      { path: "/relatorios",     label: "Relatórios",         descricao: "Visualizar relatórios de medições e obras", iconKey: "chart"     },
+      { path: "/obras",          label: "Obras",               descricao: "Ver e gerenciar as obras cadastradas",     iconKey: "building"  },
     ],
   },
   {
-    titulo: "Administração do Sistema",
+    titulo: "Administração do sistema",
     atalhos: [
-      {
-        path: "/admin",
-        label: "Painel Administrativo",
-        descricao: "Painel de controle do sistema",
-        icone: "\u2699️",
-      },
-      {
-        path: "/register",
-        label: "Cadastrar Funcionário",
-        descricao: "Adicionar novos usuários ao sistema",
-        icone: "\uD83D\uDC64",
-      },
+      { path: "/admin",    label: "Painel Administrativo", descricao: "Painel de controle do sistema",          iconKey: "settings"   },
+      { path: "/register", label: "Cadastrar Funcionário",  descricao: "Adicionar novos usuários ao sistema",    iconKey: "person-add" },
     ],
   },
 ];
-
-const PERFIL_LABEL = {
-  admin: "Administrador",
-  supervisor: "Supervisor",
-  encarregado: "Encarregado",
-};
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -104,58 +56,31 @@ const Dashboard = () => {
   return (
     <Layout>
       <div className="page-container">
-        {/* ─── Cabeçalho de boas-vindas ──────────────────────────────── */}
-        <div
-          style={{
-            background: "var(--cor-primaria-clara)",
-            border: "2px solid var(--cor-primaria)",
-            borderRadius: "var(--borda-radius-grande)",
-            padding: "var(--espacamento-lg) var(--espacamento-xl)",
-            marginBottom: "var(--espacamento-xl)",
-          }}
-        >
-          <h1 className="page-title" style={{ borderBottom: "none", marginBottom: "4px" }}>
-            Olá, {user?.nome || "usuário"}!
+        {/* Cabeçalho de boas-vindas */}
+        <div className="welcome-card">
+          <h1 className="welcome-title">
+            Olá, {user?.nome?.split(" ")[0] || "bem-vindo(a)"}!
           </h1>
-          <p style={{ margin: 0, color: "var(--cor-texto-secundario)", fontSize: "var(--tamanho-fonte-base)" }}>
-            Perfil: <strong>{PERFIL_LABEL[perfil] || perfil}</strong>&nbsp;&bull;&nbsp;
-            Escolha uma opção abaixo para começar.
+          <p className="welcome-sub">
+            Perfil:&nbsp;<strong>{PERFIL_LABELS[perfil] || perfil}</strong>
+            &nbsp;·&nbsp;Selecione uma opção abaixo para continuar.
           </p>
         </div>
 
-        {/* ─── Grupos de atalhos ───────────────────────────────────────── */}
+        {/* Grupos de atalhos */}
         {gruposVisiveis.map((grupo) => (
-          <div key={grupo.titulo} style={{ marginBottom: "var(--espacamento-xl)" }}>
-            <h2
-              style={{
-                fontSize: "var(--tamanho-subtitulo)",
-                fontWeight: 700,
-                color: "var(--cor-texto-principal)",
-                marginBottom: "var(--espacamento-md)",
-                paddingBottom: "var(--espacamento-xs)",
-                borderBottom: "2px solid var(--cor-borda)",
-              }}
-            >
-              {grupo.titulo}
-            </h2>
+          <div key={grupo.titulo} className="dashboard-grupo">
+            <h2 className="dashboard-grupo-titulo">{grupo.titulo}</h2>
 
-            {/* Grade responsiva: 2 colunas em telas largas, 1 em telas pequenas */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                gap: "var(--espacamento-md)",
-              }}
-            >
-              {grupo.atalhos.map(({ path, label, descricao, icone }) => (
+            <div className="dashboard-grid">
+              {grupo.atalhos.map(({ path, label, descricao, iconKey }) => (
                 <button
                   key={path}
                   className="topic-button"
                   onClick={() => navigate(path)}
-                  style={{ marginBottom: 0 }}
                 >
-                  <span style={{ fontSize: "28px", marginBottom: "var(--espacamento-xs)", display: "block" }}>
-                    {icone}
+                  <span className="topic-button-icon">
+                    <Icon name={iconKey} size={22} />
                   </span>
                   <span className="topic-button-title">{label}</span>
                   <span className="topic-button-desc">{descricao}</span>

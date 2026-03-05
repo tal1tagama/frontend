@@ -107,8 +107,14 @@ function EnviarMedicao() {
       let anexoId = null;
 
       // Upload da foto antes de criar a medição, se houver
+      // O back-end exige: obra (id), tipoArquivo e descricao (mín 3 chars)
       if (foto) {
-        const uploadRes = await uploadFile(foto, { tipo: "foto_obra" });
+        const areaLabel = form.area || "medição";
+        const uploadRes = await uploadFile(foto, {
+          obra: Number(form.obra),
+          tipoArquivo: "foto_obra",
+          descricao: `Foto da medição — ${areaLabel}`,
+        });
         anexoId = uploadRes?.id ? Number(uploadRes.id) : null;
       }
 
@@ -149,7 +155,7 @@ function EnviarMedicao() {
   return (
     <Layout>
       <div className="page-container">
-        <h2 className="page-title">Nova Medição</h2>
+        <h1 className="page-title">Nova Medição</h1>
         <p style={{ fontSize: "var(--tamanho-fonte-grande)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-xl)", lineHeight: "1.6" }}>
           Registre as dimensões e informações da medição realizada na obra.
           Os campos marcados com <strong>*</strong> são obrigatórios.

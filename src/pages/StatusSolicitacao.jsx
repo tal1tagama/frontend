@@ -20,6 +20,10 @@ function StatusSolicitacao() {
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
 
+  const LIMIT = 10;
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Estado do formulário de rejeição inline (uma por card)
   const [rejectTarget, setRejectTarget] = useState(null); // id da solicitação sendo rejeitada
   const [motivoRejeicao, setMotivoRejeicao] = useState("");
@@ -28,9 +32,10 @@ function StatusSolicitacao() {
     try {
       setLoading(true);
       setErro(null);
-      const res = await listPurchases();
-      const list = Array.isArray(res) ? res : res?.data || [];
+      const res = await listPurchases({ page, limit: LIMIT });
+      const list = Array.isArray(res) ? res : (Array.isArray(res?.data) ? res.data : []);
       setSolicitacoes(Array.isArray(list) ? list : []);
+      setTotalPages(res?.pagination?.totalPages ?? 1);
     } catch (err) {
       console.error("Erro solicitacoes:", err);
       setErro("Não foi possível carregar as solicitações.");
@@ -39,7 +44,9 @@ function StatusSolicitacao() {
     }
   };
 
-  useEffect(() => { load(); }, []);
+  // 'load' é redefinida a cada render por design (depende de `page`)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, [page]);
 
   const handleApprove = async (id) => {
     try {
@@ -99,10 +106,10 @@ function StatusSolicitacao() {
   return (
     <Layout>
       <div className="page-container">
-        <h2 className="page-title">Status das Solicitações</h2>
+        <h1 className="page-title">Solicitações de Materiais</h1>
         <p className="page-description">
           Acompanhe o andamento das solicitações de materiais.
-          {reviewer && " Como supervisor, você pode aprovar ou rejeitar solicitações pendentes."}
+          {reviewer && " Como supervisor, você pode aprovar ou reprovar solicitações que estão aguardando avaliação."}
         </p>
 
         {erro && <p className="erro-msg">{erro}</p>}
@@ -217,6 +224,29 @@ function StatusSolicitacao() {
 
           </div>
         ))}
+
+        {/* Controles de paginacao */}
+        {totalPages > 1 && (
+          <div className="paginacao-controles">
+            <button
+              className="button-secondary"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1 || loading}
+            >
+              ← Anterior
+            </button>
+            <span className="paginacao-info">
+              Página {page} de {totalPages}
+            </span>
+            <button
+              className="button-secondary"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages || loading}
+            >
+              Próxima →
+            </button>
+          </div>
+        )}
       </div>
     </Layout>
   );

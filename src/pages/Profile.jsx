@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import api from "../services/api";
 import Layout from "../components/Layout";
 import { extractApiMessage } from "../services/response";
+import { validarSenha } from "../utils/validarSenha";
+import { PERFIL_LABELS } from "../constants/permissions";
 import "../styles/pages.css";
 
 function Profile() {
@@ -41,8 +43,9 @@ function Profile() {
     setPwError("");
     setPwSuccess("");
 
-    if (pwForm.novaSenha.length < 6) {
-      setPwError("A nova senha deve ter pelo menos 6 caracteres.");
+    const erroSenha = validarSenha(pwForm.novaSenha);
+    if (erroSenha) {
+      setPwError(erroSenha);
       return;
     }
     if (pwForm.novaSenha !== pwForm.confirmar) {
@@ -65,7 +68,7 @@ function Profile() {
     }
   };
 
-  const perfilLabels = { admin: "Administrador", supervisor: "Supervisor", encarregado: "Encarregado" };
+  // PERFIL_LABELS importado de constants/permissions
 
   if (loading) {
     return (
@@ -109,7 +112,7 @@ function Profile() {
             <div>
               <strong>Tipo de usuário:</strong>
               <p style={{ marginTop: "var(--espacamento-xs)", textTransform: "capitalize" }}>
-                {perfilLabels[user.perfil] || user.perfil || "—"}
+                {PERFIL_LABELS[user.perfil] || user.perfil || "—"}
               </p>
             </div>
             {user.obraAtual && (
@@ -160,11 +163,14 @@ function Profile() {
               name="novaSenha"
               value={pwForm.novaSenha}
               onChange={handlePwChange}
-              placeholder="Mínimo 6 caracteres"
-              minLength={6}
+              placeholder="Mínimo 8 caracteres, 1 maiúscula e 1 número"
+              minLength={8}
               required
               autoComplete="new-password"
             />
+            <small style={{ display: "block", marginTop: "4px", color: "var(--cor-texto-secundario)", fontSize: "14px" }}>
+              Mínimo 8 caracteres, ao menos uma letra maiúscula e um número.
+            </small>
           </div>
           <div className="form-group">
             <label htmlFor="confirmar">Confirmar nova senha</label>
@@ -175,7 +181,7 @@ function Profile() {
               value={pwForm.confirmar}
               onChange={handlePwChange}
               placeholder="Repita a nova senha"
-              minLength={6}
+              minLength={8}
               required
               autoComplete="new-password"
             />

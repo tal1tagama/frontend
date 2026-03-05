@@ -1,3 +1,4 @@
+// src/pages/PurchaseRequest.jsx
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { createPurchase } from "../services/purchasesService";
@@ -5,364 +6,544 @@ import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
 import "../styles/pages.css";
 
-const topicos = [
-
-{
-id: 1,
-titulo: "Materiais de Estrutura e Alvenaria",
-itens: [
-"Cimento CP I (comum)",
-"Cimento CP II (comum e pozolânico)",
-"Cimento CP III (alto-força)",
-"Cimento rápido (desmoldante)",
-"Areia fina (para argamassa de acabamento)",
-"Areia média (para concreto)",
-"Areia grossa (para fundações)",
-"Pedra brita 0 (concreto leve)",
-"Pedra brita 1, 2, 3 (concreto e base de piso)",
-"Blocos de concreto (30x20x15, 40x20x15, etc.)",
-"Blocos cerâmicos maciços",
-"Blocos cerâmicos de vedação",
-"Tijolos maciços",
-"Tijolos furados",
-"Argamassa pronta (assentamento e reboco)",
-"Cal hidratada",
-"Ferro / Vergalhão (4mm, 6mm, 8mm, 10mm, 12mm, 16mm)",
-"Tela de aço / malha soldada (para lajes e pisos)",
-"Chumbadores / buchas de ancoragem",
-"Escoras metálicas e madeira para concretagem",
-"Concreto pronto (se necessário)"
-]
-},
-
-{
-id: 2,
-titulo: "Materiais para Lajes e Estruturas Metálicas",
-itens: [
-"Lajes pré-moldadas",
-"Lajes maciças",
-"Chapas metálicas",
-"Perfis metálicos (IPE, H, U)",
-"Arame galvanizado",
-"Pregos e parafusos estruturais",
-"Madeiramento para caixaria (caibros, vigas, ripas)",
-"Manta térmica para lajes",
-"Isolamento acústico"
-]
-},
-
-{
-id: 3,
-titulo: "Materiais para Revestimentos e Acabamentos",
-itens: [
-"Revestimentos cerâmicos (pisos, paredes)",
-"Pastilhas cerâmicas",
-"Piso laminado, vinílico ou madeira",
-"Rodapés (cerâmica, MDF, PVC)",
-"Massa corrida",
-"Gesso acartonado (drywall)",
-"Tinta acrílica (paredes internas e externas)",
-"Tinta esmalte (portas, janelas, metais)",
-"Verniz / selador",
-"Impermeabilizante (manta líquida, cimento + aditivo)",
-"Argamassa colante",
-"Rejunte",
-"Textura ou grafiato",
-"Adesivos decorativos"
-]
-},
-
-{
-id: 4,
-titulo: "Materiais Hidráulicos",
-itens: [
-"Tubos PVC (água fria e esgoto)",
-"Tubos PPR (água quente)",
-"Tubos de cobre (água quente)",
-"Conexões PVC e PPR (joelhos, T, luvas)",
-"Válvulas de retenção e registros",
-"Torneiras, misturadores, chuveiros",
-"Caixas d’água (plástico, fibra, concreto)",
-"Bombas de água",
-"Filtros e purificadores",
-"Abraçadeiras e suportes de tubos",
-"Ralos, grelhas e sifões",
-"Fitas veda rosca",
-"Tubulações flexíveis para pressurização"
-]
-},
-
-{
-id: 5,
-titulo: "Materiais Elétricos",
-itens: [
-"Cabos elétricos (cobre, alumínio, 1,5mm², 2,5mm², 4mm², 6mm²)",
-"Eletrodutos (PVC, metálico)",
-"Caixa de passagem e quadros de distribuição",
-"Disjuntores (Diferencial e termomagnético)",
-"Interruptores, tomadas e plugues",
-"Luminárias e lâmpadas (LED, fluorescente, incandescente)",
-"Conectores, bornes e fitas isolantes",
-"Cabos de aterramento",
-"Tomadas especiais (bancada, cozinha, banheiro)",
-"Sensores de presença (opcional)"
-]
-},
-
-{
-id: 6,
-titulo: "Ferramentas e Equipamentos",
-itens: [
-"Pá, enxada, picareta",
-"Colher de pedreiro",
-"Carrinho de mão",
-"Baldes de 20L",
-"Vassouras",
-"Nível de bolha, prumo e esquadro",
-"Trena 5m, 10m",
-"Talhadeira, marreta e martelo",
-"Betoneira",
-"Serra manual e elétrica",
-"Espátulas e desempenadeiras",
-"Pulverizador para tinta",
-"Brocas e furadeiras",
-"Andaimes e escadas",
-"Niveladora de piso"
-]
-},
-
-{
-id: 7,
-titulo: "Materiais para Telhados e Coberturas",
-itens: [
-"Telhas cerâmicas, fibrocimento ou metálicas",
-"Caibros, ripas, vigas de madeira",
-"Pregos, parafusos, abraçadeiras",
-"Isolantes térmicos",
-"Calhas e rufos",
-"Tela mosquiteira ou manta anti-inseto"
-]
-},
-
-{
-id: 8,
-titulo: "Materiais de Proteção e Segurança",
-itens: [
-"Capacete",
-"Luvas de proteção",
-"Óculos de proteção",
-"Bota de segurança",
-"Cinto de segurança / talabarte",
-"Máscaras respiratórias",
-"Coletes refletivos",
-"Fitas de sinalização",
-"Protetor auricular"
-]
-},
-
-{
-id: 9,
-titulo: "Materiais Diversos e Consumíveis",
-itens: [
-"Sacos plásticos",
-"Fita crepe, fita isolante",
-"Lonas de cobertura",
-"Pregos, parafusos, grampos",
-"Adesivos e selantes (silicone, PU)",
-"Espuma expansiva",
-"Cordas, cabos, arames",
-"Limpeza: panos, escovas, detergentes",
-"Lixas, esponjas, ferramentas de acabamento"
-]
-}
-
+const CATEGORIAS = [
+  {
+    nome: "EPI — Equipamentos de Proteção Individual",
+    itens: [
+      "Capacete de segurança (classe A)",
+      "Capacete de segurança (classe B)",
+      "Luvas de raspa de couro",
+      "Luvas de borracha isolante",
+      "Luvas de malha de aço",
+      "Bota de segurança com biqueira",
+      "Bota de PVC cano longo",
+      "Óculos de proteção incolor",
+      "Óculos de proteção fumê",
+      "Protetor auricular tipo plug",
+      "Protetor auricular tipo concha",
+      "Colete refletivo classe II",
+      "Cinto de segurança tipo paraquedista",
+      "Talabarte de segurança duplo",
+      "Máscara respiratória PFF2",
+      "Máscara respiratória PFF3",
+      "Máscara semifacial com filtro",
+      "Avental de raspa de couro",
+      "Manga de raspa de couro",
+      "Joelheira ergonômica",
+    ],
+  },
+  {
+    nome: "Ferramentas Manuais",
+    itens: [
+      "Martelo de borracha",
+      "Martelo de carpinteiro",
+      "Marreta 1,5 kg",
+      "Marreta 3 kg",
+      "Chave de fenda 1/4 x 6\"",
+      "Chave Phillips 1/4 x 6\"",
+      "Alicate universal 8\"",
+      "Alicate de corte diagonal",
+      "Alicate de pressão",
+      "Serra manual 26\"",
+      "Serrote para gesso",
+      "Arco de serra com lâmina",
+      "Nível de alumínio 60 cm",
+      "Nível de alumínio 120 cm",
+      "Trena de aço 5 m",
+      "Trena de aço 50 m",
+      "Colher de pedreiro 10\"",
+      "Desempenadeira de aço",
+      "Desempenadeira de borracha",
+      "Régua de alumínio 1,5 m",
+      "Régua de alumínio 3 m",
+      "Enxada",
+      "Pazinha de jardinagem",
+      "Pá de bico",
+      "Picareta",
+      "Ponteiro e talhadeira",
+    ],
+  },
+  {
+    nome: "Ferramentas Elétricas e Equipamentos",
+    itens: [
+      "Furadeira de impacto",
+      "Parafusadeira a bateria",
+      "Serra circular",
+      "Serra tico-tico",
+      "Esmerilhadeira 4,5\"",
+      "Esmerilhadeira 7\"",
+      "Lixadeira orbital",
+      "Compactador de solo (placa)",
+      "Betoneira 400L",
+      "Vibrador de imersão para concreto",
+      "Gerador de energia",
+      "Compressor de ar",
+      "Pistola de pintura",
+      "Soprador térmico",
+      "Detector de tensão",
+      "Multímetro digital",
+      "Extensão elétrica 20 m",
+      "Extensão elétrica 50 m",
+    ],
+  },
+  {
+    nome: "Materiais de Construção Civil",
+    itens: [
+      "Cimento CP II — saco 50 kg",
+      "Cimento CP V — saco 50 kg",
+      "Cimento branco — saco 20 kg",
+      "Areia fina (m³)",
+      "Areia média (m³)",
+      "Areia grossa (m³)",
+      "Brita nº 0 (m³)",
+      "Brita nº 1 (m³)",
+      "Brita nº 2 (m³)",
+      "Tijolo cerâmico 9x14x19 cm (milheiro)",
+      "Tijolo maciço (milheiro)",
+      "Bloco de concreto 14x19x39 cm (und)",
+      "Bloco de concreto celular (m³)",
+      "Argamassa AC-I — saco 20 kg",
+      "Argamassa AC-II — saco 20 kg",
+      "Argamassa AC-III — saco 20 kg",
+      "Argamassa de reboco (saco 20 kg)",
+      "Cal hidratada CH-I (saco 20 kg)",
+      "Cal virgem (saco 20 kg)",
+      "Ferro CA-50 — Ø 6,3 mm (barra 12 m)",
+      "Ferro CA-50 — Ø 8 mm (barra 12 m)",
+      "Ferro CA-50 — Ø 10 mm (barra 12 m)",
+      "Ferro CA-50 — Ø 12,5 mm (barra 12 m)",
+      "Ferro CA-60 — Ø 4,2 mm (barra 12 m)",
+      "Tela soldada Q-138",
+      "Tela soldada Q-196",
+      "Lona plástica 100 micras (m²)",
+      "Madeira pinus para forma 3x30 cm (m)",
+      "Compensado para forma 12 mm (chapa)",
+      "Concreto usinado fck 20 MPa (m³)",
+      "Concreto usinado fck 25 MPa (m³)",
+    ],
+  },
+  {
+    nome: "Acabamentos e Revestimentos",
+    itens: [
+      "Piso cerâmico 60x60 cm (m²)",
+      "Piso porcelanato 60x60 cm (m²)",
+      "Piso porcelanato 80x80 cm (m²)",
+      "Azulejo 20x20 cm (m²)",
+      "Revestimento externo 30x60 cm (m²)",
+      "Rejunte acrílico (kg)",
+      "Rejunte cimentício (kg)",
+      "Gesso em pó — saco 20 kg",
+      "Placa de gesso acartonado 1,20x1,80 m",
+      "Perfil guia U 70 mm (3 m)",
+      "Perfil montante 70 mm (3 m)",
+      "Rodapé de porcelanato (m)",
+      "Rodapé de madeira MDF (m)",
+      "Soleira de granito (m)",
+      "Peitoril de granito (m)",
+      "Massa corrida PVA (lata 25 kg)",
+      "Massa acrílica (lata 25 kg)",
+    ],
+  },
+  {
+    nome: "Pintura e Impermeabilização",
+    itens: [
+      "Tinta látex PVA branca (18L)",
+      "Tinta acrílica premium branca (18L)",
+      "Tinta acrílica colorida (18L)",
+      "Tinta esmalte brilhante (3,6L)",
+      "Tinta esmalte fosco (3,6L)",
+      "Primer acrílico (18L)",
+      "Selador acrílico (18L)",
+      "Textura acrílica (25 kg)",
+      "Verniz marítimo (3,6L)",
+      "Lixa para parede nº 80 (folha)",
+      "Lixa para madeira nº 120 (folha)",
+      "Rolo de lã 23 cm",
+      "Rolo de espuma 23 cm",
+      "Pincel 3\" cerdas naturais",
+      "Fita crepe (und)",
+      "Impermeabilizante acrílico (18L)",
+      "Manta asfáltica 3 mm (m²)",
+      "Manta asfáltica 4 mm (m²)",
+      "Argamassa de impermeabilização (20 kg)",
+    ],
+  },
+  {
+    nome: "Materiais Elétricos",
+    itens: [
+      "Fio flexível 1,5 mm² (rolo 100 m)",
+      "Fio flexível 2,5 mm² (rolo 100 m)",
+      "Fio flexível 4 mm² (rolo 100 m)",
+      "Cabo PP 2x2,5 mm² (m)",
+      "Disjuntor monopolar 10A",
+      "Disjuntor monopolar 16A",
+      "Disjuntor monopolar 20A",
+      "Disjuntor bipolar 25A",
+      "Disjuntor bipolar 40A",
+      "Disjuntor tripolar 50A",
+      "Tomada 2P+T 10A",
+      "Tomada 2P+T 20A",
+      "Interruptor simples",
+      "Interruptor paralelo",
+      "Interruptor três teclas",
+      "Eletroduto PVC rígido 3/4\" (barra 3 m)",
+      "Eletroduto PVC rígido 1\" (barra 3 m)",
+      "Eletroduto corrugado 3/4\" (rolo 50 m)",
+      "Caixa de passagem 10x10 cm",
+      "Caixa de passagem 15x15 cm",
+      "Quadro de distribuição 12 disjuntores",
+      "Luminária LED 20W",
+      "Luminária de emergência",
+      "Lâmpada LED bulbo 9W",
+    ],
+  },
+  {
+    nome: "Materiais Hidráulicos e Sanitários",
+    itens: [
+      "Tubo PVC esgoto 50 mm (barra 6 m)",
+      "Tubo PVC esgoto 75 mm (barra 6 m)",
+      "Tubo PVC esgoto 100 mm (barra 6 m)",
+      "Tubo PVC água fria 25 mm (barra 6 m)",
+      "Tubo PVC água fria 32 mm (barra 6 m)",
+      "Tubo CPVC água quente 22 mm (barra 3 m)",
+      "Joelho 90° PVC 100 mm",
+      "Joelho 45° PVC 100 mm",
+      "Tê PVC 100 mm",
+      "Luva PVC 100 mm",
+      "Joelho soldável 25 mm",
+      "Tê soldável 25 mm",
+      "Registro de gaveta 25 mm",
+      "Registro de esfera 1/2\"",
+      "Válvula de retenção 25 mm",
+      "Caixa d'água PVC 500L",
+      "Caixa d'água PVC 1000L",
+      "Fita veda-rosca (und)",
+      "Cola para PVC (bisnaga)",
+      "Cimento para esgoto (lata)",
+      "Sifão para pia",
+      "Caixilho de inspeção",
+    ],
+  },
+  {
+    nome: "Andaimes, Escoramentos e Segurança de Obra",
+    itens: [
+      "Andaime tubular — trecho 1 m (und)",
+      "Andaime tubular — trecho 2 m (und)",
+      "Prancha metálica 1,5 m (und)",
+      "Braçadeira simples (und)",
+      "Braçadeira cruzeta (und)",
+      "Escada de alumínio 6 m",
+      "Escada de alumínio 8 m",
+      "Escada de madeira 7 degraus",
+      "Cavalete metálico (par)",
+      "Tela de proteção para andaime (m²)",
+      "Placas de sinalização de obra (und)",
+      "Cone de sinalização (und)",
+      "Fita de isolamento de área (rolo)",
+      "Grade de proteção metálica (m)",
+    ],
+  },
+  {
+    nome: "Limpeza e Descarte",
+    itens: [
+      "Vassoura de pelo",
+      "Vassoura de junco",
+      "Rodo de borracha 60 cm",
+      "Pá de lixo inox",
+      "Saco de entulho 50 kg (und)",
+      "Bombona plástica 50L",
+      "Detergente concentrado (5L)",
+      "Água sanitária (5L)",
+      "Álcool 70° (1L)",
+      "Papel toalha (pacote)",
+      "Luva descartável nitrílica (caixa 100 und)",
+      "Aviso de piso molhado (und)",
+    ],
+  },
 ];
 
-export default function PurchaseRequest(){
+const PRIORIDADES = [
+  { value: "baixa",   label: "Baixa — pode aguardar" },
+  { value: "media",   label: "Média — necessidade normal" },
+  { value: "alta",    label: "Alta — necessário em breve" },
+  { value: "urgente", label: "Urgente — necessidade imediata" },
+];
 
-const [expanded,setExpanded]=useState(null);
-const [selecionados,setSelecionados]=useState({});
-const [error,setError]=useState("");
-const [success,setSuccess]=useState("");
-const [loading,setLoading]=useState(false);
-const [obras, setObras] = useState([]);
-const [obraId, setObraId] = useState("");
-const [loadingObras, setLoadingObras] = useState(true);
+export default function PurchaseRequest() {
+  const [obras, setObras] = useState([]);
+  const [obraId, setObraId] = useState("");
+  const [categoriaAberta, setCategoriaAberta] = useState(null);
+  const [itensSelecionados, setItensSelecionados] = useState([]);
+  const [prioridade, setPrioridade] = useState("media");
+  const [descricao, setDescricao] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [loadingObras, setLoadingObras] = useState(true);
+  const [erro, setErro] = useState("");
+  const [sucesso, setSucesso] = useState(false);
 
-useEffect(() => {
-  listObras({ page: 1, limit: 100 })
-    .then((data) => setObras(Array.isArray(data) ? data : []))
-    .catch(() => setObras([]))
-    .finally(() => setLoadingObras(false));
-}, []);
+  useEffect(() => {
+    listObras()
+      .then((res) => {
+        const lista = Array.isArray(res) ? res : (res?.data ?? []);
+        setObras(lista);
+        if (lista.length === 1) setObraId(String(lista[0].id));
+      })
+      .catch(() => setErro("Não foi possível carregar as obras. Verifique sua conexão."))
+      .finally(() => setLoadingObras(false));
+  }, []);
 
-const toggleTopico=(id)=>{
-setExpanded(expanded===id?null:id);
-};
-
-const toggleItem=(item)=>{
-setSelecionados(prev=>({
-...prev,
-[item]:!prev[item]
-}));
-};
-
-const itensSelecionados=
-Object.keys(selecionados)
-.filter(key=>selecionados[key]);
-
-const enviarSolicitacao = async () => {
-
-  setError("");
-  setSuccess("");
-
-  if (itensSelecionados.length === 0) {
-    setError("Selecione pelo menos um item.");
-    return;
+  function toggleItem(item) {
+    setItensSelecionados((prev) =>
+      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
+    );
   }
 
-  if (!obraId) {
-    setError("Selecione a obra relacionada a esta solicitação.");
-    return;
+  function toggleCategoria(idx) {
+    setCategoriaAberta((prev) => (prev === idx ? null : idx));
   }
 
-  try {
+  function limparSelecao() {
+    setItensSelecionados([]);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setErro("");
+    setSucesso(false);
+
+    if (!obraId) {
+      setErro("Selecione uma obra.");
+      return;
+    }
+    if (itensSelecionados.length === 0) {
+      setErro("Selecione pelo menos um item da lista de materiais.");
+      return;
+    }
+
     setLoading(true);
-    const itemsPayload = itensSelecionados.map((descricao) => ({
-      descricao,
-      quantidade: 1,
-      unidade: "un",
-      valorUnitario: null,
-      observacoes: null,
-    }));
-
-    await createPurchase(itemsPayload, obraId);
-
-    setSuccess("Solicitaão enviada com sucesso!");
-    setSelecionados({});
-    setObraId("");
-
-  } catch (err) {
-    setError("Erro ao enviar solicitacao: " + extractApiMessage(err));
-  } finally {
-    setLoading(false);
+    try {
+      await createPurchase({
+        obra_id: Number(obraId),
+        itens: itensSelecionados,
+        prioridade,
+        descricao,
+      });
+      setSucesso(true);
+      setItensSelecionados([]);
+      setDescricao("");
+      setPrioridade("media");
+      if (obras.length !== 1) setObraId("");
+      setCategoriaAberta(null);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      setErro(extractApiMessage(err, "Erro ao enviar solicitação. Tente novamente."));
+    } finally {
+      setLoading(false);
+    }
   }
-};
 
-return(
+  const totalSelecionados = itensSelecionados.length;
 
-<Layout>
-  <div className="page-container">
-
-    <h2 className="page-title">Nova Solicitação de Materiais</h2>
-    <p style={{ fontSize: "var(--tamanho-fonte-grande)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-xl)", lineHeight: "1.6" }}>
-      Selecione a obra e os materiais que você precisa
-    </p>
-
-    {/* Seletor de Obra */}
-    <div className="form-container" style={{ marginBottom: "var(--espacamento-lg)", padding: "var(--espacamento-md)" }}>
-      <div className="form-group" style={{ marginBottom: 0 }}>
-        <label htmlFor="pr-obra">Obra Relacionada *</label>
-        {loadingObras ? (
-          <select disabled><option>Carregando obras...</option></select>
-        ) : (
-          <select
-            id="pr-obra"
-            value={obraId}
-            onChange={(e) => setObraId(e.target.value)}
-            required
-          >
-            <option value="">Selecione a obra</option>
-            {obras.map((o) => (
-              <option key={o.id} value={o.id}>{o.nome || `Obra #${o.id}`}</option>
-            ))}
-          </select>
-        )}
-      </div>
-    </div>
-
-    {topicos.map(topico=>(
-
-<div key={topico.id} style={{ marginBottom: "var(--espacamento-md)" }}>
-
-<button
-className="topic-button"
-onClick={()=>toggleTopico(topico.id)}
-style={{ width: "100%", textAlign: "left" }}
->
-{expanded === topico.id ? "▼" : "▶"} {topico.titulo}
-</button>
-
-{expanded===topico.id &&(
-
-<div className="items-container">
-
-{topico.itens.map((item,index)=>(
-
-<div
-key={index}
-className={selecionados[item] ? "item selected" : "item"}
-onClick={()=>toggleItem(item)}
->
-
-<input
-type="checkbox"
-checked={selecionados[item]||false}
-readOnly
-/>
-
-<span>{item}</span>
-
-</div>
-
-))}
-
-</div>
-
-)}
-
-</div>
-
-))}
-
-    <div className="summary">
-      <h3>Itens Selecionados</h3>
-
-      {itensSelecionados.length===0&&(
-        <p style={{ color: "var(--cor-texto-secundario)", fontStyle: "italic" }}>Nenhum item selecionado ainda</p>
-      )}
-
-      {itensSelecionados.length > 0 && (
-        <ul style={{ marginTop: "var(--espacamento-sm)", paddingLeft: "20px" }}>
-          {itensSelecionados.map((item,index)=>(
-            <li key={index} style={{ marginBottom: "var(--espacamento-xs)" }}>
-              {item}
-            </li>
-          ))}
-        </ul>
-      )}
-      
-      {itensSelecionados.length > 0 && (
-        <p style={{ marginTop: "var(--espacamento-md)", fontWeight: 600 }}>
-          Total: {itensSelecionados.length} {itensSelecionados.length === 1 ? "item" : "itens"}
+  return (
+    <Layout>
+      <div className="page-container">
+        <h1 className="page-title">Solicitar Materiais</h1>
+        <p style={{ fontSize: "var(--tamanho-fonte-grande)", color: "var(--cor-texto-secundario)", marginBottom: "var(--espacamento-xl)", lineHeight: "1.6" }}>
+          Selecione os materiais necessários para a obra. Clique em uma categoria para expandir e marcar os itens desejados.
         </p>
-      )}
-    </div>
-    
-    {error && <p className="erro-msg">{error}</p>}
-    {success && <p className="success-msg">{success}</p>}
 
-    <button 
-      className="button-primary" 
-      onClick={enviarSolicitacao} 
-      disabled={loading || itensSelecionados.length === 0}
-    >
-      {loading ? "Enviando solicitação..." : `Enviar Solicitação (${itensSelecionados.length} ${itensSelecionados.length === 1 ? "item" : "itens"})`}
-    </button>
+        {sucesso && (
+          <p className="success-msg" style={{ marginBottom: "var(--espacamento-lg)" }}>
+            Solicitacao enviada com sucesso! Aguarde a aprovacao do supervisor.
+          </p>
+        )}
 
-  </div>
-</Layout>
+        <form onSubmit={handleSubmit} className="form-container">
 
-);
+          {/* Obra */}
+          <div className="form-group">
+            <label htmlFor="obra-select">Obra *</label>
+            {loadingObras ? (
+              <select id="obra-select" disabled>
+                <option>Carregando obras...</option>
+              </select>
+            ) : obras.length === 0 ? (
+              <p className="erro-msg" style={{ marginTop: "4px" }}>
+                Nenhuma obra disponível. Entre em contato com o administrador.
+              </p>
+            ) : (
+              <select
+                id="obra-select"
+                value={obraId}
+                onChange={(e) => setObraId(e.target.value)}
+                required
+              >
+                {obras.length > 1 && <option value="">Selecione a obra</option>}
+                {obras.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.nome || `Obra #${o.id}`}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
 
+          {/* Prioridade */}
+          <div className="form-group">
+            <label htmlFor="prioridade">Prioridade *</label>
+            <select
+              id="prioridade"
+              value={prioridade}
+              onChange={(e) => setPrioridade(e.target.value)}
+            >
+              {PRIORIDADES.map((p) => (
+                <option key={p.value} value={p.value}>{p.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Selecao de materiais */}
+          <div className="form-group">
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "var(--espacamento-sm)" }}>
+              <label style={{ margin: 0 }}>Materiais necessarios *</label>
+              {totalSelecionados > 0 && (
+                <button
+                  type="button"
+                  onClick={limparSelecao}
+                  style={{ background: "none", border: "none", color: "var(--cor-perigo)", cursor: "pointer", fontSize: "var(--tamanho-fonte-pequena)", fontWeight: 600, padding: "2px 6px" }}
+                >
+                  Limpar selecao ({totalSelecionados})
+                </button>
+              )}
+            </div>
+
+            <div className="materiais-lista">
+              {CATEGORIAS.map((cat, idx) => {
+                const selecionados = cat.itens.filter((i) => itensSelecionados.includes(i)).length;
+                const todosMarcados = cat.itens.every((i) => itensSelecionados.includes(i));
+                const aberta = categoriaAberta === idx;
+                return (
+                  <div key={cat.nome} className="materiais-categoria">
+                    <button
+                      type="button"
+                      className="materiais-categoria-header"
+                      aria-expanded={aberta}
+                      onClick={() => toggleCategoria(idx)}
+                    >
+                      <span className="materiais-categoria-nome">{cat.nome}</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: "var(--espacamento-sm)" }}>
+                        {selecionados > 0 && (
+                          <span className="badge">{selecionados}/{cat.itens.length}</span>
+                        )}
+                        <span className="topico-chevron">{aberta ? "▲" : "▼"}</span>
+                      </div>
+                    </button>
+
+                    {aberta && (
+                      <div className="materiais-corpo">
+                        <div className="materiais-acoes">
+                          <button
+                            type="button"
+                            className="materiais-marcar-btn"
+                            onClick={() => {
+                              if (todosMarcados) {
+                                setItensSelecionados((prev) => prev.filter((i) => !cat.itens.includes(i)));
+                              } else {
+                                setItensSelecionados((prev) => [...prev, ...cat.itens.filter((i) => !prev.includes(i))]);
+                              }
+                            }}
+                          >
+                            {todosMarcados ? "Desmarcar todos" : "Marcar todos"}
+                          </button>
+                          <span style={{ fontSize: "var(--tamanho-fonte-pequena)", color: "var(--cor-texto-secundario)" }}>
+                            {selecionados} de {cat.itens.length} selecionados
+                          </span>
+                        </div>
+                        <ul className="materiais-itens">
+                          {cat.itens.map((item) => {
+                            const marcado = itensSelecionados.includes(item);
+                            return (
+                              <li key={item} className="materiais-item">
+                                <label className={"materiais-item-label" + (marcado ? " marcado" : "")}>
+                                  <input
+                                    type="checkbox"
+                                    checked={marcado}
+                                    onChange={() => toggleItem(item)}
+                                  />
+                                  {item}
+                                </label>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Resumo dos itens selecionados */}
+          {totalSelecionados > 0 && (
+            <div className="summary">
+              <h3 style={{ marginTop: 0, marginBottom: "var(--espacamento-sm)", fontSize: "var(--tamanho-fonte-base)", color: "var(--cor-texto-principal)" }}>
+                {totalSelecionados} item(ns) selecionado(s)
+              </h3>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                {itensSelecionados.map((item) => (
+                  <span
+                    key={item}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      background: "var(--cor-primaria)",
+                      color: "#fff",
+                      borderRadius: "99px",
+                      padding: "3px 10px",
+                      fontSize: "0.78rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {item}
+                    <button
+                      type="button"
+                      onClick={() => toggleItem(item)}
+                      aria-label={`Remover ${item}`}
+                      style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 0, lineHeight: 1, fontSize: "0.95rem" }}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Justificativa */}
+          <div className="form-group">
+            <label htmlFor="descricao">Justificativa / observações (opcional)</label>
+            <textarea
+              id="descricao"
+              rows={3}
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              placeholder="Ex: Materiais necessários para segunda etapa da fundação, previsão de uso na semana 12."
+            />
+          </div>
+
+          {erro && <p className="erro-msg">{erro}</p>}
+
+          <button
+            type="submit"
+            className="button-primary"
+            disabled={loading || loadingObras || obras.length === 0}
+          >
+            {loading ? "Enviando solicitação..." : "Enviar Solicitação"}
+          </button>
+        </form>
+      </div>
+    </Layout>
+  );
 }

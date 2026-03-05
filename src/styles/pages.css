@@ -1,5 +1,5 @@
 ﻿/* ========================================
-   CONTAINERS E TÃTULOS
+   CONTAINERS E TÍTULOS
    ======================================== */
 .page-container {
   padding: var(--espacamento-lg);
@@ -25,14 +25,14 @@
 }
 
 /* ========================================
-   BOTÃ•ES DE TÃ“PICO E NAVEGAÃ‡ÃƒO (Dashboard)
+   BOTÕES DE ATALHO (Dashboard)
    ======================================== */
 .topic-button {
   background: var(--cor-primaria);
   color: white;
-  padding: 22px 24px;
+  padding: 20px 22px;
   border-radius: var(--borda-radius);
-  margin-bottom: var(--espacamento-sm);
+  margin-bottom: 0;
   cursor: pointer;
   border: none;
   font-size: var(--tamanho-fonte-base);
@@ -42,37 +42,99 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1.5;
+  gap: 6px;
+  line-height: 1.4;
   box-shadow: var(--sombra-pequena);
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+  position: relative;
+}
+
+.topic-button::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--borda-radius);
+  border-left: 4px solid rgba(255, 255, 255, 0.25);
+  pointer-events: none;
 }
 
 .topic-button:hover {
   background: var(--cor-primaria-hover);
   box-shadow: var(--sombra-media);
+  transform: translateY(-1px);
 }
 
 .topic-button:active {
-  opacity: 0.9;
+  opacity: 0.92;
+  transform: translateY(0);
 }
 
 .topic-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+}
+
+/* Ícone SVG dentro do botão de atalho */
+.topic-button-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 7px;
+  margin-bottom: 2px;
+  flex-shrink: 0;
 }
 
 .topic-button-title {
   display: block;
   font-weight: 700;
   font-size: var(--tamanho-fonte-grande);
+  line-height: 1.3;
 }
 
 .topic-button-desc {
   display: block;
-  margin-top: 4px;
   font-weight: 400;
   font-size: var(--tamanho-fonte-pequena);
-  opacity: 0.9;
+  opacity: 0.88;
+  line-height: 1.4;
+}
+
+/* ========================================
+   GRUPOS E GRADE DO DASHBOARD
+   ======================================== */
+.dashboard-grupo {
+  margin-bottom: var(--espacamento-xl);
+}
+
+.dashboard-grupo-titulo {
+  font-size: var(--tamanho-subtitulo);
+  font-weight: 700;
+  color: var(--cor-texto-principal);
+  margin: 0 0 var(--espacamento-md) 0;
+  padding-bottom: var(--espacamento-xs);
+  border-bottom: 2px solid var(--cor-borda);
+  letter-spacing: 0.01em;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--espacamento-md);
+}
+
+@media (min-width: 600px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
 }
 
 /* ========================================
@@ -118,7 +180,7 @@
 }
 
 /* ========================================
-   RESUMO E INFORMAÃ‡Ã•ES
+   RESUMO E INFORMAÇÕES
    ======================================== */
 .summary {
   background: var(--cor-fundo-secundario);
@@ -149,7 +211,7 @@
 }
 
 /* ========================================
-   BOTÃ•ES PRINCIPAIS
+   BOTÕES PRINCIPAIS
    ======================================== */
 .button-primary {
   background: var(--cor-primaria);
@@ -240,10 +302,10 @@
 }
 
 /* ========================================
-   FORMULÃRIOS
+   FORMULÁRIOS
    ======================================== */
 
-/* PÃ¡gina de login e registro */
+/* Página de login e registro */
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -365,7 +427,7 @@
 }
 
 /* ========================================
-   CONTAINER DE BOTÃ•ES (Dashboard)
+   CONTAINER DE BOTÕES (Dashboard)
    ======================================== */
 .buttons-container {
   display: grid;
@@ -566,7 +628,7 @@
 }
 
 /* ========================================
-   MODAL DE REJEIÃ‡ÃƒO (inline)
+   MODAL DE REJEIÇÃO (inline)
    ======================================== */
 .reject-form {
   background: var(--cor-perigo-clara);
@@ -606,7 +668,7 @@
 }
 
 /* ========================================
-   SEÃ‡ÃƒO DE PERFIL â€” ALTERAR SENHA
+   SEÇÃO DE PERFIL — ALTERAR SENHA
    ======================================== */
 .section-divider {
   margin: var(--espacamento-xl) 0 var(--espacamento-lg) 0;
@@ -622,7 +684,7 @@
 }
 
 /* ========================================
-   ADMIN â€” PAINEL DE CONTROLE
+   ADMIN — PAINEL DE CONTROLE
    ======================================== */
 .admin-grid {
   display: grid;
@@ -718,3 +780,689 @@
   color: var(--cor-aviso);
 }
 
+/* ========================================
+   CARD DE BOAS-VINDAS (Dashboard)
+   ======================================== */
+.welcome-card {
+  background: var(--cor-fundo-secundario);
+  border: 1px solid var(--cor-borda);
+  border-left: 4px solid var(--cor-primaria);
+  border-radius: var(--borda-radius-grande);
+  padding: var(--espacamento-lg) var(--espacamento-xl);
+  margin-bottom: var(--espacamento-xl);
+  box-shadow: var(--sombra-pequena);
+}
+
+.welcome-card .welcome-title {
+  font-size: var(--tamanho-titulo);
+  font-weight: 700;
+  color: var(--cor-texto-principal);
+  margin: 0 0 var(--espacamento-xs) 0;
+  line-height: 1.3;
+}
+
+.welcome-card .welcome-sub {
+  margin: 0;
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-fonte-base);
+}
+
+/* ========================================
+   BANNER INFORMATIVO
+   ======================================== */
+.info-banner {
+  background: var(--cor-primaria-clara);
+  border: 1px solid var(--cor-primaria);
+  border-left: 4px solid var(--cor-primaria);
+  border-radius: var(--borda-radius);
+  padding: var(--espacamento-md);
+  margin-bottom: var(--espacamento-lg);
+  font-size: var(--tamanho-fonte-base);
+  color: var(--cor-texto-principal);
+  line-height: 1.6;
+}
+
+.aviso-banner {
+  background: var(--cor-aviso-clara);
+  border: 1px solid var(--cor-aviso);
+  border-left: 4px solid var(--cor-aviso);
+  border-radius: var(--borda-radius);
+  padding: var(--espacamento-md);
+  margin-bottom: var(--espacamento-lg);
+  font-size: var(--tamanho-fonte-base);
+  color: var(--cor-aviso);
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+/* ========================================
+   ESTADO DE CARREGAMENTO
+   ======================================== */
+.carregando {
+  text-align: center;
+  padding: var(--espacamento-xl);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-fonte-base);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+.carregando::before {
+  content: "⏳ ";
+}
+
+/* ========================================
+   FOCO ACESSÍVEL EM BOTÕES
+   ======================================== */
+.button-primary:focus-visible,
+.button-success:focus-visible,
+.button-danger:focus-visible,
+.button-secondary:focus-visible {
+  outline: 3px solid var(--cor-primaria);
+  outline-offset: 3px;
+}
+
+.button-danger:focus-visible {
+  outline-color: var(--cor-perigo);
+}
+
+/* ========================================
+   LISTA VAZIA (estado zero)
+   ======================================== */
+.estado-vazio {
+  text-align: center;
+  padding: var(--espacamento-xl);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-fonte-base);
+  background: var(--cor-fundo-secundario);
+  border: 2px dashed var(--cor-borda);
+  border-radius: var(--borda-radius-grande);
+}
+
+.estado-vazio p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* ========================================
+   PAGINAÇÃO
+   ======================================== */
+.paginacao-controles {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacamento-md);
+  margin-top: var(--espacamento-xl);
+  padding-top: var(--espacamento-lg);
+  border-top: 1px solid var(--cor-borda);
+  flex-wrap: wrap;
+}
+
+.paginacao-info {
+  font-size: var(--tamanho-fonte-base);
+  color: var(--cor-texto-secundario);
+  min-width: 110px;
+  text-align: center;
+}
+
+/* ========================================
+   FORM CARD (PurchaseRequest e similares)
+   ======================================== */
+.form-card {
+  background: var(--cor-fundo-secundario);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-radius-grande);
+  padding: var(--espacamento-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-lg);
+}
+
+/* ========================================
+   LISTA DE MATERIAIS (PurchaseRequest)
+   ======================================== */
+.materiais-lista {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-radius);
+  overflow: hidden;
+}
+
+.materiais-categoria {
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.materiais-categoria:last-child {
+  border-bottom: none;
+}
+
+.materiais-categoria-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--espacamento-sm) var(--espacamento-md);
+  background: var(--cor-fundo-secundario);
+  border: none;
+  cursor: pointer;
+  gap: var(--espacamento-sm);
+  flex-wrap: wrap;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.materiais-categoria-header:hover {
+  background: var(--cor-borda);
+}
+
+.materiais-categoria-nome {
+  font-weight: 700;
+  font-size: var(--tamanho-fonte-base);
+  color: var(--cor-texto-principal);
+  flex: 1;
+}
+
+.materiais-marcar-btn {
+  background: none;
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-radius);
+  padding: 3px 10px;
+  font-size: var(--tamanho-fonte-pequena);
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.materiais-marcar-btn:hover {
+  background: var(--cor-primaria);
+  color: #fff;
+  border-color: var(--cor-primaria);
+}
+
+.materiais-corpo {
+  background: var(--cor-fundo-principal);
+  padding: var(--espacamento-sm) var(--espacamento-md) var(--espacamento-md);
+}
+
+.materiais-acoes {
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-md);
+  margin-bottom: var(--espacamento-sm);
+  padding-bottom: var(--espacamento-sm);
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+.materiais-itens {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.materiais-item {
+  border-bottom: 1px solid #f0f0f0;
+  border-right: 1px solid #f0f0f0;
+}
+
+/* Remove borda direita nos itens da segunda coluna */
+.materiais-item:nth-child(2n) {
+  border-right: none;
+}
+
+/* Remove borda inferior nos dois últimos itens */
+.materiais-item:nth-last-child(-n+2):nth-child(2n+1),
+.materiais-item:nth-last-child(-n+2):nth-child(2n+1) ~ .materiais-item {
+  border-bottom: none;
+}
+
+.materiais-item-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-size: var(--tamanho-fonte-base);
+  font-weight: normal;
+  margin-bottom: 0;
+  transition: background 0.1s;
+  color: var(--cor-texto-principal);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.materiais-item-label:hover {
+  background: rgba(29, 78, 216, 0.05);
+}
+
+.materiais-item-label.marcado {
+  background: rgba(29, 78, 216, 0.08);
+  color: var(--cor-primaria);
+  font-weight: 600;
+}
+
+/* Reset do checkbox dentro dos itens de material */
+.materiais-item-label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--cor-primaria);
+}
+
+/* ========================================
+   TOPICOS (legado — mantido para compatibilidade)
+   ======================================== */
+.topicos-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-sm);
+  margin-top: var(--espacamento-sm);
+}
+
+.topico-item {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-radius);
+  overflow: hidden;
+}
+
+.topico-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-sm);
+  padding: var(--espacamento-sm) var(--espacamento-md);
+  background: var(--cor-fundo-secundario);
+  border: none;
+  cursor: pointer;
+  font-size: var(--tamanho-fonte-base);
+  font-weight: 600;
+  color: var(--cor-texto-principal);
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.topico-btn:hover {
+  background: var(--cor-borda);
+}
+
+.topico-btn span:first-child {
+  flex: 1;
+}
+
+.topico-chevron {
+  font-size: 0.75rem;
+  color: var(--cor-texto-secundario);
+}
+
+.itens-lista {
+  list-style: none;
+  margin: 0;
+  padding: var(--espacamento-sm) var(--espacamento-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-xs);
+  background: var(--cor-fundo-principal);
+}
+
+.item-check label {
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-sm);
+  cursor: pointer;
+  font-size: var(--tamanho-fonte-base);
+  font-weight: normal;
+  margin-bottom: 0;
+}
+
+/* Reset: desfaz o width:100% e padding que .form-group input aplica globalmente */
+.item-check input[type="checkbox"] {
+  width: auto;
+  min-width: unset;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  background: transparent;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: var(--cor-primaria);
+  width: 16px;
+  height: 16px;
+}
+
+.itens-resumo {
+  margin: var(--espacamento-sm) 0 0 0;
+  padding-left: 20px;
+  line-height: 1.9;
+  font-size: var(--tamanho-fonte-base);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--cor-primaria);
+  color: #fff;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+/* ========================================
+   RESPONSIVIDADE COMPLETA
+   Todos os pontos de quebra:
+   >=1280px desktop · >=1024px notebook
+   >=768px tablet   · <=480px mobile
+   <=375px mobile pequeno
+   ======================================== */
+
+/* --- Wrapper universal para tabelas com scroll horizontal --- */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--borda-radius);
+}
+
+/* --- Grupo de botões empilhável --- */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacamento-sm);
+  align-items: center;
+}
+
+/* --- Grade com 2 colunas no tablet+ e 1 coluna no mobile --- */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacamento-md);
+}
+
+/* --- Grade de detalhes expandidos nos cards --- */
+.details-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacamento-md);
+  margin-bottom: var(--espacamento-md);
+}
+
+/* ========================================
+   ADMIN-GRID — mais colunas em telas grandes
+   ======================================== */
+@media (min-width: 1024px) {
+  .admin-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .admin-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ========================================
+   OBRAS-LIST — 3 colunas no desktop
+   ======================================== */
+@media (min-width: 1024px) {
+  .obras-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ========================================
+   TABLET (<=768px)
+   ======================================== */
+@media (max-width: 768px) {
+  /* Contêiner de página */
+  .page-container {
+    padding: var(--espacamento-md);
+  }
+
+  /* Cards e formulários */
+  .welcome-card {
+    padding: var(--espacamento-md);
+  }
+
+  .form-card {
+    padding: var(--espacamento-md);
+    gap: var(--espacamento-md);
+  }
+
+  .summary {
+    padding: var(--espacamento-md);
+  }
+
+  /* Grids de 2 colunas → 1 coluna em tablet estreito */
+  .form-grid-2,
+  .details-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Rejeição — botões em coluna */
+  .reject-form-buttons {
+    flex-direction: column;
+  }
+
+  .reject-form-buttons .button-danger,
+  .reject-form-buttons .button-secondary {
+    width: 100%;
+  }
+
+  /* Paginação em coluna */
+  .paginacao-controles {
+    flex-direction: column;
+    gap: var(--espacamento-sm);
+    text-align: center;
+  }
+
+  /* Tabela de medições — scroll horizontal */
+  .measurements-table {
+    min-width: 600px;
+  }
+
+  /* Fontes de tabela */
+  .measurements-table th,
+  .measurements-table td {
+    padding: 10px 8px;
+    font-size: var(--tamanho-fonte-pequena);
+  }
+}
+
+/* ========================================
+   MOBILE (<=480px)
+   ======================================== */
+@media (max-width: 480px) {
+  /* Títulos e descrições */
+  .page-title {
+    font-size: 19px;
+    padding-bottom: var(--espacamento-xs);
+    margin-bottom: var(--espacamento-md);
+  }
+
+  .page-description {
+    font-size: var(--tamanho-fonte-base);
+    margin-bottom: var(--espacamento-lg);
+  }
+
+  /* Contêiner de página */
+  .page-container {
+    padding: var(--espacamento-sm) var(--espacamento-md);
+  }
+
+  /* Login */
+  .login-form {
+    padding: var(--espacamento-lg) var(--espacamento-md);
+  }
+
+  /* Cards */
+  .card {
+    padding: var(--espacamento-md);
+  }
+
+  .welcome-card {
+    padding: var(--espacamento-md);
+  }
+
+  .form-card {
+    padding: var(--espacamento-md);
+  }
+
+  .summary {
+    padding: var(--espacamento-md);
+  }
+
+  /* Botões — aumentar área de toque */
+  .button-primary {
+    padding: 16px var(--espacamento-md);
+    font-size: var(--tamanho-fonte-base);
+  }
+
+  .button-success,
+  .button-danger,
+  .button-secondary {
+    padding: 12px var(--espacamento-md);
+    font-size: var(--tamanho-fonte-base);
+  }
+
+  /* Botões de ação nas tabelas — menores mas tocáveis */
+  .measurements-table .button-success,
+  .measurements-table .button-danger {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  /* Botões de ação ficam em coluna no mobile */
+  .measurements-table td > div {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* Formulários — campos em 100% */
+  .form-group input,
+  .form-group select,
+  .form-group textarea,
+  .form-container input,
+  .form-container select,
+  .form-container textarea,
+  .login-form input {
+    font-size: 16px; /* evita zoom automático no iOS */
+  }
+
+  /* Grids de 2 colunas → 1 coluna no mobile */
+  .form-grid-2,
+  .details-grid-2 {
+    grid-template-columns: 1fr;
+  }
+
+  /* Materiais — 1 coluna no mobile */
+  .materiais-itens {
+    grid-template-columns: 1fr;
+  }
+
+  .materiais-item {
+    border-right: none;
+  }
+
+  .materiais-item:nth-child(2n) {
+    border-right: none;
+  }
+
+  /* Remove borda inferior apenas dos últimos corretamente */
+  .materiais-item:last-child {
+    border-bottom: none;
+  }
+
+  /* Admin stat — valor menor */
+  .admin-stat-value {
+    font-size: 26px;
+  }
+
+  /* Categoria de materiais */
+  .materiais-categoria-header {
+    padding: var(--espacamento-sm);
+  }
+
+  .materiais-corpo {
+    padding: var(--espacamento-sm);
+  }
+
+  /* Topic button (Dashboard) */
+  .topic-button {
+    padding: 18px 20px;
+  }
+
+  .topic-button-title {
+    font-size: var(--tamanho-fonte-base);
+  }
+
+  /* Paginação sempre em coluna */
+  .paginacao-controles {
+    flex-direction: column;
+    gap: var(--espacamento-sm);
+    text-align: center;
+  }
+
+  /* Rejeição — área de botões em coluna */
+  .reject-form-buttons {
+    flex-direction: column;
+  }
+
+  .reject-form-buttons .button-danger,
+  .reject-form-buttons .button-secondary {
+    width: 100%;
+  }
+
+  /* Banner informativo */
+  .info-banner,
+  .aviso-banner {
+    padding: var(--espacamento-sm) var(--espacamento-md);
+    font-size: var(--tamanho-fonte-base);
+  }
+}
+
+/* ========================================
+   MOBILE MUITO PEQUENO (<=375px)
+   ======================================== */
+@media (max-width: 375px) {
+  .page-title {
+    font-size: 17px;
+  }
+
+  .page-container {
+    padding: var(--espacamento-xs) var(--espacamento-sm);
+  }
+
+  .card,
+  .form-card,
+  .summary,
+  .welcome-card {
+    padding: var(--espacamento-sm);
+  }
+
+  .admin-stat-value {
+    font-size: 22px;
+  }
+
+  .topic-button {
+    padding: 16px;
+  }
+}

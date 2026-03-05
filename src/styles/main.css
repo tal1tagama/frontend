@@ -21,13 +21,13 @@
 
   /* Cores neutras — alto contraste */
   --cor-texto-principal: #111827;
-  --cor-texto-secundario: #374151;  /* mais escuro que antes para melhor legibilidade */
+  --cor-texto-secundario: #374151;
   --cor-borda: #9ca3af;
   --cor-fundo: #f3f4f6;
   --cor-fundo-secundario: #ffffff;
 
   /* Header */
-  --cor-header: #1e3a5f;          /* azul navy sólido */
+  --cor-header: #1e3a5f;
   --cor-header-texto: #ffffff;
   --cor-header-border: #1a3353;
 
@@ -38,7 +38,7 @@
   --espacamento-lg: 28px;
   --espacamento-xl: 40px;
 
-  /* Tipografia — fontes maiores para melhor leitura */
+  /* Tipografia */
   --fonte-principal: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --tamanho-fonte-base: 17px;
   --tamanho-fonte-pequena: 15px;
@@ -61,6 +61,11 @@
   box-sizing: border-box;
 }
 
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   font-family: var(--fonte-principal);
   font-size: var(--tamanho-fonte-base);
@@ -68,6 +73,19 @@ body {
   background: var(--cor-fundo);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Animação de entrada suave nas páginas */
+@keyframes fadeInPage {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.container {
+  animation: fadeInPage 0.18s ease;
 }
 
 /* ========================================
@@ -91,18 +109,54 @@ body {
   margin-bottom: var(--espacamento-sm);
 }
 
-.header h1 {
-  font-size: var(--tamanho-titulo);
-  margin: 0;
+/* Logo do sistema — link que volta ao início */
+.header-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
   color: var(--cor-header-texto);
+}
+
+.header-logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.header-logo-text {
+  font-size: var(--tamanho-titulo);
   font-weight: 700;
   letter-spacing: -0.3px;
+  color: var(--cor-header-texto);
+  line-height: 1.2;
+}
+
+.header-logo-link:hover {
+  opacity: 0.88;
+}
+
+/* Nome do usuário logado */
+.header-user-nome {
+  display: block;
+  font-weight: 600;
+  font-size: var(--tamanho-fonte-base);
+  color: rgba(255,255,255,0.92);
+  line-height: 1.3;
 }
 
 .header-user-info {
   font-size: var(--tamanho-fonte-pequena);
   color: rgba(255,255,255,0.85);
   text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
 .header-perfil-badge {
@@ -118,13 +172,54 @@ body {
 }
 
 /* ========================================
+   HEADER-TOP-RIGHT — agrupa user-info + hamburger
+   ======================================== */
+.header-top-right {
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-sm);
+}
+
+/* Botão hamburguer — somente mobile (escondido no desktop via media query) */
+.menu-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.15);
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: var(--borda-radius);
+  color: #fff;
+  font-size: 20px;
+  width: 44px;
+  height: 44px;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.menu-hamburger:hover {
+  background: rgba(255,255,255,0.28);
+}
+
+.menu-hamburger:focus-visible {
+  outline: 3px solid rgba(255,255,255,0.8);
+  outline-offset: 2px;
+}
+
+/* ========================================
    MENU DE NAVEGAÇÃO — BOTÕES GRANDES E CLAROS
    ======================================== */
+/* mobile: menu oculto por padrão — expande com .menu-aberto */
 .menu {
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: var(--espacamento-xs);
   margin-top: var(--espacamento-sm);
+}
+
+.menu.menu-aberto {
+  display: flex;
 }
 
 .menu a {
@@ -134,10 +229,11 @@ body {
 
 .menu button {
   width: 100%;
-  padding: 13px 18px;
-  border: 2px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.1);
-  color: #ffffff;
+  padding: 12px 16px;
+  border: none;
+  border-left: 3px solid transparent;
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.88);
   border-radius: var(--borda-radius);
   font-size: var(--tamanho-fonte-base);
   font-weight: 500;
@@ -146,33 +242,40 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  transition: background 0.15s ease, border-color 0.15s ease;
-  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  white-space: normal;
+  word-break: break-word;
+  min-height: 44px;
 }
 
 .menu button:hover {
-  background: rgba(255,255,255,0.22);
-  border-color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.12);
+  color: #ffffff;
+}
+
+.menu button:focus-visible {
+  outline: 3px solid rgba(255,255,255,0.7);
+  outline-offset: 2px;
 }
 
 .menu button.active {
-  background: #ffffff;
-  color: var(--cor-header);
-  border-color: #ffffff;
+  background: rgba(255,255,255,0.12);
+  color: #ffffff;
+  border-left: 3px solid #facc15;
   font-weight: 700;
 }
 
-/* Botão de logout — destaque vermelho */
+/* Botão de logout */
 .btn-logout {
-  background: var(--cor-perigo) !important;
-  color: white !important;
-  border-color: var(--cor-perigo) !important;
+  background: rgba(185,28,28,0.75) !important;
+  color: rgba(255,255,255,0.95) !important;
+  border-left-color: #ef4444 !important;
   font-weight: 600 !important;
 }
 
 .btn-logout:hover {
-  background: var(--cor-perigo-hover) !important;
-  border-color: var(--cor-perigo-hover) !important;
+  background: var(--cor-perigo) !important;
+  color: #ffffff !important;
 }
 
 /* ========================================
@@ -195,23 +298,28 @@ body {
 }
 
 /* ========================================
-   RESPONSIVO — DESKTOP
+   RESPONSIVO — TABLET/DESKTOP (>=768px)
    ======================================== */
 @media (min-width: 768px) {
   .header {
     padding: var(--espacamento-md) var(--espacamento-xl);
   }
 
-  .header-top {
-    flex-direction: row;
+  /* Esconde o hamburguer no desktop */
+  .menu-hamburger {
+    display: none;
   }
 
+  /* Menu sempre visível no desktop como row */
   .menu {
+    display: flex !important;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: var(--espacamento-xs);
-    margin-top: var(--espacamento-sm);
-    align-items: center;
+    gap: 2px;
+    margin-top: 0;
+    align-items: stretch;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 4px;
   }
 
   .menu a {
@@ -221,11 +329,38 @@ body {
   .menu button {
     width: auto;
     flex-shrink: 0;
-    padding: 11px 18px;
+    padding: 9px 14px;
+    white-space: nowrap;
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    font-size: var(--tamanho-fonte-pequena);
+  }
+
+  .menu button:hover {
+    background: rgba(255,255,255,0.1);
+    border-bottom-color: rgba(255,255,255,0.4);
+  }
+
+  .menu button.active {
+    background: rgba(255,255,255,0.1);
+    border-left: none;
+    border-bottom: 2px solid #facc15;
+    color: #ffffff;
   }
 
   .btn-logout {
     margin-left: auto;
+    background: transparent !important;
+    color: #fca5a5 !important;
+    border-bottom-color: transparent !important;
+  }
+
+  .btn-logout:hover {
+    background: rgba(185,28,28,0.5) !important;
+    color: #ffffff !important;
+    border-bottom-color: #ef4444 !important;
   }
 
   .menu-separator {
@@ -233,6 +368,93 @@ body {
   }
 
   .container {
+    padding: var(--espacamento-lg);
+  }
+}
+
+/* ========================================
+   RESPONSIVO — NOTEBOOK (>=1024px)
+   ======================================== */
+@media (min-width: 1024px) {
+  .container {
     padding: var(--espacamento-xl);
+  }
+}
+
+/* ========================================
+   RESPONSIVO — DESKTOP LARGO (>=1280px)
+   ======================================== */
+@media (min-width: 1280px) {
+  /* nenhuma regra de menu necessária — os valores do breakpoint 768px são mantidos */
+}
+
+/* ========================================
+   RESPONSIVO — MOBILE PEQUENO (<=480px)
+   ======================================== */
+@media (max-width: 480px) {
+  :root {
+    --tamanho-titulo: 21px;
+    --tamanho-subtitulo: 17px;
+    --tamanho-fonte-base: 15px;
+    --tamanho-fonte-grande: 16px;
+    --espacamento-xl: 24px;
+    --espacamento-lg: 18px;
+  }
+
+  .header {
+    padding: var(--espacamento-xs) var(--espacamento-sm);
+  }
+
+  .header h1 {
+    font-size: 16px;
+  }
+
+  .header-perfil-badge {
+    font-size: 12px;
+    padding: 2px 7px;
+  }
+
+  .header-user-info {
+    font-size: 13px;
+  }
+
+  .menu-hamburger {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .menu button {
+    font-size: 14px;
+    padding: 11px 14px;
+  }
+
+  .container {
+    padding: var(--espacamento-xs) var(--espacamento-sm);
+  }
+}
+
+/* ========================================
+   IMPRESSÃO — RELATÓRIOS PROFISSIONAIS
+   ======================================== */
+@media print {
+  .header, .btn-logout, .menu, .button-primary,
+  .button-secondary, .button-danger, .button-success {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    font-size: 13px;
+  }
+
+  .container {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .card, .form-container, .summary {
+    box-shadow: none;
+    border: 1px solid #ccc;
   }
 }

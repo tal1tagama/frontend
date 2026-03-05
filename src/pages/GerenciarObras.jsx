@@ -74,6 +74,9 @@ function GerenciarObras() {
   const [encLoading, setEncLoading]   = useState(false);
   const [encErro, setEncErro]         = useState(null);
 
+  // ── confirmação de exclusão inline (sem window.confirm) ─────────────────────
+  const [deleteConfirmId, setDeleteConfirmId] = useState(null);
+
   // ── carregamento de obras ───────────────────────────────────────────────────
   const loadObras = async () => {
     try {
@@ -197,10 +200,15 @@ function GerenciarObras() {
   };
 
   // ── Excluir obra ────────────────────────────────────────────────────────────
-  const handleExcluir = async (obra) => {
-    if (!window.confirm(`Deseja remover a obra "${obra.nome || `#${obra.id}`}"?`)) return;
+  const handleExcluir = (obra) => {
+    // Abre confirmação inline em vez de window.confirm
+    setDeleteConfirmId(obra.id);
+  };
+
+  const confirmExcluir = async (obra) => {
     try {
       await deleteObra(obra.id);
+      setDeleteConfirmId(null);
       await loadObras();
     } catch (err) {
       setErro(extractApiMessage(err, "Não foi possível remover a obra."));
@@ -291,7 +299,7 @@ function GerenciarObras() {
 
           <form className="form-container" onSubmit={handleSalvar}>
             {/* ── Dados básicos ────────────────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--espacamento-md)" }}>
+            <div className="form-grid-2">
               <div className="form-group">
                 <label htmlFor="o-nome">Nome da obra *</label>
                 <input
@@ -343,7 +351,7 @@ function GerenciarObras() {
             </div>
 
             {/* ── Datas ────────────────────────────────────────────────── */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--espacamento-md)" }}>
+            <div className="form-grid-2">
               <div className="form-group">
                 <label htmlFor="o-ini">Data de Início</label>
                 <input id="o-ini" name="dataInicio" type="date" value={form.dataInicio} onChange={handleChange} />
@@ -489,7 +497,7 @@ function GerenciarObras() {
               <p>Carregando usuários...</p>
             ) : (
               <form onSubmit={handleVincular}>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "var(--espacamento-md)" }}>
+                <div className="form-grid-2">
                   <div className="form-group">
                     <label htmlFor="enc-user">Usuário</label>
                     <select
@@ -688,27 +696,62 @@ function GerenciarObras() {
                     marginTop: "var(--espacamento-md)",
                     flexWrap: "wrap",
                   }}>
-                    <button
-                      className="button-secondary"
-                      onClick={() => abrirEditar(obra)}
-                      style={{ padding: "10px 18px", flex: 1 }}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="button-secondary"
-                      onClick={() => abrirEncarregados(obra)}
-                      style={{ padding: "10px 18px", flex: 1 }}
-                    >
-                      Encarregados
-                    </button>
-                    <button
-                      className="button-danger"
-                      onClick={() => handleExcluir(obra)}
-                      style={{ padding: "10px 18px" }}
-                    >
-                      Remover
-                    </button>
+                    {deleteConfirmId === obra.id ? (
+                      /* ── Confirmação inline de exclusão ─────────────── */
+                      <>
+                        <div style={{
+                          width: "100%",
+                          background: "var(--cor-perigo-clara)",
+                          border: "2px solid var(--cor-perigo)",
+                          borderRadius: "var(--borda-radius)",
+                          padding: "var(--espacamento-sm) var(--espacamento-md)",
+                          marginBottom: "var(--espacamento-xs)",
+                        }}>
+                          <p style={{ margin: 0, fontWeight: 700, color: "var(--cor-perigo)", fontSize: "var(--tamanho-fonte-pequena)" }}>
+                            Tem certeza que deseja remover a obra <em>"{obra.nome || `#${obra.id}`}"</em>? Esta ação não pode ser desfeita.
+                          </p>
+                        </div>
+                        <button
+                          className="button-danger"
+                          onClick={() => confirmExcluir(obra)}
+                          style={{ padding: "10px 18px", flex: 1 }}
+                        >
+                          Sim, remover obra
+                        </button>
+                        <button
+                          className="button-secondary"
+                          onClick={() => setDeleteConfirmId(null)}
+                          style={{ padding: "10px 18px", flex: 1 }}
+                        >
+                          Cancelar
+                        </button>
+                      </>
+                    ) : (
+                      /* ── Botões normais ──────────────────────────────── */
+                      <>
+                        <button
+                          className="button-secondary"
+                          onClick={() => abrirEditar(obra)}
+                          style={{ padding: "10px 18px", flex: 1 }}
+                        >
+                          Editar
+                        </button>
+                        <button
+                          className="button-secondary"
+                          onClick={() => abrirEncarregados(obra)}
+                          style={{ padding: "10px 18px", flex: 1 }}
+                        >
+                          Encarregados
+                        </button>
+                        <button
+                          className="button-danger"
+                          onClick={() => handleExcluir(obra)}
+                          style={{ padding: "10px 18px" }}
+                        >
+                          Remover
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
               </div>

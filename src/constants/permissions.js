@@ -45,3 +45,10 @@ export function isReviewer(perfil) {
 export function isAdmin(perfil) {
   return perfil === PERFIS.ADMIN;
 }
+
+/** Labels legíveis para cada perfil — compartilhado entre Dashboard, Layout e Register */
+export const PERFIL_LABELS = {
+  admin: "Administrador",
+  supervisor: "Supervisor",
+  encarregado: "Encarregado",
+};

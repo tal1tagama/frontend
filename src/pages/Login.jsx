@@ -35,9 +35,19 @@ const Login = () => {
   return (
     <div className="login-page">
       <form onSubmit={handleSubmit} className="login-form">
+        {/* ── Identidade visual da empresa ── */}
         <div className="login-header">
-          <h2 className="page-title">Bem-vindo</h2>
-          <p className="login-subtitle">Digite suas credenciais para acessar o sistema</p>
+          <div style={{
+            fontSize: "52px",
+            lineHeight: 1,
+            marginBottom: "var(--espacamento-sm)",
+          }}>
+            🏗️
+          </div>
+          <h2 className="page-title">Gestão de Obras</h2>
+          <p className="login-subtitle">
+            Acesse sua conta para registrar medições, materiais e documentos
+          </p>
         </div>
 
         {error && <p className="erro-msg">{error}</p>}

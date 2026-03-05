@@ -1,12 +1,10 @@
+// Status padronizados conforme o back-end (aprovada / rejeitada / pendente)
 export const SOLICITACAO_STATUS_LABELS = {
-  pendente: "Pendente",
-  aprovado: "Aprovado",
-  aprovada: "Aprovada",
-  reprovado: "Reprovado",
-  rejeitada: "Rejeitada",
+  pendente:     "Pendente",
+  aprovada:     "Aprovada",
+  rejeitada:    "Rejeitada",
+  concluida:    "Concluída",
   em_andamento: "Em andamento",
-  "Em análise": "Em analise",
-  "Em analise": "Em analise",
 };
 
 export const UNIDADES_MEDIDA = ["m", "m²", "m³", "kg", "un", "t", "l"];

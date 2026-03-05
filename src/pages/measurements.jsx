@@ -17,6 +17,7 @@ import { extractApiMessage } from "../services/response";
 import { AuthContext } from "../context/AuthContext";
 import { isReviewer, isAdmin } from "../constants/permissions";
 import { TIPOS_SERVICO, STATUS_CLASS, STATUS_LABEL } from "../constants/medicao";
+import { normalizeMedicao } from "../utils/normalizeMedicao";
 import "../styles/pages.css";
 
 const PAGE_LIMIT = 25;
@@ -32,6 +33,10 @@ function Measurements() {
   const [loading, setLoading]           = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
 
+  // ── Rejeição inline (sem window.prompt) ───────────────────────────────────
+  const [rejectTargetId, setRejectTargetId] = useState(null);
+  const [motivoRejeicao, setMotivoRejeicao] = useState("");
+
   // Paginação
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems]   = useState(0);
@@ -45,25 +50,6 @@ function Measurements() {
     dataFim:     "",
     responsavel: "",   // busca textual local sobre responsavelNome (JOIN do back)
   });
-
-  // Normaliza o objeto retornado pelo back-end para campos uniformes
-  const normalizeMedicao = (m) => {
-    const itens = Array.isArray(m.itens) ? m.itens : [];
-    const firstItem = itens[0] || {};
-    return {
-      id:              m.id || m._id,
-      obra:            m.obra         || m.obraId  || null,
-      obraNome:        m.obraNome     || null,     // vem do JOIN com obras
-      responsavel:     m.responsavel  || null,
-      responsavelNome: m.responsavelNome || null,  // vem do JOIN com users
-      area:            m.area         ?? firstItem.quantidade,
-      volume:          m.volume       ?? firstItem.valorTotal,
-      tipoServico:     m.tipoServico  || null,
-      observacoes:     m.observacoes  || firstItem.observacoes,
-      status:          m.status       || "enviada",
-      createdAt:       m.createdAt    || m.metadata?.createdAt,
-    };
-  };
 
   // Carrega as obras para popular o select de filtro
   useEffect(() => {
@@ -104,7 +90,6 @@ function Measurements() {
   useEffect(() => { load(); }, [load]);
 
   const handleApprove = async (id) => {
-    if (!window.confirm("Confirmar aprovação desta medição?")) return;
     try {
       setActionLoadingId(id);
       setErro(null);
@@ -117,16 +102,23 @@ function Measurements() {
     }
   };
 
-  const handleReject = async (id) => {
-    const motivo = window.prompt(
-      "Confirmar rejeição.\nInforme o motivo da rejeição (ou cancele para abortar):"
-    );
-    // null = usuário cancelou o prompt
-    if (motivo === null) return;
+  const handleReject = (id) => {
+    setRejectTargetId(id);
+    setMotivoRejeicao("");
+  };
+
+  const cancelReject = () => {
+    setRejectTargetId(null);
+    setMotivoRejeicao("");
+  };
+
+  const confirmReject = async (id) => {
     try {
       setActionLoadingId(id);
       setErro(null);
-      await rejeitarMedicao(id, motivo.trim());
+      await rejeitarMedicao(id, motivoRejeicao.trim());
+      setRejectTargetId(null);
+      setMotivoRejeicao("");
       await load();
     } catch (error) {
       setErro(extractApiMessage(error, "Não foi possível rejeitar a medição."));
@@ -160,11 +152,11 @@ function Measurements() {
   return (
     <Layout>
       <div className="page-container" style={{ maxWidth: "1200px" }}>
-        <h2 className="page-title">Lista de Medições</h2>
+        <h1 className="page-title">Lista de Medições</h1>
         <p className="page-description">
           {reviewer
             ? "Visualize, filtre e aprove as medições enviadas pelos encarregados."
-            : "Suas medições enviadas e seus respectivos status."}
+            : "Veja todas as suas medições enviadas e os respectivos status de aprovação."}
         </p>
 
         {/* ── Painel de Filtros ─────────────────────────────────────────────── */}
@@ -260,6 +252,38 @@ function Measurements() {
           </p>
         )}
 
+        {/* ── Painel de Rejeição Inline ────────────────────────────────────── */}
+        {rejectTargetId !== null && (
+          <div className="reject-form" style={{ marginBottom: "var(--espacamento-lg)" }}>
+            <label htmlFor="motivo-rejeicao">
+              Informe o motivo da rejeição (opcional):
+            </label>
+            <textarea
+              id="motivo-rejeicao"
+              value={motivoRejeicao}
+              onChange={(e) => setMotivoRejeicao(e.target.value)}
+              placeholder="Ex: Medição incompleta, dados inconsistentes..."
+              rows={3}
+            />
+            <div className="reject-form-buttons">
+              <button
+                className="button-danger"
+                onClick={() => confirmReject(rejectTargetId)}
+                disabled={actionLoadingId === rejectTargetId}
+              >
+                {actionLoadingId === rejectTargetId ? "Rejeitando..." : "Confirmar Rejeição"}
+              </button>
+              <button
+                className="button-secondary"
+                onClick={cancelReject}
+                disabled={actionLoadingId === rejectTargetId}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
+
         {!erro && !loading && listFiltrada.length === 0 && (
           <div className="card" style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>
             <p>
@@ -340,19 +364,23 @@ function Measurements() {
                           <div style={{ display: "flex", gap: "var(--espacamento-xs)" }}>
                             <button
                               className="button-success"
-                              disabled={actionLoadingId === m.id || m.status === "aprovada"}
+                              disabled={actionLoadingId === m.id || m.status === "aprovada" || rejectTargetId !== null}
                               onClick={() => handleApprove(m.id)}
                               style={{ padding: "10px 16px" }}
                             >
-                              Aprovar
+                              {actionLoadingId === m.id ? "Aprovando..." : "Aprovar"}
                             </button>
                             <button
                               className="button-danger"
                               disabled={actionLoadingId === m.id || m.status === "rejeitada"}
                               onClick={() => handleReject(m.id)}
-                              style={{ padding: "10px 16px" }}
+                              style={{
+                                padding: "10px 16px",
+                                opacity: rejectTargetId === m.id ? 1 : undefined,
+                                outline: rejectTargetId === m.id ? "2px solid #7f1d1d" : undefined,
+                              }}
                             >
-                              Rejeitar
+                              {rejectTargetId === m.id ? "✎ Motivo acima" : "Rejeitar"}
                             </button>
                           </div>
                         </td>
