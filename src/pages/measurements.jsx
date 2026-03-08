@@ -331,7 +331,7 @@ function Measurements() {
                       )}
                       <td>
                         <strong>
-                          {m.area != null ? Number(m.area).toFixed(2) : "—"}
+                          {m.area != null && !isNaN(m.area) ? Number(m.area).toFixed(2) : "—"}
                         </strong>
                       </td>
                       <td>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../services/api";
+import { getObra } from "../services/obrasService";
 import Layout from "../components/Layout";
 import { extractApiMessage } from "../services/response";
 import { validarSenha } from "../utils/validarSenha";
@@ -10,6 +11,7 @@ function Profile() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [obra, setObra] = useState(null);
 
   // Estado do formulário de troca de senha
   const [pwForm, setPwForm] = useState({ senhaAtual: "", novaSenha: "", confirmar: "" });
@@ -23,7 +25,19 @@ function Profile() {
         setLoading(true);
         setError("");
         const response = await api.get("/auth/me");
-        setUser(response.data?.data || null);
+        const userData = response.data?.data || null;
+        setUser(userData);
+
+        // Buscar dados da obra se o usuário tiver uma obra atribuída
+        if (userData?.obraAtual) {
+          try {
+            const obraData = await getObra(userData.obraAtual);
+            setObra(obraData);
+          } catch (err) {
+            console.error("Erro ao buscar dados da obra:", err);
+            // Não bloqueia a exibição do perfil se falhar ao buscar a obra
+          }
+        }
       } catch (err) {
         console.error("Erro ao buscar perfil:", err);
         setError("Não foi possível carregar o perfil.");
@@ -118,7 +132,26 @@ function Profile() {
             {user.obraAtual && (
               <div>
                 <strong>Obra atual:</strong>
-                <p style={{ marginTop: "var(--espacamento-xs)" }}>{user.obraAtual}</p>
+                <p style={{ marginTop: "var(--espacamento-xs)" }}>
+                  {obra ? (
+                    <>
+                      <span style={{ fontWeight: 600 }}>#{user.obraAtual}</span>
+                      {" — "}
+                      <span>{obra.nome}</span>
+                      {obra.codigo && (
+                        <span style={{ 
+                          color: "var(--cor-texto-secundario)", 
+                          fontSize: "var(--tamanho-fonte-pequena)",
+                          marginLeft: "8px"
+                        }}>
+                          ({obra.codigo})
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    user.obraAtual
+                  )}
+                </p>
               </div>
             )}
             {user.createdAt && (

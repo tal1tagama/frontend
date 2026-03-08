@@ -306,12 +306,12 @@ function MeusRelatorios() {
                     <>
                       {/* Área e Serviço */}
                       <div className="details-grid-2">
-                        {m.area != null && (
+                        {m.area != null && !isNaN(m.area) && (
                           <p style={{ margin: 0 }}>
                             <strong>Área calculada:</strong> {Number(m.area).toFixed(2)} m²
                           </p>
                         )}
-                        {m.volume != null && m.volume > 0 && (
+                        {m.volume != null && !isNaN(m.volume) && m.volume > 0 && (
                           <p style={{ margin: 0 }}>
                             <strong>Volume:</strong> {Number(m.volume).toFixed(2)} m³
                           </p>
@@ -348,7 +348,7 @@ function MeusRelatorios() {
                                 {m.itens.map((item, idx) => (
                                   <tr key={idx}>
                                     <td>{item.descricao || "—"}</td>
-                                    <td>{item.quantidade != null ? Number(item.quantidade).toFixed(2) : "—"}</td>
+                                    <td>{item.quantidade != null && !isNaN(item.quantidade) ? Number(item.quantidade).toFixed(2) : "—"}</td>
                                     <td>{item.unidade || "—"}</td>
                                     <td>{item.local || "—"}</td>
                                   </tr>

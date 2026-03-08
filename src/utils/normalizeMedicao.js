@@ -8,14 +8,23 @@
 export function normalizeMedicao(m) {
   const itens = Array.isArray(m.itens) ? m.itens : [];
   const firstItem = itens[0] || {};
+  
+  // Garante valores numéricos válidos ou null
+  const parseNumOrNull = (val) => {
+    const num = Number(val);
+    return !isNaN(num) && isFinite(num) ? num : null;
+  };
+  
   return {
     id:              m.id,
     obra:            m.obra         || m.obraId  || null,
     obraNome:        m.obraNome     || null,
     responsavel:     m.responsavel  || null,
     responsavelNome: m.responsavelNome || null,
-    area:            m.area         ?? firstItem.quantidade,
-    volume:          m.volume       ?? firstItem.valorTotal,
+    // area contém o nome do ambiente (string), areaCalculada contém o valor numérico
+    areaNome:        m.area         || null,
+    area:            parseNumOrNull(m.areaCalculada ?? firstItem.quantidade),
+    volume:          parseNumOrNull(m.volume ?? firstItem.valorTotal),
     tipoServico:     m.tipoServico  || null,
     observacoes:     m.observacoes  || firstItem.observacoes,
     status:          m.status       || "enviada",

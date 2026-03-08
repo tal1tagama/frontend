@@ -17,6 +17,31 @@
   padding-bottom: var(--espacamento-sm);
 }
 
+/* Título sem borda — usado no formulário de login */
+.login-title {
+  font-size: var(--tamanho-titulo);
+  font-weight: 700;
+  margin: 0 0 var(--espacamento-xs) 0;
+  color: var(--cor-texto-principal);
+  line-height: 1.3;
+}
+
+/* Logo na tela de login */
+.login-logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--espacamento-md);
+  flex-shrink: 0;
+}
+
+.login-logo-img {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
 .page-description {
   font-size: var(--tamanho-fonte-grande);
   color: var(--cor-texto-secundario);
@@ -306,52 +331,517 @@
    ======================================== */
 
 /* Página de login e registro */
+/* ========================================
+   LOGIN — REDESIGN CANTEIRO DE OBRAS
+   Layout split-panel com tema de construção civil
+   ======================================== */
+
+/* ── Contêiner raiz ── */
 .login-page {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  align-items: stretch;
+  background: var(--cor-header);
+  overflow: hidden;
+}
+
+/* ── Painel esquerdo — branding / visual de canteiro ── */
+.login-panel-esquerdo {
+  flex: 0 0 44%;
+  background: var(--cor-header);       /* #1e3a5f — azul construção */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 58px 48px;
+  overflow: hidden;
+}
+
+/* Grade de planta baixa (blueprint grid) */
+.login-deco-grid {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+}
+
+/* Círculo decorativo — chapéu de obra */
+.login-deco-circulo {
+  position: absolute;
+  bottom: -140px;
+  right: -100px;
+  width: 420px;
+  height: 420px;
+  border: 56px solid rgba(250, 204, 21, 0.07);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Barra diagonal — viga estrutural */
+.login-deco-barra {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(250, 204, 21, 0.35) 30%,
+    rgba(250, 204, 21, 0.55) 50%,
+    rgba(250, 204, 21, 0.35) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Conteúdo do painel esquerdo — fica acima dos decorativos */
+.login-painel-conteudo {
+  position: relative;
+  z-index: 1;
+}
+
+/* Marca (logo + nome) */
+.login-marca {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 48px;
+}
+
+.login-marca-logo {
+  width: 52px;
+  height: 52px;
+  background: #ffffff;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--espacamento-md);
-  background: var(--cor-primaria);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.28);
+  overflow: hidden;
+  flex-shrink: 0;
+  padding: 4px;
 }
 
+.login-marca-logo img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.login-marca-nome {
+  font-size: 26px;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.4px;
+}
+
+/* Título do painel */
+.login-painel-titulo {
+  font-size: 34px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.22;
+  margin: 0 0 20px 0;
+  letter-spacing: -0.5px;
+}
+
+.login-painel-titulo span {
+  color: #facc15;   /* amarelo capacete */
+}
+
+/* Descrição */
+.login-painel-desc {
+  font-size: 15px;
+  color: rgba(255,255,255,0.70);
+  line-height: 1.75;
+  max-width: 320px;
+  margin: 0 0 40px 0;
+}
+
+/* Lista de funcionalidades */
+.login-painel-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.login-feature-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255,255,255,0.82);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.login-feature-dot {
+  width: 8px;
+  height: 8px;
+  background: #facc15;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(250, 204, 21, 0.60);
+}
+
+/* Rodapé do painel com links legais */
+.login-painel-footer {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255,255,255,0.66);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+.login-painel-footer button {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.72);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.login-painel-footer button:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.login-painel-footer button:focus-visible {
+  outline: 2px solid rgba(255,255,255,0.75);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ── Painel direito — formulário de login ── */
+.login-panel-direito {
+  flex: 1;
+  background: var(--cor-fundo);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 28px;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Cabeçalho mobile (logo + nome — visível só no mobile) */
+.login-mobile-header {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.login-marca-logo--mobile {
+  width: 44px;
+  height: 44px;
+}
+
+.login-marca-nome--mobile {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--cor-header);
+  letter-spacing: -0.3px;
+}
+
+/* Card do formulário */
 .login-form {
   background: var(--cor-fundo-secundario);
-  padding: var(--espacamento-xl);
+  padding: 30px 28px;
   border-radius: var(--borda-radius-grande);
-  box-shadow: var(--sombra-grande);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
   width: 100%;
-  max-width: 480px;
+  max-width: 412px;
+  transition: box-shadow 0.15s ease;
 }
 
+.login-form:focus-within {
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.13), 0 0 0 2px rgba(0, 98, 255, 0.12);
+}
+
+/* Cabeçalho interior do form */
 .login-header {
-  text-align: center;
-  margin-bottom: var(--espacamento-xl);
+  text-align: left;
+  margin-bottom: 26px;
 }
 
-.login-header .page-title {
+.login-header .page-title,
+.login-header .login-title {
   margin-bottom: var(--espacamento-sm);
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Badge de área restrita */
+.login-header-badge {
+  display: inline-flex;
+  align-items: center;
+  color: rgba(30, 58, 95, 0.72);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: 10px;
+  text-transform: none;
+  letter-spacing: 0.01em;
+}
+
+.login-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 12px 0;
+  color: var(--cor-texto-principal);
+  line-height: 1.25;
   border-bottom: none;
   padding-bottom: 0;
 }
 
 .login-subtitle {
   color: var(--cor-texto-secundario);
-  font-size: var(--tamanho-fonte-base);
-  line-height: 1.5;
+  font-size: var(--tamanho-fonte-pequena);
+  line-height: 1.62;
+  margin-bottom: 2px;
 }
 
+/* Inputs com ícone */
+.login-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--cor-borda);
+  pointer-events: none;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.login-input-wrapper:focus-within .login-input-icon {
+  color: var(--cor-primaria);
+}
+
+.login-input-com-icone {
+  padding-left: 44px !important;
+}
+
+/* Botão de submit com ícone e spinner */
+.login-btn-submit {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: var(--espacamento-md);
+  letter-spacing: 0.02em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.login-btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 98, 255, 0.25);
+  filter: brightness(1.05);
+}
+
+.login-btn-submit:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 98, 255, 0.2);
+}
+
+.login-inline-link {
+  background: transparent;
+  border: none;
+  color: var(--cor-primaria);
+  font-size: var(--tamanho-fonte-pequena);
+  font-weight: 600;
+  padding: 0;
+  margin: 4px 0 8px 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.login-password-group {
+  margin-bottom: 6px;
+}
+
+.login-inline-link:hover {
+  text-decoration: underline;
+}
+
+.login-inline-link:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+.login-back-link {
+  margin-top: var(--espacamento-lg);
+  margin-bottom: 0;
+  text-align: center;
+  width: 100%;
+  display: block;
+  font-size: var(--tamanho-fonte-base);
+}
+
+.login-recovery-box {
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--borda-radius);
+  background: var(--cor-fundo);
+  padding: 12px;
+  margin-top: 2px;
+}
+
+.login-recovery-title {
+  margin: 0 0 10px 0;
+  font-size: var(--tamanho-fonte-grande);
+  font-weight: 700;
+  color: var(--cor-texto-principal);
+}
+
+.login-recovery-btn {
+  width: 100%;
+  margin-bottom: var(--espacamento-md);
+}
+
+.login-recovery-form {
+  margin-top: var(--espacamento-sm);
+}
+
+.login-dev-hint {
+  margin: var(--espacamento-sm) 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--cor-aviso);
+  background: var(--cor-aviso-clara);
+  border-left: 3px solid var(--cor-aviso);
+}
+
+/* Spinner de loading */
+@keyframes loginSpinner {
+  to { transform: rotate(360deg); }
+}
+
+.login-spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: loginSpinner 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* Rodapé do formulário */
 .login-footer {
   text-align: center;
-  margin-top: var(--espacamento-lg);
-  font-size: var(--tamanho-fonte-base);
+  margin-top: var(--espacamento-md);
+  font-size: var(--tamanho-fonte-pequena);
   color: var(--cor-texto-secundario);
+  line-height: 1.55;
+}
+
+.login-form input::placeholder,
+.login-form textarea::placeholder,
+.login-form select::placeholder {
+  color: #8A8A8A;
+}
+
+.login-form input:focus,
+.login-form textarea:focus,
+.login-form select:focus {
+  box-shadow: 0 0 0 2px rgba(0, 98, 255, 0.2);
+}
+
+@media (max-width: 1366px) {
+  .login-painel-titulo {
+    font-size: 30px;
+  }
+
+  .login-painel-desc {
+    font-size: 14px;
+  }
+
+  .login-feature-item {
+    font-size: 13px;
+  }
+
+  .login-painel-footer,
+  .login-painel-footer-btn {
+    font-size: 11px;
+  }
 }
 
 .login-footer a {
   color: var(--cor-primaria);
   font-weight: 600;
   text-decoration: underline;
+}
+
+/* ── RESPONSIVIDADE ── */
+
+/* Tablet: reduz padding do painel esquerdo */
+@media (max-width: 1024px) {
+  .login-panel-esquerdo {
+    flex: 0 0 38%;
+    padding: 52px 36px;
+  }
+
+  .login-painel-titulo {
+    font-size: 28px;
+  }
+}
+
+/* Mobile: oculta painel esquerdo, mostra logo no topo do form */
+@media (max-width: 768px) {
+  .login-page {
+    flex-direction: column;
+    background: var(--cor-fundo);
+    height: 100vh;
+  }
+
+  .login-panel-esquerdo {
+    display: none;
+  }
+
+  .login-panel-direito {
+    padding: 24px 20px 28px;
+    height: 100vh;
+    justify-content: flex-start;
+    padding-top: 28px;
+    overflow: hidden;
+  }
+
+  .login-mobile-header {
+    display: flex;
+  }
+
+  .login-form {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.10);
+    border: 1.5px solid var(--cor-borda);
+    padding: 24px 20px;
+    max-width: 412px;
+  }
 }
 
 .form-group {

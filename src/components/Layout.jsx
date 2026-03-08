@@ -55,24 +55,34 @@ function Layout({ children }) {
         <div className="header-top">
           {/* Logo clicável leva ao início */}
           <Link to="/" className="header-logo-link" onClick={() => setMenuAberto(false)}>
-            <span className="header-logo-icon" aria-hidden="true">
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="9" width="18" height="13" rx="1" />
-                <path d="M8 22V9" />
-                <path d="M16 22V9" />
-                <path d="M3 14h18" />
-                <path d="M8 6h8l2 3H6z" />
-              </svg>
+            <span className="header-logo-icon">
+              <img
+                src={`${process.env.PUBLIC_URL}/logo.png`}
+                alt="ObraLink"
+                className="header-logo-img"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
             </span>
-            <span className="header-logo-text">Gestão de Obras</span>
+            <span className="header-logo-text">ObraLink</span>
           </Link>
 
           <div className="header-top-right">
             {user && (
               <div className="header-user-info">
-                {user.nome && <span className="header-user-nome">{user.nome}</span>}
+                {user.nome && (
+                  <span className="header-user-nome">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
+                      strokeLinejoin="round" aria-hidden="true"
+                      style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4, flexShrink: 0 }}>
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                    </svg>
+                    {user.nome}
+                  </span>
+                )}
                 <span className="header-perfil-badge">
+                  <span className="header-perfil-label">Cargo</span>
                   {PERFIL_LABELS[perfil] || perfil || "Usuário"}
                 </span>
               </div>

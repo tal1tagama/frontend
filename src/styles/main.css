@@ -122,10 +122,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 6px;
-  padding: 4px;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 3px 6px;
   flex-shrink: 0;
+  line-height: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+
+.header-logo-img {
+  height: 38px;
+  width: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .header-logo-text {
@@ -138,6 +147,13 @@ body {
 
 .header-logo-link:hover {
   opacity: 0.88;
+  text-decoration: none;
+}
+
+.header-logo-link:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.75);
+  outline-offset: 3px;
+  border-radius: 4px;
 }
 
 /* Nome do usuário logado */
@@ -160,15 +176,28 @@ body {
 }
 
 .header-perfil-badge {
-  display: inline-block;
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: var(--tamanho-fonte-pequena);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.13);
+  color: rgba(255,255,255,0.92);
+  padding: 3px 10px 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.22);
+}
+
+.header-perfil-label {
+  font-size: 10px;
   font-weight: 600;
-  text-transform: capitalize;
-  margin-left: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.55);
+  margin-right: 3px;
+  border-right: 1px solid rgba(255,255,255,0.25);
+  padding-right: 5px;
+  line-height: 1;
 }
 
 /* ========================================
