@@ -36,7 +36,7 @@ export async function createMedicao(payload) {
     area:         areaNome,
     tipoServico,
     observacoes:  payload?.observacoes || "",
-    status:       "enviada",
+    status:       payload?.status || "enviada",
     // Dimensões brutas — agora persistidas como colunas dedicadas no banco
     comprimento,
     largura,

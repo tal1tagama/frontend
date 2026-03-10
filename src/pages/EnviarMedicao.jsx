@@ -9,6 +9,7 @@ import { uploadFile } from "../services/filesService";
 import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
 import { AREAS_MEDICAO, TIPOS_SERVICO } from "../constants/medicao";
+import { enqueueSyncOperation } from "../utils/syncQueue";
 import "../styles/pages.css";
 
 function EnviarMedicao() {
@@ -27,9 +28,22 @@ function EnviarMedicao() {
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [submitMode, setSubmitMode] = useState("enviada");
   const [loading, setLoading] = useState(false);
   const [obras, setObras] = useState([]);
   const [loadingObras, setLoadingObras] = useState(true);
+
+  useEffect(() => {
+    const onSyncCompleted = (event) => {
+      const total = event?.detail?.synced || 0;
+      if (total > 0) {
+        setSuccess(`Sincronização concluída: ${total} registro(s) offline enviado(s).`);
+      }
+    };
+
+    window.addEventListener("sync:completed", onSyncCompleted);
+    return () => window.removeEventListener("sync:completed", onSyncCompleted);
+  }, []);
 
   // ─── Carregar obras do usuário ao montar o componente ───────────────────────
   // O endpoint /obras retorna apenas as obras vinculadas ao perfil do usuário:
@@ -102,6 +116,31 @@ function EnviarMedicao() {
       return;
     }
 
+    const body = {
+      obra: Number(form.obra),
+      data: new Date().toISOString(),
+      area: form.area,
+      tipoServico: form.tipoServico,
+      observacoes: form.observacoes,
+      status: submitMode,
+      comprimento: Number(form.comprimento),
+      largura: Number(form.largura),
+      altura: Number(form.altura),
+      areaCalculada,
+      volume,
+      itens: [
+        {
+          descricao: `Medição geométrica — ${form.area}`,
+          quantidade: areaCalculada,
+          unidade: "m²",
+          valorUnitario: null,
+          valorTotal: volume > 0 ? volume : areaCalculada,
+          observacoes: form.observacoes || "",
+          local: form.area || "",
+        },
+      ],
+    };
+
     try {
       setLoading(true);
       let anexoId = null;
@@ -119,20 +158,20 @@ function EnviarMedicao() {
       }
 
       // Criar medição no back-end, incluindo dimensões brutas e campos de área/serviço
-      await createMedicao({
-        obra: Number(form.obra),
-        area: form.area,
-        tipoServico: form.tipoServico,
-        comprimento: Number(form.comprimento),
-        largura: Number(form.largura),
-        altura: Number(form.altura),
-        areaCalculada,
-        volume,
-        observacoes: form.observacoes,
-        ...(anexoId && { anexos: [anexoId] }),
-      });
+      const fullBody = { ...body, ...(anexoId ? { anexos: [anexoId] } : {}) };
 
-      setSuccess("Medição enviada com sucesso!");
+      if (!navigator.onLine) {
+        await enqueueSyncOperation("medicao", fullBody);
+      } else {
+        await createMedicao(fullBody);
+      }
+
+      const acaoLabel = submitMode === "rascunho" ? "Rascunho salvo" : "Medição enviada";
+      setSuccess(
+        navigator.onLine
+          ? `${acaoLabel} com sucesso!`
+          : `Sem internet: ${acaoLabel.toLowerCase()} para sincronização automática.`,
+      );
       // Limpa o formulário, mas mantém a obra se só havia uma opção
       setForm({
         obra: obras.length === 1 ? String(obras[0].id) : "",
@@ -146,7 +185,14 @@ function EnviarMedicao() {
       setFoto(null);
       setPreview(null);
     } catch (err) {
-      setError("Erro ao enviar medição: " + extractApiMessage(err));
+      const status = err?.response?.status;
+      if (!navigator.onLine || !status) {
+        await enqueueSyncOperation("medicao", body);
+        const acaoLabel = submitMode === "rascunho" ? "Rascunho" : "Medição";
+        setSuccess(`Sem conexão: ${acaoLabel.toLowerCase()} salvo offline e será sincronizado ao reconectar.`);
+      } else {
+        setError("Erro ao enviar medição: " + extractApiMessage(err));
+      }
     } finally {
       setLoading(false);
     }
@@ -247,6 +293,9 @@ function EnviarMedicao() {
               onChange={handleChange}
               required
             />
+            <small style={{ color: "var(--cor-texto-secundario)", fontSize: "var(--tamanho-fonte-pequena)" }}>
+              Exemplo: para parede de alvenaria, use o lado horizontal (ex: 5.20m).
+            </small>
           </div>
 
           <div className="form-group">
@@ -262,6 +311,9 @@ function EnviarMedicao() {
               onChange={handleChange}
               required
             />
+            <small style={{ color: "var(--cor-texto-secundario)", fontSize: "var(--tamanho-fonte-pequena)" }}>
+              Exemplo: para piso, use a segunda dimensão do ambiente (ex: 3.80m).
+            </small>
           </div>
 
           <div className="form-group">
@@ -277,6 +329,9 @@ function EnviarMedicao() {
               onChange={handleChange}
               required
             />
+            <small style={{ color: "var(--cor-texto-secundario)", fontSize: "var(--tamanho-fonte-pequena)" }}>
+              Exemplo: para alvenaria, use o pé-direito (ex: 2.80m). Para piso, informe 0.01.
+            </small>
           </div>
 
           {/* ─── Cálculos Automáticos ──────────────────────────────────────── */}
@@ -330,13 +385,24 @@ function EnviarMedicao() {
           {error && <p className="erro-msg">{error}</p>}
           {success && <p className="success-msg">{success}</p>}
 
-          <button
-            type="submit"
-            className="button-primary"
-            disabled={loading || loadingObras || obras.length === 0}
-          >
-            {loading ? "Enviando medição..." : "Enviar Medição"}
-          </button>
+          <div style={{ display: "flex", gap: "var(--espacamento-sm)", flexWrap: "wrap" }}>
+            <button
+              type="submit"
+              className="button-secondary"
+              disabled={loading || loadingObras || obras.length === 0}
+              onClick={() => setSubmitMode("rascunho")}
+            >
+              {loading && submitMode === "rascunho" ? "Salvando..." : "Salvar Rascunho"}
+            </button>
+            <button
+              type="submit"
+              className="button-primary"
+              disabled={loading || loadingObras || obras.length === 0}
+              onClick={() => setSubmitMode("enviada")}
+            >
+              {loading && submitMode === "enviada" ? "Enviando medição..." : "Enviar Medição"}
+            </button>
+          </div>
         </form>
       </div>
     </Layout>

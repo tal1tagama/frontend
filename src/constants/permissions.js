@@ -19,6 +19,8 @@ export const ROUTE_PERMISSIONS = {
   "/solicitacoes":         [PERFIS.ADMIN, PERFIS.SUPERVISOR, PERFIS.ENCARREGADO],
   "/status-solicitacoes":  [PERFIS.ADMIN, PERFIS.SUPERVISOR, PERFIS.ENCARREGADO],
   "/upload":               [PERFIS.ADMIN, PERFIS.SUPERVISOR, PERFIS.ENCARREGADO],
+  "/diario":               [PERFIS.ADMIN, PERFIS.SUPERVISOR, PERFIS.ENCARREGADO],
+  "/sincronizacao":        [PERFIS.ADMIN, PERFIS.SUPERVISOR, PERFIS.ENCARREGADO],
 
   // Supervisor e Admin
   "/medicoes-lista":       [PERFIS.ADMIN, PERFIS.SUPERVISOR],

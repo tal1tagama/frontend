@@ -9,6 +9,24 @@ export const AuthProvider = ({ children }) => {
   // null = ainda verificando; false = verificado, não autenticado; object = autenticado
   const [authChecked, setAuthChecked] = useState(false);
 
+  const patchUser = (partial) => {
+    setUser((prev) => {
+      const next = { ...(prev || {}), ...(partial || {}) };
+      localStorage.setItem("user", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const refreshUser = async () => {
+    const res = await api.get("/auth/me");
+    const freshUser = res.data?.data || null;
+    if (freshUser) {
+      setUser(freshUser);
+      localStorage.setItem("user", JSON.stringify(freshUser));
+    }
+    return freshUser;
+  };
+
   // Tenta carregar user do localStorage ao iniciar e valida o token com o servidor
   useEffect(() => {
     const handleExternalLogout = () => {
@@ -41,12 +59,7 @@ export const AuthProvider = ({ children }) => {
 
       // Validar token com o servidor (GET /auth/me)
       try {
-        const res = await api.get("/auth/me");
-        const freshUser = res.data?.data || null;
-        if (freshUser) {
-          setUser(freshUser);
-          localStorage.setItem("user", JSON.stringify(freshUser));
-        }
+        await refreshUser();
       } catch (err) {
         // Só invalida sessão em 401/403 — erros de rede ou 5xx não desconectam o usuário
         const status = err?.response?.status;
@@ -98,7 +111,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, authChecked }}>
+    <AuthContext.Provider value={{ user, login, logout, authChecked, patchUser, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

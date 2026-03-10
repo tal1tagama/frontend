@@ -20,11 +20,15 @@ import Upload from "./pages/Upload";
 import Measurements from "./pages/measurements";
 import GerenciarObras from "./pages/GerenciarObras";
 import AdminPanel from "./pages/AdminPanel";
+import DiarioObra from "./pages/DiarioObra";
+import SyncManager from "./components/SyncManager";
+import Sincronizacao from "./pages/Sincronizacao";
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <SyncManager />
         <Routes>
           {/* Páginas públicas */}
           <Route path="/login" element={<Login />} />
@@ -36,6 +40,8 @@ function App() {
           <Route path="/solicitacoes" element={<PrivateRoute routePath="/solicitacoes"><Solicitacoes /></PrivateRoute>} />
           <Route path="/status-solicitacoes" element={<PrivateRoute routePath="/status-solicitacoes"><StatusSolicitacao /></PrivateRoute>} />
           <Route path="/upload" element={<PrivateRoute routePath="/upload"><Upload /></PrivateRoute>} />
+          <Route path="/diario" element={<PrivateRoute routePath="/diario"><DiarioObra /></PrivateRoute>} />
+          <Route path="/sincronizacao" element={<PrivateRoute routePath="/sincronizacao"><Sincronizacao /></PrivateRoute>} />
 
           {/* Supervisor e Admin */}
           <Route path="/medicoes-lista" element={<PrivateRoute routePath="/medicoes-lista"><Measurements /></PrivateRoute>} />

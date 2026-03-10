@@ -15,6 +15,8 @@ const NAV_LINKS = [
   { path: "/solicitacoes",        label: "Solicitar Materiais",   iconKey: "cart"        },
   { path: "/status-solicitacoes", label: "Minhas Solicitações",   iconKey: "clipboard"   },
   { path: "/upload",              label: "Enviar Arquivos",       iconKey: "upload"      },
+  { path: "/diario",              label: "Diário de Obra",        iconKey: "clipboard"   },
+  { path: "/sincronizacao",       label: "Sincronização",         iconKey: "checklist"   },
   // -- apenas supervisor e admin --
   { path: "/medicoes-lista",      label: "Lista de Medições",     iconKey: "checklist"   },
   { path: "/relatorios",          label: "Relatórios",            iconKey: "chart"       },

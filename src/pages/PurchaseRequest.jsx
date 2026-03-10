@@ -4,6 +4,7 @@ import Layout from "../components/Layout";
 import { createPurchase } from "../services/purchasesService";
 import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
+import { enqueueSyncOperation } from "../utils/syncQueue";
 import "../styles/pages.css";
 
 const CATEGORIAS = [
@@ -282,6 +283,19 @@ export default function PurchaseRequest() {
   const [sucesso, setSucesso] = useState(false);
 
   useEffect(() => {
+    const onSyncCompleted = (event) => {
+      const total = event?.detail?.synced || 0;
+      if (total > 0) {
+        setSucesso(true);
+        setErro("");
+      }
+    };
+
+    window.addEventListener("sync:completed", onSyncCompleted);
+    return () => window.removeEventListener("sync:completed", onSyncCompleted);
+  }, []);
+
+  useEffect(() => {
     listObras()
       .then((res) => {
         const lista = Array.isArray(res) ? res : (res?.data ?? []);
@@ -322,12 +336,31 @@ export default function PurchaseRequest() {
 
     setLoading(true);
     try {
-      await createPurchase({
+      const itens = itensSelecionados.map((item) => ({
+        descricao: item,
+        quantidade: 1,
+        unidade: "un",
+      }));
+
+      const payload = {
+        obra: Number(obraId),
+        itens,
+        prioridade,
+        justificativa: descricao || null,
+        status: "pendente",
+      };
+
+      if (!navigator.onLine) {
+        await enqueueSyncOperation("solicitacao", payload);
+      } else {
+        await createPurchase({
         obra_id: Number(obraId),
         itens: itensSelecionados,
         prioridade,
         descricao,
-      });
+        });
+      }
+
       setSucesso(true);
       setItensSelecionados([]);
       setDescricao("");
@@ -336,7 +369,25 @@ export default function PurchaseRequest() {
       setCategoriaAberta(null);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
-      setErro(extractApiMessage(err, "Erro ao enviar solicitação. Tente novamente."));
+      const status = err?.response?.status;
+      if (!navigator.onLine || !status) {
+        const payload = {
+          obra: Number(obraId),
+          itens: itensSelecionados.map((item) => ({ descricao: item, quantidade: 1, unidade: "un" })),
+          prioridade,
+          justificativa: descricao || null,
+          status: "pendente",
+        };
+        await enqueueSyncOperation("solicitacao", payload);
+        setSucesso(true);
+        setItensSelecionados([]);
+        setDescricao("");
+        setPrioridade("media");
+        if (obras.length !== 1) setObraId("");
+        setCategoriaAberta(null);
+      } else {
+        setErro(extractApiMessage(err, "Erro ao enviar solicitação. Tente novamente."));
+      }
     } finally {
       setLoading(false);
     }
