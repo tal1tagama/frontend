@@ -18,7 +18,8 @@
       "sizes": "512x512"
     }
   ],
-  "start_url": ".",
+  "description": "Sistema de Gestão de Obras da Construtora RPG — registro de medições, solicitações de materiais e acompanhamento de canteiros.",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#1e3a5f",
   "background_color": "#f3f4f6"
