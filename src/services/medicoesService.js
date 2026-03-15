@@ -81,13 +81,14 @@ export async function listMedicoes(params = {}) {
 /**
  * Versão paginada de listMedicoes — retorna { data: [], pagination: {} }
  * para que os componentes possam exibir controles de navegação de página.
+ * A API retorna paginação dentro de `meta` (via successResponse).
  */
 export async function listMedicoesPaginado(params = {}) {
   const response = await api.get("/measurements/minhas", { params });
   const payload = response.data;
   return {
     data:       payload?.data  ?? [],
-    pagination: payload?.pagination ?? null,
+    pagination: payload?.meta  ?? null,
   };
 }
 
@@ -100,19 +101,15 @@ export async function listAllMedicoes(params = {}) {
 
 /**
  * Versão paginada de listAllMedicoes — retorna { data: [], pagination: {} }
+ * A API retorna paginação dentro de `meta` (via successResponse).
  */
 export async function listAllMedicoesPaginado(params = {}) {
   const response = await api.get("/measurements", { params });
   const payload = response.data;
   return {
     data:       payload?.data  ?? [],
-    pagination: payload?.pagination ?? null,
+    pagination: payload?.meta  ?? null,
   };
-}
-
-export async function listMedicoesByObra(obraId, params = {}) {
-  const response = await api.get(`/measurements/obra/${obraId}`, { params });
-  return extractApiData(response.data);
 }
 
 export async function aprovarMedicao(id) {

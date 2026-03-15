@@ -9,7 +9,6 @@ import Layout from "../components/Layout";
 import Icon from "../components/Icons";
 import { AuthContext } from "../context/AuthContext";
 import { canAccessRoute, PERFIL_LABELS } from "../constants/permissions";
-import { markNotificationsRead } from "../services/authService";
 import "../styles/pages.css";
 
 /**
@@ -51,13 +50,8 @@ const Dashboard = () => {
   const perfil = user?.perfil || null;
   const notificacoesPendentes = Number(user?.notificacoesPendentes || 0);
 
-  const handleReadNotifications = async () => {
-    try {
-      await markNotificationsRead();
-      patchUser({ notificacoesPendentes: 0 });
-    } catch (_) {
-      // Não bloqueia a navegação em caso de falha.
-    }
+  const handleReadNotifications = () => {
+    patchUser({ notificacoesPendentes: 0 });
   };
 
   // Filtra apenas os atalhos que o perfil atual pode acessar

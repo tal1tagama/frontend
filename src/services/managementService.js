@@ -36,6 +36,13 @@ export async function downloadBoletimPdf({ obraId, mes } = {}) {
   const response = await api.get("/management/exports/boletim.pdf", {
     params: { obraId, mes },
     responseType: "blob",
+    validateStatus: (status) => status < 500 || status === 501,
   });
+
+  // Backend retorna 501 Not Implemented - tratar gracefully
+  if (response.status === 501) {
+    throw new Error("Exportação em PDF ainda não está disponível. Use a exportação CSV como alternativa.");
+  }
+
   triggerBlobDownload(response.data, `boletim-medicoes-${mes || "geral"}.pdf`);
 }

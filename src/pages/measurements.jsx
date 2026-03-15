@@ -12,15 +12,16 @@ import {
   listMedicoesPaginado,
   rejeitarMedicao,
 } from "../services/medicoesService";
-import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
+import useObras from "../hooks/useObras";
 import { AuthContext } from "../context/AuthContext";
 import { isReviewer, isAdmin } from "../constants/permissions";
 import { TIPOS_SERVICO, STATUS_CLASS, STATUS_LABEL } from "../constants/medicao";
 import { normalizeMedicao } from "../utils/normalizeMedicao";
+import { PAGE_LIMIT_MEDICOES } from "../constants/pagination";
 import "../styles/pages.css";
 
-const PAGE_LIMIT = 25;
+const PAGE_LIMIT = PAGE_LIMIT_MEDICOES;
 
 function Measurements() {
   const { user } = useContext(AuthContext);
@@ -28,7 +29,7 @@ function Measurements() {
   const admin    = isAdmin(user?.perfil);
 
   const [measurements, setMeasurements] = useState([]);
-  const [obras, setObras]               = useState([]);
+  const { obras }                       = useObras(200);
   const [erro, setErro]                 = useState(null);
   const [loading, setLoading]           = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
@@ -51,12 +52,6 @@ function Measurements() {
     responsavel: "",   // busca textual local sobre responsavelNome (JOIN do back)
   });
 
-  // Carrega as obras para popular o select de filtro
-  useEffect(() => {
-    listObras({ page: 1, limit: 200 })
-      .then((data) => setObras(Array.isArray(data) ? data : []))
-      .catch(() => {});
-  }, []);
 
   // Carrega medições; re-executa sempre que os filtros ou página mudam
   const load = useCallback(async () => {
@@ -80,7 +75,6 @@ function Measurements() {
       setMeasurements(list.map(normalizeMedicao));
       setTotalItems(res.pagination?.totalItems ?? list.length);
     } catch (err) {
-      console.error("Erro ao buscar medicoes:", err);
       setErro("Não foi possível carregar as medições.");
     } finally {
       setLoading(false);

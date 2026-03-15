@@ -36,10 +36,14 @@ function Layout({ children }) {
 
   const perfil = user?.perfil || null;
 
-  const isActive = (path) =>
-    path === "/"
-      ? location.pathname === "/"
-      : location.pathname.startsWith(path);
+  const isActive = (path) => {
+    if (path === "/") return location.pathname === "/";
+    // garante que o match ocorra em fronteira de segmento (evita /medicoes ativar em /medicoes-lista)
+    return (
+      location.pathname === path ||
+      location.pathname.startsWith(path + "/")
+    );
+  };
 
   async function handleLogout() {
     await logout();

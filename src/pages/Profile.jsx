@@ -34,12 +34,10 @@ function Profile() {
             const obraData = await getObra(userData.obraAtual);
             setObra(obraData);
           } catch (err) {
-            console.error("Erro ao buscar dados da obra:", err);
             // Não bloqueia a exibição do perfil se falhar ao buscar a obra
           }
         }
       } catch (err) {
-        console.error("Erro ao buscar perfil:", err);
         setError("Não foi possível carregar o perfil.");
       } finally {
         setLoading(false);

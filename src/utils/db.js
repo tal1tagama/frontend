@@ -78,7 +78,10 @@ export async function getPendingFiles() {
 
   // Remove registros inválidos em background sem bloquear
   if (toRemove.length > 0) {
-    Promise.all(toRemove.map((id) => db.delete("files", id))).catch(() => {});
+    Promise.all(toRemove.map((id) => db.delete("files", id))).catch((err) => {
+      // Limpeza de registros inválidos em background — falha não afeta fluxo principal
+      if (process.env.NODE_ENV === "development") console.warn("Erro ao limpar registros inválidos:", err);
+    });
   }
 
   return valid;

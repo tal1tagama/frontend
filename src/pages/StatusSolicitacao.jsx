@@ -9,6 +9,7 @@ import { SOLICITACAO_STATUS_LABELS } from "../constants";
 import { extractApiMessage } from "../services/response";
 import { AuthContext } from "../context/AuthContext";
 import { isReviewer } from "../constants/permissions";
+import { PAGE_LIMIT_SOLICITACOES } from "../constants/pagination";
 import "../styles/pages.css";
 
 function StatusSolicitacao() {
@@ -20,7 +21,7 @@ function StatusSolicitacao() {
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState(null);
 
-  const LIMIT = 10;
+  const LIMIT = PAGE_LIMIT_SOLICITACOES;
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -37,7 +38,6 @@ function StatusSolicitacao() {
       setSolicitacoes(Array.isArray(list) ? list : []);
       setTotalPages(res?.pagination?.totalPages ?? 1);
     } catch (err) {
-      console.error("Erro solicitacoes:", err);
       setErro("Não foi possível carregar as solicitações.");
     } finally {
       setLoading(false);

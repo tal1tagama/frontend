@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { createMedicao } from "../services/medicoesService";
 import { uploadFile } from "../services/filesService";
-import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
+import useObras from "../hooks/useObras";
 import { AREAS_MEDICAO, TIPOS_SERVICO } from "../constants/medicao";
 import { enqueueSyncOperation } from "../utils/syncQueue";
 import "../styles/pages.css";
@@ -30,8 +30,7 @@ function EnviarMedicao() {
   const [success, setSuccess] = useState("");
   const [submitMode, setSubmitMode] = useState("enviada");
   const [loading, setLoading] = useState(false);
-  const [obras, setObras] = useState([]);
-  const [loadingObras, setLoadingObras] = useState(true);
+  const { obras, loadingObras } = useObras(100);
 
   useEffect(() => {
     const onSyncCompleted = (event) => {
@@ -45,30 +44,12 @@ function EnviarMedicao() {
     return () => window.removeEventListener("sync:completed", onSyncCompleted);
   }, []);
 
-  // ─── Carregar obras do usuário ao montar o componente ───────────────────────
-  // O endpoint /obras retorna apenas as obras vinculadas ao perfil do usuário:
-  // encarregados veem apenas suas obras; supervisores e admins veem todas.
+  // Pré-seleciona automaticamente quando houver apenas uma obra vinculada
   useEffect(() => {
-    const loadObras = async () => {
-      try {
-        setLoadingObras(true);
-        setError("");
-        const data = await listObras({ page: 1, limit: 100 });
-        const lista = Array.isArray(data) ? data : [];
-        setObras(lista);
-        // Se houver apenas uma obra vinculada, pré-seleciona automaticamente
-        if (lista.length === 1) {
-          setForm((prev) => ({ ...prev, obra: String(lista[0].id) }));
-        }
-      } catch {
-        setObras([]);
-        setError("Não foi possível carregar as obras. Verifique sua conexão.");
-      } finally {
-        setLoadingObras(false);
-      }
-    };
-    loadObras();
-  }, []);
+    if (obras.length === 1) {
+      setForm((prev) => ({ ...prev, obra: String(obras[0].id) }));
+    }
+  }, [obras]);
 
   // ─── Cálculos automáticos de área e volume ──────────────────────────────────
   const comprimento = Number(form.comprimento) || 0;

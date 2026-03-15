@@ -1192,10 +1192,21 @@
 .admin-stat-card {
   background: var(--cor-fundo-secundario);
   border: 1px solid var(--cor-borda);
+  border-top: 4px solid var(--cor-primaria);
   border-radius: var(--borda-radius-grande);
   padding: var(--espacamento-lg);
   box-shadow: var(--sombra-pequena);
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
 }
+
+.admin-stat-card:hover {
+  box-shadow: var(--sombra-media);
+  transform: translateY(-1px);
+}
+
+.admin-stat-card--success { border-top-color: var(--cor-sucesso); }
+.admin-stat-card--warning { border-top-color: var(--cor-aviso);   }
+.admin-stat-card--danger  { border-top-color: var(--cor-perigo);  }
 
 .admin-stat-label {
   font-size: var(--tamanho-fonte-pequena);
@@ -1203,20 +1214,218 @@
   color: var(--cor-texto-secundario);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 6px;
+  margin: 0 0 6px 0;
 }
 
 .admin-stat-value {
-  font-size: 32px;
+  font-size: 30px;
   font-weight: 700;
   color: var(--cor-primaria);
   line-height: 1;
+  margin: 0 0 4px 0;
+  word-break: break-word;
+}
+
+.admin-stat-value--destaque {
+  color: var(--cor-perigo);
 }
 
 .admin-stat-sub {
   font-size: var(--tamanho-fonte-pequena);
   color: var(--cor-texto-secundario);
-  margin-top: 4px;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Cabeçalho de card (título + controles na mesma linha) ── */
+.admin-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--espacamento-md);
+  padding-bottom: var(--espacamento-md);
+  border-bottom: 2px solid var(--cor-borda);
+}
+
+.admin-card-title {
+  font-size: var(--tamanho-subtitulo);
+  font-weight: 700;
+  color: var(--cor-texto-principal);
+  margin: 0;
+  flex: 1 1 auto;
+}
+
+.admin-period-row {
+  display: flex;
+  align-items: center;
+  gap: var(--espacamento-sm);
+  flex-wrap: wrap;
+}
+
+.admin-period-row label {
+  font-weight: 600;
+  font-size: var(--tamanho-fonte-pequena);
+  color: var(--cor-texto-secundario);
+}
+
+.admin-period-row select {
+  max-width: 120px;
+}
+
+/* ── Tabela gerencial ── */
+.admin-table-wrapper {
+  overflow-x: auto;
+  margin-top: var(--espacamento-md);
+  border-radius: var(--borda-radius);
+  border: 1px solid var(--cor-borda);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+  font-size: var(--tamanho-fonte-pequena);
+}
+
+.admin-table thead tr {
+  background: var(--cor-header);
+  color: var(--cor-header-texto);
+}
+
+.admin-table thead th {
+  padding: 11px 14px;
+  font-weight: 600;
+  font-size: var(--tamanho-fonte-pequena);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.admin-table thead th.text-right {
+  text-align: right;
+}
+
+.admin-table tbody tr {
+  border-bottom: 1px solid var(--cor-borda);
+  transition: background 0.1s ease;
+}
+
+.admin-table tbody tr:nth-child(even) {
+  background: var(--cor-fundo);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--cor-primaria-clara);
+}
+
+.admin-table td {
+  padding: 11px 14px;
+  color: var(--cor-texto-principal);
+  vertical-align: middle;
+}
+
+.admin-table td.text-right {
+  text-align: right;
+}
+
+.admin-table td.valor-alerta {
+  color: var(--cor-perigo);
+  font-weight: 700;
+}
+
+.admin-table td.valor-ok {
+  color: var(--cor-sucesso);
+  font-weight: 500;
+}
+
+/* ── Alertas de orçamento ── */
+.admin-alerta-card {
+  background: var(--cor-aviso-clara);
+  border-left: 4px solid var(--cor-aviso);
+  border-radius: var(--borda-radius);
+  padding: var(--espacamento-md);
+  margin-bottom: var(--espacamento-sm);
+}
+
+.admin-alerta-card strong {
+  font-size: var(--tamanho-fonte-base);
+  color: var(--cor-texto-principal);
+}
+
+.admin-alerta-prazo {
+  margin: 4px 0 0 0;
+  color: var(--cor-perigo);
+  font-weight: 600;
+  font-size: var(--tamanho-fonte-pequena);
+}
+
+/* ── Área de exportação ── */
+.admin-export-area {
+  margin-top: var(--espacamento-lg);
+  padding-top: var(--espacamento-md);
+  border-top: 2px solid var(--cor-borda);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacamento-sm);
+}
+
+.admin-export-section-title {
+  font-size: var(--tamanho-fonte-pequena);
+  font-weight: 700;
+  color: var(--cor-texto-secundario);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+.admin-export-filters {
+  display: flex;
+  gap: var(--espacamento-sm);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-export-filters select,
+.admin-export-filters input[type="month"] {
+  max-width: 220px;
+  flex: 1 1 140px;
+}
+
+.admin-export-buttons {
+  display: flex;
+  gap: var(--espacamento-sm);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.admin-export-buttons .button-secondary {
+  margin-top: 0;
+  padding: 11px 18px;
+  font-size: var(--tamanho-fonte-pequena);
+  width: auto;
+}
+
+.admin-export-btn-pdf {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+  font-weight: 700;
+}
+
+.admin-export-btn-pdf:hover {
+  background: var(--cor-primaria-clara);
+  border-color: var(--cor-primaria);
+}
+
+/* ── Estado de carregamento ── */
+.admin-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espacamento-xl);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-fonte-grande);
+  gap: var(--espacamento-sm);
 }
 
 /* Obras */

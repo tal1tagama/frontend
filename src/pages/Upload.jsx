@@ -8,8 +8,8 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { saveFileOffline, getPendingFiles, markAsUploaded, removeOfflineFile, incrementRetryCount, MAX_RETRY_COUNT } from "../utils/db";
 import { uploadFile } from "../services/filesService";
-import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
+import useObras from "../hooks/useObras";
 import "../styles/pages.css";
 
 // Tipos de arquivo aceitos pelo back-end
@@ -31,8 +31,7 @@ function Upload() {
     descricao: "",      // descrição do arquivo (obrigatório)
     detalheProblema: "", // obrigatório apenas quando tipoArquivo === "problema"
   });
-  const [obras, setObras] = useState([]);
-  const [loadingObras, setLoadingObras] = useState(true);
+  const { obras, loadingObras } = useObras(100);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -51,24 +50,15 @@ function Upload() {
     };
   }, []);
 
-  // Carrega obras ao montar
+  // Pré-seleciona automaticamente quando houver apenas uma obra vinculada
   useEffect(() => {
-    const load = async () => {
-      try {
-        setLoadingObras(true);
-        const data = await listObras({ page: 1, limit: 100 });
-        const lista = Array.isArray(data) ? data : [];
-        setObras(lista);
-        if (lista.length === 1) {
-          setForm((prev) => ({ ...prev, obra: String(lista[0].id) }));
-        }
-      } catch {
-        setObras([]);
-      } finally {
-        setLoadingObras(false);
-      }
-    };
-    load();
+    if (obras.length === 1) {
+      setForm((prev) => ({ ...prev, obra: String(obras[0].id) }));
+    }
+  }, [obras]);
+
+  // Carrega arquivos pendentes ao montar
+  useEffect(() => {
     loadPendingFiles();
   }, []);
 
@@ -97,7 +87,6 @@ function Upload() {
           if (nextCount >= MAX_RETRY_COUNT) {
             falhos++;
           }
-          console.error("Erro ao reenviar arquivo pendente:", err);
         }
       }
       if (enviados > 0) {

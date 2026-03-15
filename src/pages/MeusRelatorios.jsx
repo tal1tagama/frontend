@@ -7,11 +7,12 @@ import Layout from "../components/Layout";
 import { listMedicoesPaginado } from "../services/medicoesService";
 import { TIPOS_SERVICO, getTipoServicoLabel, STATUS_CLASS, STATUS_LABEL } from "../constants/medicao";
 import { normalizeMedicao } from "../utils/normalizeMedicao";
-import { listObras } from "../services/obrasService";
+import useObras from "../hooks/useObras";
+import { PAGE_LIMIT_RELATORIOS } from "../constants/pagination";
 import api from "../services/api";
 import "../styles/pages.css";
 
-const BASE_URL = (process.env.REACT_APP_API_URL || "http://localhost:5001/api").replace(/\/api\/?$/, "");
+const BASE_URL = (process.env.REACT_APP_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
 
 // Constantes importadas de ../constants/medicao
 
@@ -26,7 +27,7 @@ function getFotoUrl(m) {
 
 function MeusRelatorios() {
   const [medicoes, setMedicoes]     = useState([]);
-  const [obras, setObras]           = useState([]);
+  const { obras }                   = useObras(200);
   const [erro, setErro]             = useState(null);
   const [loading, setLoading]       = useState(true);
   const [expandedId, setExpandedId] = useState(null);
@@ -43,13 +44,6 @@ function MeusRelatorios() {
     dataFim:     "",
   });
 
-  // Carrega as obras para o select de filtro
-  useEffect(() => {
-    listObras({ page: 1, limit: 200 })
-      .then((data) => setObras(Array.isArray(data) ? data : []))
-      .catch(() => {});
-  }, []);
-
   // Carrega medições aplicando filtros
   useEffect(() => {
     const load = async () => {
@@ -58,7 +52,7 @@ function MeusRelatorios() {
         setErro(null);
 
         // Monta apenas filtros não-vazios
-        const params = { page: currentPage, limit: 20 };
+        const params = { page: currentPage, limit: PAGE_LIMIT_RELATORIOS };
         if (filtros.obra)        params.obra        = filtros.obra;
         if (filtros.status)      params.status      = filtros.status;
         if (filtros.tipoServico) params.tipoServico = filtros.tipoServico;
@@ -70,7 +64,7 @@ function MeusRelatorios() {
         setMedicoes(raw.map(normalizeMedicao));
         setTotalItems(res?.pagination?.totalItems ?? raw.length);
       } catch (err) {
-        console.error("Erro medicoes:", err);
+
         setErro("Não foi possível carregar as medições.");
       } finally {
         setLoading(false);

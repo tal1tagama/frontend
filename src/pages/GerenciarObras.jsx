@@ -6,11 +6,11 @@ import Layout from "../components/Layout";
 import {
   createObra,
   deleteObra,
-  listObras,
   updateObra,
   vincularEncarregado,
   desvincularEncarregado,
 } from "../services/obrasService";
+import useObras from "../hooks/useObras";
 import { listUsers } from "../services/usersService";
 import { extractApiMessage } from "../services/response";
 import { AuthContext } from "../context/AuthContext";
@@ -46,8 +46,7 @@ function GerenciarObras() {
   const admin = isAdmin(user?.perfil);
 
   // ── listagem ────────────────────────────────────────────────────────────────
-  const [obras, setObras]       = useState([]);
-  const [loading, setLoading]   = useState(true);
+  const { obras, loadingObras: loading, reload: loadObras } = useObras(200);
   const [erro, setErro]         = useState(null);
 
   // ── filtros ─────────────────────────────────────────────────────────────────
@@ -76,23 +75,6 @@ function GerenciarObras() {
 
   // ── confirmação de exclusão inline (sem window.confirm) ─────────────────────
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-
-  // ── carregamento de obras ───────────────────────────────────────────────────
-  const loadObras = async () => {
-    try {
-      setLoading(true);
-      setErro(null);
-      const data = await listObras({ page: 1, limit: 200 });
-      setObras(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Erro ao carregar obras:", err);
-      setErro("Não foi possível carregar as obras.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { loadObras(); }, []);
 
   // ── carregamento de usuários (apenas quando abre painel de encarregados) ────
   const loadUsuarios = async () => {
@@ -233,9 +215,7 @@ function GerenciarObras() {
       // Atualiza a obra selecionada com a lista de encarregados atualizada
       setObraSelecionada(obraAtualizada);
       // Atualiza na lista principal
-      setObras((prev) =>
-        prev.map((o) => (o.id === obraAtualizada.id ? obraAtualizada : o))
-      );
+      await loadObras();
       setUserIdNovo("");
     } catch (err) {
       setEncErro(extractApiMessage(err, "Não foi possível vincular o encarregado."));
@@ -251,9 +231,7 @@ function GerenciarObras() {
       setEncLoading(true);
       const obraAtualizada = await desvincularEncarregado(obraSelecionada.id, userId);
       setObraSelecionada(obraAtualizada);
-      setObras((prev) =>
-        prev.map((o) => (o.id === obraAtualizada.id ? obraAtualizada : o))
-      );
+      await loadObras();
     } catch (err) {
       setEncErro(extractApiMessage(err, "Não foi possível desvincular o encarregado."));
     } finally {

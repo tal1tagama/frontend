@@ -2,8 +2,8 @@
 import { useState, useEffect } from "react";
 import Layout from "../components/Layout";
 import { createPurchase } from "../services/purchasesService";
-import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
+import useObras from "../hooks/useObras";
 import { enqueueSyncOperation } from "../utils/syncQueue";
 import "../styles/pages.css";
 
@@ -271,14 +271,13 @@ const PRIORIDADES = [
 ];
 
 export default function PurchaseRequest() {
-  const [obras, setObras] = useState([]);
+  const { obras, loadingObras } = useObras(100);
   const [obraId, setObraId] = useState("");
   const [categoriaAberta, setCategoriaAberta] = useState(null);
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [prioridade, setPrioridade] = useState("media");
   const [descricao, setDescricao] = useState("");
   const [loading, setLoading] = useState(false);
-  const [loadingObras, setLoadingObras] = useState(true);
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState(false);
 
@@ -295,16 +294,10 @@ export default function PurchaseRequest() {
     return () => window.removeEventListener("sync:completed", onSyncCompleted);
   }, []);
 
+  // Pré-seleciona automaticamente quando houver apenas uma obra vinculada
   useEffect(() => {
-    listObras()
-      .then((res) => {
-        const lista = Array.isArray(res) ? res : (res?.data ?? []);
-        setObras(lista);
-        if (lista.length === 1) setObraId(String(lista[0].id));
-      })
-      .catch(() => setErro("Não foi possível carregar as obras. Verifique sua conexão."))
-      .finally(() => setLoadingObras(false));
-  }, []);
+    if (obras.length === 1) setObraId(String(obras[0].id));
+  }, [obras]);
 
   function toggleItem(item) {
     setItensSelecionados((prev) =>
@@ -335,21 +328,21 @@ export default function PurchaseRequest() {
     }
 
     setLoading(true);
+    const itens = itensSelecionados.map((item) => ({
+      descricao: item,
+      quantidade: 1,
+      unidade: "un",
+    }));
+
+    const payload = {
+      obra: Number(obraId),
+      itens,
+      prioridade,
+      justificativa: descricao || null,
+      status: "pendente",
+    };
+
     try {
-      const itens = itensSelecionados.map((item) => ({
-        descricao: item,
-        quantidade: 1,
-        unidade: "un",
-      }));
-
-      const payload = {
-        obra: Number(obraId),
-        itens,
-        prioridade,
-        justificativa: descricao || null,
-        status: "pendente",
-      };
-
       if (!navigator.onLine) {
         await enqueueSyncOperation("solicitacao", payload);
       } else {
@@ -371,13 +364,6 @@ export default function PurchaseRequest() {
     } catch (err) {
       const status = err?.response?.status;
       if (!navigator.onLine || !status) {
-        const payload = {
-          obra: Number(obraId),
-          itens: itensSelecionados.map((item) => ({ descricao: item, quantidade: 1, unidade: "un" })),
-          prioridade,
-          justificativa: descricao || null,
-          status: "pendente",
-        };
         await enqueueSyncOperation("solicitacao", payload);
         setSucesso(true);
         setItensSelecionados([]);

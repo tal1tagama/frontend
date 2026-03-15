@@ -17,7 +17,7 @@ export default function SyncManager() {
             }),
           );
         }
-      } catch (_) {
+      } catch (err) {
         // Falhas de sincronização são não-bloqueantes para a UI.
       } finally {
         running = false;

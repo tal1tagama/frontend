@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
+import Icon from "../components/Icons";
 import api from "../services/api";
 import {
   getManagementOverview,
@@ -23,6 +24,19 @@ function AdminPanel() {
   const [overview, setOverview] = useState({ resumoGeral: {}, obras: [], alertas: [] });
   const [exportMes, setExportMes] = useState(new Date().toISOString().slice(0, 7));
   const [exportObraId, setExportObraId] = useState("");
+  const [exportErro, setExportErro] = useState(null);
+
+  const handleExport = async (fn, label) => {
+    try {
+      setExportErro(null);
+      await fn();
+    } catch (err) {
+      const msg = err?.response?.data?.error?.message
+        || err?.message
+        || `Não foi possível exportar ${label}.`;
+      setExportErro(msg);
+    }
+  };
 
   const [stats, setStats] = useState({
     totalObras: null,
@@ -56,10 +70,14 @@ function AdminPanel() {
           totalArquivos:         data.totalArquivos         ?? null,
         });
 
-        const overviewData = await getManagementOverview(periodo);
-        setOverview(overviewData);
+        // Visão gerencial — isolada para não quebrar os stats se falhar
+        try {
+          const overviewData = await getManagementOverview(periodo);
+          setOverview(overviewData);
+        } catch {
+          // mantém overview com fallback silencioso — seção fica zerada mas stats carregam
+        }
       } catch (err) {
-        console.error("Erro ao carregar stats:", err);
         setErro("Não foi possível carregar as estatísticas do sistema.");
       } finally {
         setLoading(false);
@@ -69,10 +87,24 @@ function AdminPanel() {
     loadStats();
   }, [periodo]);
 
-  const StatCard = ({ label, value, sub, destaque }) => (
-    <div className="admin-stat-card">
+  const formatCurrency = (v) =>
+    (v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  const formatStatus = (s) => {
+    const MAP = {
+      em_andamento: "Em andamento",
+      planejamento:  "Planejamento",
+      concluida:     "Concluída",
+      paralisada:    "Paralisada",
+      ativa:         "Ativa",
+    };
+    return MAP[s] || s;
+  };
+
+  const StatCard = ({ label, value, sub, destaque, variant }) => (
+    <div className={`admin-stat-card${variant ? ` admin-stat-card--${variant}` : ""}`}>
       <p className="admin-stat-label">{label}</p>
-      <p className="admin-stat-value" style={destaque ? { color: "var(--cor-perigo)" } : {}}>
+      <p className={`admin-stat-value${destaque ? " admin-stat-value--destaque" : ""}`}>
         {value !== null && value !== undefined ? value : "—"}
       </p>
       {sub && <p className="admin-stat-sub">{sub}</p>}
@@ -90,9 +122,7 @@ function AdminPanel() {
         {erro && <p className="erro-msg">{erro}</p>}
 
         {loading && (
-          <p style={{ textAlign: "center", padding: "var(--espacamento-xl)" }}>
-            Carregando estatísticas...
-          </p>
+          <p className="admin-loading">Carregando estatísticas…</p>
         )}
 
         {!loading && (
@@ -109,17 +139,20 @@ function AdminPanel() {
                 value={stats.totalMedicoes}
                 sub={`${stats.medicoesPendentes ?? "—"} aguardando aprovação · ${stats.medicoesAprovadas ?? "—"} aprovadas`}
                 destaque={stats.medicoesPendentes > 0}
+                variant={stats.medicoesPendentes > 0 ? "warning" : "success"}
               />
               <StatCard
                 label="Total de solicitações"
                 value={stats.totalSolicitacoes}
                 sub={`${stats.solicitacoesPendentes ?? "—"} pendentes de aprovação`}
                 destaque={stats.solicitacoesPendentes > 0}
+                variant={stats.solicitacoesPendentes > 0 ? "danger" : "success"}
               />
               <StatCard
                 label="Total de arquivos"
                 value={stats.totalArquivos}
                 sub="documentos e fotos enviados"
+                variant="success"
               />
             </div>
 
@@ -128,40 +161,41 @@ function AdminPanel() {
             <h2 className="section-title">Ações Rápidas</h2>
 
             <div className="card" style={{ marginBottom: "var(--espacamento-md)" }}>
-              <h3 style={{ marginTop: 0 }}>Visão Gerencial</h3>
-              <div style={{ display: "flex", gap: "var(--espacamento-sm)", flexWrap: "wrap", alignItems: "center" }}>
-                <label htmlFor="periodo-gerencial" style={{ fontWeight: 600 }}>Período (dias):</label>
-                <select
-                  id="periodo-gerencial"
-                  value={periodo}
-                  onChange={(e) => setPeriodo(Number(e.target.value))}
-                  style={{ maxWidth: "140px" }}
-                >
-                  <option value={7}>7</option>
-                  <option value={15}>15</option>
-                  <option value={30}>30</option>
-                  <option value={60}>60</option>
-                </select>
+              <div className="admin-card-header">
+                <h3 className="admin-card-title">Visão Gerencial</h3>
+                <div className="admin-period-row">
+                  <label htmlFor="periodo-gerencial">Período (dias):</label>
+                  <select
+                    id="periodo-gerencial"
+                    value={periodo}
+                    onChange={(e) => setPeriodo(Number(e.target.value))}
+                  >
+                    <option value={7}>7</option>
+                    <option value={15}>15</option>
+                    <option value={30}>30</option>
+                    <option value={60}>60</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="admin-grid" style={{ marginTop: "var(--espacamento-md)" }}>
-                <StatCard label="Total orçado" value={`R$ ${(overview?.resumoGeral?.totalOrcado || 0).toFixed(2)}`} />
-                <StatCard label="Total realizado" value={`R$ ${(overview?.resumoGeral?.totalRealizado || 0).toFixed(2)}`} />
-                <StatCard label="Obras em alerta" value={overview?.resumoGeral?.obrasEmAlerta || 0} destaque={(overview?.resumoGeral?.obrasEmAlerta || 0) > 0} />
-                <StatCard label="Pendências de compra" value={overview?.resumoGeral?.solicitacoesPendentes || 0} sub={`Estimado: R$ ${(overview?.resumoGeral?.valorPendenteEstimado || 0).toFixed(2)}`} />
+              <div className="admin-grid">
+                <StatCard label="Total orçado"       value={formatCurrency(overview?.resumoGeral?.totalOrcado)} />
+                <StatCard label="Total realizado"    value={formatCurrency(overview?.resumoGeral?.totalRealizado)} variant="success" />
+                <StatCard label="Obras em alerta"    value={overview?.resumoGeral?.obrasEmAlerta || 0}  destaque={(overview?.resumoGeral?.obrasEmAlerta || 0) > 0} variant={(overview?.resumoGeral?.obrasEmAlerta || 0) > 0 ? "warning" : undefined} />
+                <StatCard label="Pendências de compra" value={overview?.resumoGeral?.solicitacoesPendentes || 0} sub={`Estimado: ${formatCurrency(overview?.resumoGeral?.valorPendenteEstimado)}`} variant={(overview?.resumoGeral?.solicitacoesPendentes || 0) > 0 ? "danger" : undefined} />
               </div>
 
               {Array.isArray(overview?.alertas) && overview.alertas.length > 0 && (
                 <div style={{ marginTop: "var(--espacamento-md)" }}>
-                  <h4 style={{ marginBottom: "var(--espacamento-sm)" }}>Alertas de orçamento</h4>
+                  <h4 style={{ margin: "0 0 var(--espacamento-sm) 0", color: "var(--cor-aviso)" }}>⚠ Alertas de orçamento</h4>
                   {overview.alertas.map((obra) => (
-                    <div key={obra.obraId} className="card" style={{ marginBottom: "var(--espacamento-sm)", borderLeft: "4px solid var(--cor-aviso)" }}>
+                    <div key={obra.obraId} className="admin-alerta-card">
                       <strong>{obra.nome}</strong>
-                      <p style={{ margin: "6px 0 0 0" }}>
-                        Gasto: {obra.percentualGasto}% (R$ {obra.realizado.toFixed(2)} de R$ {obra.orcado.toFixed(2)})
+                      <p style={{ margin: "6px 0 0 0", fontSize: "var(--tamanho-fonte-pequena)" }}>
+                        Gasto: {obra.percentualGasto}% ({formatCurrency(obra.realizado)} de {formatCurrency(obra.orcado)})
                       </p>
                       {obra.alertaPrazo && (
-                        <p style={{ margin: "4px 0 0 0", color: "var(--cor-perigo)", fontWeight: 600 }}>
+                        <p className="admin-alerta-prazo">
                           Prazo em risco: {obra.prazoDiasRestantes} dia(s) restantes para término previsto.
                         </p>
                       )}
@@ -170,98 +204,109 @@ function AdminPanel() {
                 </div>
               )}
 
-              <div style={{ marginTop: "var(--espacamento-md)", overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "760px" }}>
+              <div className="admin-table-wrapper">
+                <table className="admin-table">
                   <thead>
                     <tr>
-                      <th style={{ textAlign: "left", padding: "8px" }}>Obra</th>
-                      <th style={{ textAlign: "left", padding: "8px" }}>Status</th>
-                      <th style={{ textAlign: "right", padding: "8px" }}>Orçado</th>
-                      <th style={{ textAlign: "right", padding: "8px" }}>Realizado</th>
-                      <th style={{ textAlign: "right", padding: "8px" }}>% gasto</th>
-                      <th style={{ textAlign: "right", padding: "8px" }}>Prazo (dias)</th>
-                      <th style={{ textAlign: "right", padding: "8px" }}>Medições ({periodo}d)</th>
-                      <th style={{ textAlign: "right", padding: "8px" }}>Solicitações pendentes</th>
+                      <th>Obra</th>
+                      <th>Status</th>
+                      <th className="text-right">Orçado</th>
+                      <th className="text-right">Realizado</th>
+                      <th className="text-right">% gasto</th>
+                      <th className="text-right">Prazo (dias)</th>
+                      <th className="text-right">Medições ({periodo}d)</th>
+                      <th className="text-right">Sol. pendentes</th>
                     </tr>
                   </thead>
                   <tbody>
                     {(overview?.obras || []).map((obra) => (
                       <tr key={obra.obraId}>
-                        <td style={{ padding: "8px", borderTop: "1px solid var(--cor-borda)" }}>{obra.nome}</td>
-                        <td style={{ padding: "8px", borderTop: "1px solid var(--cor-borda)" }}>{obra.status}</td>
-                        <td style={{ padding: "8px", textAlign: "right", borderTop: "1px solid var(--cor-borda)" }}>R$ {obra.orcado.toFixed(2)}</td>
-                        <td style={{ padding: "8px", textAlign: "right", borderTop: "1px solid var(--cor-borda)" }}>R$ {obra.realizado.toFixed(2)}</td>
-                        <td style={{ padding: "8px", textAlign: "right", borderTop: "1px solid var(--cor-borda)", color: obra.percentualGasto >= 80 ? "var(--cor-perigo)" : "inherit", fontWeight: obra.percentualGasto >= 80 ? 700 : 500 }}>
+                        <td>{obra.nome}</td>
+                        <td>
+                          <span className={`obra-status ${obra.status}`}>{formatStatus(obra.status)}</span>
+                        </td>
+                        <td className="text-right">{formatCurrency(obra.orcado)}</td>
+                        <td className="text-right">{formatCurrency(obra.realizado)}</td>
+                        <td className={`text-right ${obra.percentualGasto >= 80 ? "valor-alerta" : ""}`}>
                           {obra.percentualGasto}%
                         </td>
-                        <td style={{ padding: "8px", textAlign: "right", borderTop: "1px solid var(--cor-borda)", color: obra.alertaPrazo ? "var(--cor-perigo)" : "inherit", fontWeight: obra.alertaPrazo ? 700 : 500 }}>
+                        <td className={`text-right ${obra.alertaPrazo ? "valor-alerta" : ""}`}>
                           {obra.prazoDiasRestantes ?? "—"}
                         </td>
-                        <td style={{ padding: "8px", textAlign: "right", borderTop: "1px solid var(--cor-borda)" }}>{obra.medicoesPeriodo}</td>
-                        <td style={{ padding: "8px", textAlign: "right", borderTop: "1px solid var(--cor-borda)" }}>{obra.solicitacoesPendentes}</td>
+                        <td className="text-right">{obra.medicoesPeriodo}</td>
+                        <td className="text-right">{obra.solicitacoesPendentes}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
 
-              <div style={{ marginTop: "var(--espacamento-md)", display: "flex", gap: "var(--espacamento-sm)", flexWrap: "wrap", alignItems: "center" }}>
-                <button className="button-secondary" onClick={() => downloadManagementCsv(periodo)}>
-                  Exportar visão gerencial (CSV)
-                </button>
+              <div className="admin-export-area">
+                <p className="admin-export-section-title">Exportar dados</p>
 
-                <select
-                  value={exportObraId}
-                  onChange={(e) => setExportObraId(e.target.value)}
-                  style={{ maxWidth: "240px" }}
-                >
-                  <option value="">Todas as obras</option>
-                  {(overview?.obras || []).map((obra) => (
-                    <option key={obra.obraId} value={obra.obraId}>{obra.nome}</option>
-                  ))}
-                </select>
+                <div className="admin-export-filters">
+                  <select
+                    value={exportObraId}
+                    onChange={(e) => setExportObraId(e.target.value)}
+                    aria-label="Filtrar por obra"
+                  >
+                    <option value="">Todas as obras</option>
+                    {(overview?.obras || []).map((obra) => (
+                      <option key={obra.obraId} value={obra.obraId}>{obra.nome}</option>
+                    ))}
+                  </select>
 
-                <input
-                  type="month"
-                  value={exportMes}
-                  onChange={(e) => setExportMes(e.target.value)}
-                  style={{ maxWidth: "170px" }}
-                />
+                  <input
+                    type="month"
+                    value={exportMes}
+                    onChange={(e) => setExportMes(e.target.value)}
+                    aria-label="Mês de referência"
+                  />
+                </div>
 
-                <button
-                  className="button-secondary"
-                  onClick={() => downloadMedicoesCsv({ obraId: exportObraId || undefined, mes: exportMes || undefined })}
-                >
-                  Exportar boletim (CSV)
-                </button>
+                <div className="admin-export-buttons">
+                  <button className="button-secondary" onClick={() => handleExport(() => downloadManagementCsv(periodo), "visão gerencial")}>
+                    Gerencial (CSV)
+                  </button>
+                  <button className="button-secondary" onClick={() => handleExport(() => downloadMedicoesCsv({ obraId: exportObraId || undefined, mes: exportMes || undefined }), "boletim CSV")}>
+                    Boletim (CSV)
+                  </button>
+                  <button className="button-secondary admin-export-btn-pdf" onClick={() => handleExport(() => downloadBoletimPdf({ obraId: exportObraId || undefined, mes: exportMes || undefined }), "boletim PDF")}>
+                    Boletim (PDF)
+                  </button>
+                </div>
 
-                <button
-                  className="button-primary"
-                  onClick={() => downloadBoletimPdf({ obraId: exportObraId || undefined, mes: exportMes || undefined })}
-                >
-                  Exportar boletim (PDF)
-                </button>
+                {exportErro && (
+                  <p style={{ color: "var(--cor-perigo)", fontSize: "var(--tamanho-fonte-pequena)", margin: 0 }}>
+                    {exportErro}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="buttons-container">
               <button className="topic-button" onClick={() => navigate("/obras")}>
+                <span className="topic-button-icon"><Icon name="building" size={22} /></span>
                 <span className="topic-button-title">Gerenciar Obras</span>
                 <span className="topic-button-desc">Ver todas as obras cadastradas</span>
               </button>
               <button className="topic-button" onClick={() => navigate("/medicoes-lista")}>
+                <span className="topic-button-icon"><Icon name="checklist" size={22} /></span>
                 <span className="topic-button-title">Aprovar Medições</span>
                 <span className="topic-button-desc">Revisar e aprovar medições pendentes</span>
               </button>
               <button className="topic-button" onClick={() => navigate("/status-solicitacoes")}>
+                <span className="topic-button-icon"><Icon name="cart" size={22} /></span>
                 <span className="topic-button-title">Aprovar Solicitações</span>
                 <span className="topic-button-desc">Revisar e aprovar solicitações de materiais</span>
               </button>
               <button className="topic-button" onClick={() => navigate("/relatorios")}>
+                <span className="topic-button-icon"><Icon name="chart" size={22} /></span>
                 <span className="topic-button-title">Relatórios</span>
-                <span className="topic-button-desc">Ver relatórios de medições</span>
+                <span className="topic-button-desc">Ver relatórios e indicadores das obras</span>
               </button>
               <button className="topic-button" onClick={() => navigate("/register")}>
+                <span className="topic-button-icon"><Icon name="person-add" size={22} /></span>
                 <span className="topic-button-title">Cadastrar Funcionário</span>
                 <span className="topic-button-desc">Adicionar novo encarregado ou supervisor</span>
               </button>

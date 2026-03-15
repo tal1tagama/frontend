@@ -1,6 +1,3 @@
-import api from "./api";
-
-export async function markNotificationsRead() {
-  const response = await api.post("/auth/notifications/read");
-  return response?.data?.data || { total: 0 };
-}
+// src/services/authService.js
+// Reservado para operações de autenticação complementares.
+// O endpoint /auth/notifications/read foi removido porque não existe no backend.

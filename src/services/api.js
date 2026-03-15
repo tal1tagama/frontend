@@ -58,9 +58,14 @@ api.interceptors.response.use(
 
         const newToken =
           refreshRes.data?.data?.accessToken || refreshRes.data?.accessToken;
+        const newRefreshToken =
+          refreshRes.data?.data?.refreshToken || refreshRes.data?.refreshToken;
 
         if (newToken) {
           localStorage.setItem("token", newToken);
+          if (newRefreshToken) {
+            localStorage.setItem("refreshToken", newRefreshToken);
+          }
           originalRequest.headers.Authorization = `Bearer ${newToken}`;
           processQueue(null, newToken);
           return api(originalRequest);

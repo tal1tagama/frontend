@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import { createDiario, listMeusDiarios } from "../services/diariosService";
-import { listObras } from "../services/obrasService";
 import { extractApiMessage } from "../services/response";
+import useObras from "../hooks/useObras";
 import "../styles/pages.css";
 
 const CLIMAS = ["ensolarado", "nublado", "chuvoso", "ventania", "instavel"];
@@ -17,37 +17,24 @@ export default function DiarioObra() {
     observacoesGerais: "",
   });
 
-  const [obras, setObras] = useState([]);
-  const [loadingObras, setLoadingObras] = useState(true);
+  const { obras, loadingObras } = useObras(100);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [recentes, setRecentes] = useState([]);
 
+  // Pré-seleciona automaticamente quando houver apenas uma obra vinculada
   useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoadingObras(true);
-        const [obrasData, diariosData] = await Promise.all([
-          listObras({ page: 1, limit: 100 }),
-          listMeusDiarios({ page: 1, limit: 5 }),
-        ]);
+    if (obras.length === 1) {
+      setForm((prev) => ({ ...prev, obra: String(obras[0].id) }));
+    }
+  }, [obras]);
 
-        const listaObras = Array.isArray(obrasData) ? obrasData : [];
-        setObras(listaObras);
-        if (listaObras.length === 1) {
-          setForm((prev) => ({ ...prev, obra: String(listaObras[0].id) }));
-        }
-
-        setRecentes(Array.isArray(diariosData?.data) ? diariosData.data : []);
-      } catch {
-        setError("Não foi possível carregar dados do diário.");
-      } finally {
-        setLoadingObras(false);
-      }
-    };
-
-    loadData();
+  // Carrega diários recentes
+  useEffect(() => {
+    listMeusDiarios({ page: 1, limit: 5 })
+      .then((data) => setRecentes(Array.isArray(data?.data) ? data.data : []))
+      .catch(() => setError("Não foi possível carregar dados do diário."));
   }, []);
 
   function handleChange(event) {
