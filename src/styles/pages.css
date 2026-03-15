@@ -7,6 +7,11 @@
   margin: 0 auto;
 }
 
+/* Container mais largo para o dashboard — aproveita o espaço sem sidebar */
+.dashboard-container {
+  max-width: 1200px;
+}
+
 .page-title {
   font-size: var(--tamanho-titulo);
   font-weight: 700;

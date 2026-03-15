@@ -467,8 +467,10 @@ body {
    IMPRESSÃO — RELATÓRIOS PROFISSIONAIS
    ======================================== */
 @media print {
-  .header, .btn-logout, .menu, .button-primary,
-  .button-secondary, .button-danger, .button-success {
+  /* Elementos de layout/navegação — ocultos na impressão */
+  .header, .btn-logout, .menu,
+  .sidebar, .sidebar-overlay, .topbar,
+  .button-primary, .button-secondary, .button-danger, .button-success {
     display: none !important;
   }
 

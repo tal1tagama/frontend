@@ -1,0 +1,428 @@
+/* ============================================================
+   SIDEBAR — Menu Lateral Retrátil
+   Layout principal do sistema (sidebar + conteúdo)
+   Design acessível para usuários com pouca familiaridade digital
+   ============================================================ */
+
+:root {
+  --sidebar-width:           240px;
+  --sidebar-width-collapsed:  64px;
+  --sidebar-bg:              var(--cor-header);       /* azul escuro compartilhado */
+  --sidebar-border:          var(--cor-header-border);
+  --sidebar-text:            rgba(255, 255, 255, 0.84);
+  --sidebar-hover-bg:        rgba(255, 255, 255, 0.07);
+  --sidebar-active-bg:       rgba(255, 255, 255, 0.11);
+  --sidebar-active-indicator:#facc15;                 /* fio amarelo — item ativo  */
+  --topbar-height:            56px;
+}
+
+/* ============================================================
+   ESTRUTURA RAIZ DO APP
+   Flex vertical: NavBar no topo, conteúdo abaixo
+   ============================================================ */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  border-right: 2px solid var(--sidebar-border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex-shrink: 0;
+  z-index: 200;
+  transition: width 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.sidebar::-webkit-scrollbar        { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb  { background: rgba(255, 255, 255, 0.14); border-radius: 2px; }
+
+/* ── Estado: recolhida ────────────────────────────────────── */
+.sidebar--collapsed {
+  width: var(--sidebar-width-collapsed);
+}
+
+/* ============================================================
+   CABEÇALHO DA SIDEBAR — logo + botão de colapsar
+   ============================================================ */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+  min-height: 62px;
+  flex-shrink: 0;
+}
+
+.sidebar--collapsed .sidebar-header {
+  justify-content: center;
+  padding: 14px 8px;
+}
+
+.sidebar-logo-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.sidebar-logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
+  object-fit: contain;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 2px 5px;
+  flex-shrink: 0;
+}
+
+.sidebar-logo-text {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Botão expandir/recolher */
+.sidebar-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.90);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background 0.15s ease;
+}
+
+.sidebar-toggle:hover       { background: rgba(255, 255, 255, 0.18); }
+.sidebar-toggle:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.65);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   NAVEGAÇÃO — grupos e itens
+   ============================================================ */
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0 4px;
+  scrollbar-width: none;
+}
+.sidebar-nav::-webkit-scrollbar { display: none; }
+
+/* Grupo */
+.sidebar-group {
+  padding-bottom: 4px;
+}
+
+.sidebar-group + .sidebar-group {
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  padding-top: 4px;
+}
+
+/* Rótulo do grupo — oculto quando recolhida */
+.sidebar-group-label {
+  display: block;
+  padding: 8px 16px 3px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* ── Item de navegação ────────────────────────────────────── */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 14px 9px 13px;
+  background: transparent;
+  border: none;
+  border-left: 3px solid transparent;
+  color: var(--sidebar-text);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  line-height: 1.3;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  min-height: 44px;             /* área mínima de toque acessível */
+  transition: background 0.13s ease, color 0.13s ease, border-color 0.13s ease;
+}
+
+.sidebar-item:hover        { background: var(--sidebar-hover-bg); color: #ffffff; }
+.sidebar-item:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.55);
+  outline-offset: -2px;
+}
+
+/* Item ativo */
+.sidebar-item--active {
+  background: var(--sidebar-active-bg);
+  color: #ffffff;
+  border-left-color: var(--sidebar-active-indicator);
+  font-weight: 700;
+}
+
+/* Sidebar recolhida — centraliza ícones */
+.sidebar--collapsed .sidebar-item {
+  justify-content: center;
+  padding: 9px 0;
+  border-left-color: transparent;
+}
+
+.sidebar--collapsed .sidebar-item--active {
+  border-left-color: var(--sidebar-active-indicator);
+}
+
+/* Ícone do item */
+.sidebar-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+/* Texto do item */
+.sidebar-item-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* ============================================================
+   RODAPÉ — informações do usuário + sair
+   ============================================================ */
+.sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 8px 0 6px;
+  flex-shrink: 0;
+}
+
+.sidebar-user {
+  padding: 8px 16px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.sidebar-user-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.44);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Botão de sair */
+.sidebar-item--logout {
+  color: #fca5a5 !important;
+  margin-top: 2px;
+}
+.sidebar-item--logout:hover {
+  background: rgba(185, 28, 28, 0.32) !important;
+  color: #fecaca !important;
+}
+
+/* ============================================================
+   OVERLAY — fundo escuro para fechar sidebar no mobile
+   ============================================================ */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.48);
+  z-index: 490;
+  animation: fadeOverlay 0.2s ease;
+}
+
+@keyframes fadeOverlay {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ============================================================
+   TOPBAR — barra superior visível somente no mobile
+   ============================================================ */
+.topbar {
+  display: none;            /* oculta no desktop; aparece via media query */
+  align-items: center;
+  gap: 12px;
+  background: var(--sidebar-bg);
+  color: #ffffff;
+  padding: 0 16px;
+  height: var(--topbar-height);
+  border-bottom: 2px solid var(--sidebar-border);
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--sombra-media);
+}
+
+.topbar-hamburger {
+  background: rgba(255, 255, 255, 0.10);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  color: #ffffff;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background 0.15s ease;
+}
+.topbar-hamburger:hover        { background: rgba(255, 255, 255, 0.20); }
+.topbar-hamburger:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.70);
+  outline-offset: 2px;
+}
+
+.topbar-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.2px;
+}
+
+.topbar-user {
+  margin-left: auto;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 140px;
+}
+
+/* ============================================================
+   RESPONSIVO — MOBILE  (< 768 px)
+   Sidebar como overlay; topbar visível
+   ============================================================ */
+@media (max-width: 767px) {
+  .app-layout {
+    display: block;           /* empilha em coluna no mobile */
+  }
+
+  .topbar {
+    display: flex;
+  }
+
+  /* Sidebar sai da tela pela esquerda por padrão */
+  .sidebar {
+    position: fixed;
+    left: calc(-1 * var(--sidebar-width) - 8px);
+    top: 0;
+    height: 100vh;
+    width: var(--sidebar-width) !important;   /* ignora collapsed no mobile */
+    z-index: 500;
+    transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: none;
+  }
+
+  /* Sidebar aberta — desliza para dentro */
+  .sidebar--mobile-open {
+    left: 0;
+    box-shadow: 6px 0 24px rgba(0, 0, 0, 0.28);
+  }
+
+  /* Anula estilos "collapsed" dentro do mobile para exibição completa */
+  .sidebar--collapsed .sidebar-header       { justify-content: space-between; padding: 14px 12px; }
+  .sidebar--collapsed .sidebar-item         { justify-content: flex-start; padding: 9px 14px 9px 13px; }
+  .sidebar--collapsed .sidebar-item--active { border-left-color: var(--sidebar-active-indicator); }
+
+  .sidebar--collapsed .sidebar-group-label,
+  .sidebar--collapsed .sidebar-item-label,
+  .sidebar--collapsed .sidebar-user,
+  .sidebar--collapsed .sidebar-logo-text,
+  .sidebar--collapsed .sidebar-logo-wrap    { display: flex !important; }
+
+  .sidebar--collapsed .sidebar-group-label,
+  .sidebar--collapsed .sidebar-item-label,
+  .sidebar--collapsed .sidebar-user-name,
+  .sidebar--collapsed .sidebar-user-role,
+  .sidebar--collapsed .sidebar-logo-text   { display: block !important; }
+}
+
+/* ============================================================
+   RESPONSIVO — TABLET  (768 px – 1023 px)
+   Sidebar um pouco mais estreita
+   ============================================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  :root {
+    --sidebar-width: 210px;
+  }
+}
+
+/* ============================================================
+   IMPRESSÃO — oculta sidebar e topbar
+   ============================================================ */
+@media print {
+  .sidebar,
+  .sidebar-overlay,
+  .topbar {
+    display: none !important;
+  }
+
+  .app-layout,
+  .app-content {
+    display: block;
+  }
+}

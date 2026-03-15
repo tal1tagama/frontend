@@ -1,150 +1,20 @@
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import { useContext, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { canAccessRoute, PERFIL_LABELS } from "../constants/permissions";
-import Icon from "./Icons";
+﻿import NavBar from "./NavBar";
 import "../styles/main.css";
 
 /**
- * Links de navegação disponíveis por perfil.
- * A função canAccessRoute (baseada em ROUTE_PERMISSIONS) controla o que cada perfil vê.
+ * Layout principal — NavBar superior + area de conteudo.
+ * A navegacao, controle de permissoes e logout ficam no componente NavBar.
  */
-const NAV_LINKS = [
-  { path: "/",                    label: "Início",                iconKey: "home"        },
-  { path: "/medicoes",            label: "Nova Medição",          iconKey: "ruler"       },
-  { path: "/solicitacoes",        label: "Solicitar Materiais",   iconKey: "cart"        },
-  { path: "/status-solicitacoes", label: "Minhas Solicitações",   iconKey: "clipboard"   },
-  { path: "/upload",              label: "Enviar Arquivos",       iconKey: "upload"      },
-  { path: "/diario",              label: "Diário de Obra",        iconKey: "clipboard"   },
-  { path: "/sincronizacao",       label: "Sincronização",         iconKey: "checklist"   },
-  // -- apenas supervisor e admin --
-  { path: "/medicoes-lista",      label: "Lista de Medições",     iconKey: "checklist"   },
-  { path: "/relatorios",          label: "Relatórios",            iconKey: "chart"       },
-  { path: "/obras",               label: "Obras",                 iconKey: "building"    },
-  // -- apenas admin --
-  { path: "/admin",               label: "Administração",         iconKey: "settings"    },
-  { path: "/register",            label: "Cadastrar Funcionário", iconKey: "person-add"  },
-  // -- todos --
-  { path: "/profile",             label: "Meu Perfil",            iconKey: "person"      },
-];
-
 function Layout({ children }) {
-  const { user, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [menuAberto, setMenuAberto] = useState(false);
-
-  const perfil = user?.perfil || null;
-
-  const isActive = (path) => {
-    if (path === "/") return location.pathname === "/";
-    // garante que o match ocorra em fronteira de segmento (evita /medicoes ativar em /medicoes-lista)
-    return (
-      location.pathname === path ||
-      location.pathname.startsWith(path + "/")
-    );
-  };
-
-  async function handleLogout() {
-    await logout();
-    navigate("/login");
-  }
-
-  function handleNavClick(path) {
-    navigate(path);
-    setMenuAberto(false);
-  }
-
   return (
-    <div>
-      <header className="header">
-        <div className="header-top">
-          {/* Logo clicável leva ao início */}
-          <Link to="/" className="header-logo-link" onClick={() => setMenuAberto(false)}>
-            <span className="header-logo-icon">
-              <img
-                src={`${process.env.PUBLIC_URL}/logo.png`}
-                alt="ObraLink"
-                className="header-logo-img"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-            </span>
-            <span className="header-logo-text">ObraLink</span>
-          </Link>
+    <div className="app-layout">
+      <NavBar />
 
-          <div className="header-top-right">
-            {user && (
-              <div className="header-user-info">
-                {user.nome && (
-                  <span className="header-user-nome">
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
-                      stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
-                      strokeLinejoin="round" aria-hidden="true"
-                      style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: 4, flexShrink: 0 }}>
-                      <circle cx="12" cy="8" r="4" />
-                      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                    </svg>
-                    {user.nome}
-                  </span>
-                )}
-                <span className="header-perfil-badge">
-                  <span className="header-perfil-label">Cargo</span>
-                  {PERFIL_LABELS[perfil] || perfil || "Usuário"}
-                </span>
-              </div>
-            )}
-            {/* Botão hambúrguer — visível apenas no mobile */}
-            <button
-              className="menu-hamburger"
-              aria-label={menuAberto ? "Fechar menu" : "Abrir menu"}
-              aria-expanded={menuAberto}
-              onClick={() => setMenuAberto((prev) => !prev)}
-            >
-              {menuAberto ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                  <line x1="3" y1="6" x2="21" y2="6" />
-                  <line x1="3" y1="12" x2="21" y2="12" />
-                  <line x1="3" y1="18" x2="21" y2="18" />
-                </svg>
-              )}
-            </button>
-          </div>
-        </div>
-
-        <nav
-          className={`menu${menuAberto ? " menu-aberto" : ""}`}
-          aria-label="Menu principal"
-        >
-          {NAV_LINKS.filter(({ path }) => canAccessRoute(perfil, path)).map(({ path, label, iconKey }) => (
-            <button
-              key={path}
-              className={isActive(path) ? "active" : ""}
-              onClick={() => handleNavClick(path)}
-            >
-              <Icon name={iconKey} size={15} />
-              {label}
-            </button>
-          ))}
-
-          <div className="menu-separator" />
-
-          <button className="btn-logout" onClick={handleLogout}>
-            <Icon name="logout" size={15} />
-            Sair
-          </button>
-        </nav>
-      </header>
-
-      <main className="container">
-        {children}
-      </main>
+      <div className="app-content">
+        <main className="container" id="main-content">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,6 @@
 // src/pages/Dashboard.jsx
 // Página inicial do sistema, exibida após o login.
 // Os atalhos visíveis dependem do perfil do usuário (encarregado / supervisor / admin).
-// src/pages/Dashboard.jsx
-// Página inicial do sistema, exibida após o login.
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
@@ -62,7 +60,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <div className="page-container">
+      <div className="page-container dashboard-container">
         {/* Cabeçalho de boas-vindas */}
         <div className="welcome-card">
           <h1 className="welcome-title">
